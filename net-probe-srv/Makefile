@@ -1,12 +1,7 @@
 lint: clean
-	pylint --rcfile=~/.pylint srv.py netProbeSrv/*py
+	pylint --rcfile=~/.pylint srv.py netProbeSrv/*py config/*py
 
 clean:
-	rm -f *pyc netProbeSrv/*pyc
-	rm -f *~ netProbeSrv/*~
+	rm -f *pyc */*pyc
+	rm -f *~ */*~
 
-# git commit
-# git push origin master
-#
-# git rm --cached %
-# git add %

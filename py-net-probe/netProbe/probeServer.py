@@ -19,6 +19,8 @@ __author__ = "Alex Chauvin"
 import socket
 import requests
 import time
+import json
+import logging
 
 class probeServer(object):
     """class to talk to the probe server"""
@@ -33,6 +35,11 @@ class probeServer(object):
         self.sSrvBaseURL = ""
         self.bServerAvail = False
         self.lastCmdRespTime = 0
+        self.uid = 0
+        self.session = requests.Session()
+        adapter = requests.adapters.HTTPAdapter(pool_connections=1,
+                                                pool_maxsize=2)
+        self.session.mount('http', adapter)
 
     # -----------------------------------------------------------------
     def findServer(self):
@@ -51,10 +58,10 @@ class probeServer(object):
                 self.sServerName = server
                 break
             except socket.gaierror:
-                print "WARNING cannot find servername {}".format(server)
+                logging.error("cannot find servername {}".format(server))
 
         if self.sServerName == "":
-            print "ERROR no suitable server to talk to"
+            logging.error("no suitable server to talk to")
             return False
 
         self.sSrvBaseURL = "http://{}:{}".format(self.sServerName,
@@ -71,6 +78,9 @@ class probeServer(object):
 
         returns boolean
         """
+        if self.bServerAvail == False:
+            self.uid = 0
+
         if self.sServerName == "":
             return False
 
@@ -79,12 +89,25 @@ class probeServer(object):
 
         try:
             now = time.time()
-            requests.get(self.sPingURL)
-            delta = time.time() - now
+            if (self.uid > 0):
+                data = {
+                    'uid' : self.uid
+                }
+                r = self.session.post(self.sPingURL, data)
+                if (r.status_code == 200):
+                    delta = time.time() - now
+                    s = json.loads(r.text)
+                    if s.__contains__('answer') and s['answer'] != "OK":
+                        self.bServerAvail = False
+                        return False
+            else:
+                self.session.get(self.sPingURL)
+                delta = time.time() - now
+
             self.lastCmdRespTime = delta
             self.bServerAvail = True
-        except requests.ConnectionError, e:
-            print "ERROR reaching srv : {}".format(e.message)
+        except requests.ConnectionError:
+            logging.error("reaching srv : connection refused")
             self.bServerAvail = False
             return False
 
@@ -122,5 +145,23 @@ class probeServer(object):
         }
 
         req = self.sSrvBaseURL+'/discover'
-        r = requests.post(req, data)
-        print r
+
+        try:
+            r = self.session.post(req, data)
+        except requests.ConnectionError:
+            logging.error("reaching srv : connection refused")
+            self.bServerAvail = False
+            return False
+
+        if (r.status_code == 200):
+            s = json.loads(r.text)
+            if s.__contains__('uid') and s.__contains__('answer') and s['answer'] == "OK":
+                self.uid = s['uid']
+                self.bServerAvail = True
+                logging.info("my id is {}".format(self.uid))
+                return True
+            else:
+                logging.error("bad response from server, missing uid")
+
+        self.bServerAvail = False
+        return False

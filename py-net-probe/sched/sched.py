@@ -56,8 +56,7 @@ class sched(object):
         """
         constructor, calls once the step() method
         """
-        self.aSchedJobs = []
-        self.step()
+        self.clean()
 
     def add(self, iFreq, func):
         """
@@ -99,3 +98,9 @@ class sched(object):
             self.aSchedJobs.append(nextJob)
             return 0
 
+    def clean(self):
+        """
+        suppress all jobs scheduled
+        """
+        self.aSchedJobs = []
+        self.step()

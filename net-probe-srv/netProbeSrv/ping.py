@@ -6,12 +6,27 @@
  ping WS
 """
 
-from flask import make_response, jsonify
+from flask import make_response, jsonify, request
 from netProbeSrv import app
+from config import conf
+import time
 
-@app.route('/ping', methods=['GET'])
+@app.route('/ping', methods=['GET', 'POST'])
 def ws_ping():
     """
-    answers pong on ok
+    answers ok if everything is good
     """
-    return make_response(jsonify({"answer" : "pong"}), 200)
+
+    global conf
+
+    if request.method == 'POST':
+        uid = int(request.form['uid'])
+
+        host = conf.getHostByUid(uid)
+        if host == None:
+            return make_response(jsonify({"answer" : "KO"}), 200)
+
+        conf.updateHost(host, { "last" : time.time() })
+        conf.dump()
+
+    return make_response(jsonify({"answer" : "OK"}), 200)

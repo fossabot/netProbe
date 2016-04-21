@@ -7,44 +7,81 @@
 """
 
 import time
+import logging
 
 import netProbe
 import sched
 import hostId
 
-# check IP configuration of probe
-# if no default route !
-#
-ip = netProbe.ipConf()
 
-if ip.hasDefaultRoute() == False:
-    print "no default route, abort"
-    exit(1)
-else:
-    print "INFO : ip route OK"
+_logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+logging.basicConfig(format=_logFormat,
+                    level=logging.INFO)
 
-# get hostId
-#
-hid = hostId.hostId(ip.getLinkAddr())
+logging.info("starting probe")
 
-# connect to probe server
-#
+# logging.warning("warning")
+# logging.error("error")
+# logging.critical("critical")
+# logging.exception("in exception only")
 
-srv = netProbe.probeServer()
+srv = {}
+bConnected = False
 
-if srv.findServer():
-    print "INFO : srv found"
-else:
-    print "ERROR : server not found"
-    exit(2)
+# -----------------------------------------
+def serverConnect():
+    """
+    """
 
-if srv.ping() == False:
-    print "ERROR : service ping not working"
-    exit(1)
+    global srv
+    global bConnected
 
-# send identification to get certificate
-#
-srv.discover(hid.get(), ip.getIfIPv4(), ip.getIfIPv6())
+    # check IP configuration of probe
+    # if no default route !
+    #
+    ip = netProbe.ipConf()
+
+    if ip.hasDefaultRoute() == False:
+        logging.error("no default route, abort")
+        exit(1)
+    else:
+        logging.info("ip route OK")
+
+    # get hostId
+    #
+    hid = hostId.hostId(ip.getLinkAddr())
+
+    bConnected = False
+    
+    iSleepConnectDelay = 1
+
+    while bConnected == False:
+        logging.info("sleep for {:0.0f}".format(iSleepConnectDelay))
+        time.sleep(iSleepConnectDelay)
+
+        if iSleepConnectDelay < 60:
+            iSleepConnectDelay = iSleepConnectDelay * 1.5
+        else:
+            iSleepConnectDelay = 60
+
+        # connect to probe server
+        #
+        srv = netProbe.probeServer()
+
+        if srv.findServer():
+            logging.info("srv IP found in tables")
+        else:
+            logging.error("server not found in DNS or host table")
+            continue
+
+        # send identification to get id & certificate
+        #
+        if srv.discover(hid.get(), ip.getIfIPv4(), ip.getIfIPv6()) == True:
+            bConnected = True
+
+        if bConnected and srv.ping() == False:
+            logging.error("service ping not working")
+            continue
 
 #
 # -----------------------------------------
@@ -54,25 +91,43 @@ def ping():
     called by the scheduler
     """
     if srv.ping():
-        print "INFO delta time = {:0.2f}ms".format(srv.getLastCmdDeltaTime()*1000)
+        logging.info("ping delta time = {:0.2f}ms".format(srv.getLastCmdDeltaTime()*1000))
 
 # -----------------------------------------
 def showStatus():
     """
     called by the scheduler in order to print if the server is available
     """
+    global bConnected
+
     if srv.getStatus() == False:
-        print "WARNING : server not available"
+        logging.warning("server not available")
+        bConnected = False
     else:
-        print "INFO : server up and alive"
+        logging.info("server up and alive")
+
+# -----------------------------------------
+def mainLoop():
+    global scheduler
+    global bConnected
+
+    while bConnected:
+        f = scheduler.step()
+        time.sleep(f)
+
+
+# -----------------------------------------
 
 # create global scheduler
 #
 scheduler = sched.sched()
 
-scheduler.add(5, ping)
-scheduler.add(15, showStatus)
-
 while True:
-    f = scheduler.step()
-    time.sleep(f)
+    scheduler.clean()
+
+    serverConnect()
+
+    scheduler.add(1, ping)
+    scheduler.add(15, showStatus)
+
+    mainLoop()
