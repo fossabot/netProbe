@@ -18,21 +18,7 @@ class config(object):
         constructor
         """
         self.aHostTable = {}
-        self.uid = 0
         return
-
-    # ----------------------------------------------------------
-    def getUniqueId(self, sId):
-        """
-        returns a unique id for the probe
-        """
-        if self.aHostTable.__contains__(sId):
-            host = self.aHostTable[sId]
-            if host.__contains__('uid'):
-                return host['uid']
-
-        self.uid = self.uid+1
-        return self.uid
 
     # ----------------------------------------------------------
     def checkHost(self, sId):
@@ -54,19 +40,6 @@ class config(object):
         if sId != "" and sId != None and sId != False:
             logging.info("add host to the DB")
             self.aHostTable[sId] = {}
-
-    # ----------------------------------------------------------
-    def updateHost(self, sId, o):
-        """ update host by its identifier """
-
-        if self.aHostTable.__contains__(sId) == False:
-            return None
-
-        new = self.aHostTable[sId].copy()
-        new.update(o)
-
-        self.aHostTable.update({sId : new})
-        logging.info("update host in config {}".format(sId))
 
     # ----------------------------------------------------------
     def getHostByUid(self, uid):

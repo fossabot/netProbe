@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-21 11:24:35 alex>
+# Time-stamp: <2016-04-21 20:29:01 alex>
 #
 # pylint --rcfile=~/.pylint main.py
 
@@ -132,7 +132,7 @@ while True:
 
     serverConnect()
 
-    scheduler.add(1, ping)
+    scheduler.add(5, ping)
     scheduler.add(15, showStatus)
 
     mainLoop()

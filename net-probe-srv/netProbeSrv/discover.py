@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-21 12:07:13 alex>
+# Time-stamp: <2016-04-21 20:25:13 alex>
 #
 
 """
@@ -8,9 +8,12 @@
 """
 
 from flask import make_response, jsonify, request
+import time
+
 from netProbeSrv import app
 from config import conf
-import time
+from liveDB import lDB
+
 
 @app.route('/discover', methods=['POST'])
 def ws_discover():
@@ -20,18 +23,22 @@ def ws_discover():
     """
     
     global conf
+    global liveDB
 
     if request.method == 'POST':
         _sHostId = request.form['hostId']
         _sIpv4 = request.form['ipv4']
         _sIpv6 = request.form['ipv6']
 
+        # if the probe is in the configuration db
+        # update the probe db
+        #
         if conf.checkHost(_sHostId):
-            _id = conf.getUniqueId(_sHostId)
-            conf.updateHost(_sHostId, {'uid' : _id,
-                                       'discoverTime': time.time(),
-                                       'ipv4' : _sIpv4,
-                                       'ipv6' : _sIpv6})
+            _id = lDB.getUniqueId(_sHostId)
+            lDB.updateHost(_sHostId, {'uid' : _id,
+                                      'discoverTime': time.time(),
+                                      'ipv4' : _sIpv4,
+                                      'ipv6' : _sIpv6})
 
             return make_response(jsonify({"answer" : "OK",
                                           "uid" : _id}), 200)
