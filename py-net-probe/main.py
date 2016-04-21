@@ -1,5 +1,7 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
+# Time-stamp: <2016-04-21 11:24:35 alex>
+#
 # pylint --rcfile=~/.pylint main.py
 
 """
@@ -12,7 +14,6 @@ import logging
 import netProbe
 import sched
 import hostId
-
 
 _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
 logging.basicConfig(format=_logFormat,
@@ -31,6 +32,7 @@ bConnected = False
 # -----------------------------------------
 def serverConnect():
     """
+    connects to main server, if not available, wait and loop
     """
 
     global srv
@@ -108,6 +110,9 @@ def showStatus():
 
 # -----------------------------------------
 def mainLoop():
+    """
+    main scheduler loop
+    """
     global scheduler
     global bConnected
 

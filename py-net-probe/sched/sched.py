@@ -56,6 +56,7 @@ class sched(object):
         """
         constructor, calls once the step() method
         """
+        self.aSchedJobs = []
         self.clean()
 
     def add(self, iFreq, func):

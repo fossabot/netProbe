@@ -1,5 +1,7 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
+# Time-stamp: <2016-04-21 11:27:36 alex>
+#
 
 """
 Manages communication with the central server
@@ -37,6 +39,7 @@ class probeServer(object):
         self.lastCmdRespTime = 0
         self.uid = 0
         self.session = requests.Session()
+
         adapter = requests.adapters.HTTPAdapter(pool_connections=1,
                                                 pool_maxsize=2)
         self.session.mount('http', adapter)
@@ -89,12 +92,12 @@ class probeServer(object):
 
         try:
             now = time.time()
-            if (self.uid > 0):
+            if self.uid > 0:
                 data = {
                     'uid' : self.uid
                 }
                 r = self.session.post(self.sPingURL, data)
-                if (r.status_code == 200):
+                if r.status_code == 200:
                     delta = time.time() - now
                     s = json.loads(r.text)
                     if s.__contains__('answer') and s['answer'] != "OK":
@@ -153,7 +156,7 @@ class probeServer(object):
             self.bServerAvail = False
             return False
 
-        if (r.status_code == 200):
+        if r.status_code == 200:
             s = json.loads(r.text)
             if s.__contains__('uid') and s.__contains__('answer') and s['answer'] == "OK":
                 self.uid = s['uid']

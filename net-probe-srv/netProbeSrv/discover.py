@@ -1,5 +1,7 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
+# Time-stamp: <2016-04-21 12:07:13 alex>
+#
 
 """
  discover WS
@@ -25,12 +27,14 @@ def ws_discover():
         _sIpv6 = request.form['ipv6']
 
         if conf.checkHost(_sHostId):
-            id = conf.getUniqueId(_sHostId)
-            conf.updateHost(_sHostId, { 'uid' : id,
-                                        'discoverTime': time.time() })
+            _id = conf.getUniqueId(_sHostId)
+            conf.updateHost(_sHostId, {'uid' : _id,
+                                       'discoverTime': time.time(),
+                                       'ipv4' : _sIpv4,
+                                       'ipv6' : _sIpv6})
 
             return make_response(jsonify({"answer" : "OK",
-                                          "uid" : id}), 200)
+                                          "uid" : _id}), 200)
 
     return make_response(jsonify({"answer" : "KO"}), 400)
 

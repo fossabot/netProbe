@@ -2,11 +2,9 @@
 #
 
 """
- 
+configuration class
 """
 
 import config
 
 conf = config.config()
-
-

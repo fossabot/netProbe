@@ -10,6 +10,7 @@ from flask import make_response, jsonify, request
 from netProbeSrv import app
 from config import conf
 import time
+import logging
 
 @app.route('/ping', methods=['GET', 'POST'])
 def ws_ping():
@@ -26,7 +27,7 @@ def ws_ping():
         if host == None:
             return make_response(jsonify({"answer" : "KO"}), 200)
 
-        conf.updateHost(host, { "last" : time.time() })
-        conf.dump()
+        conf.updateHost(host, {"last" : time.time()})
+        # logging.info("config : %s", conf.dump())
 
     return make_response(jsonify({"answer" : "OK"}), 200)

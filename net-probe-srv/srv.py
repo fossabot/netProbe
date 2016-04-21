@@ -6,12 +6,20 @@
  server module for the probe system
 """
 
+import logging
+
 from config import conf
 
 from netProbeSrv import app
 from netProbeSrv import main, ping, version, discover
 
 from werkzeug.serving import WSGIRequestHandler
+
+_logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+logging.basicConfig(format=_logFormat,
+                    level=logging.INFO)
+
+logging.info("starting server")
 
 conf.loadFile('1.conf')
 

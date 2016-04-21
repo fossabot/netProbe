@@ -6,7 +6,8 @@
 """
 
 import json
-import pprint
+import logging
+# import pprint
 
 class config(object):
     """ class to manipulate the configuration """
@@ -31,7 +32,7 @@ class config(object):
                 return host['uid']
 
         self.uid = self.uid+1
-        return(self.uid)
+        return self.uid
 
     # ----------------------------------------------------------
     def checkHost(self, sId):
@@ -39,18 +40,19 @@ class config(object):
         check if the host is in the database
         """
         if self.aHostTable.__contains__(sId):
-            print "checkHost OK {}".format(sId)
+            logging.info("checkHost OK {}".format(sId))
+            return True
         else:
-            print "checkHost KO {}".format(sId)
-
-        return True
+            logging.info("checkHost KO {}".format(sId))
+            return False
 
     # ----------------------------------------------------------
     def addHost(self, sId):
         """
         add a host to the database
         """
-        if (sId != "" and sId != None and sId != False):
+        if sId != "" and sId != None and sId != False:
+            logging.info("add host to the DB")
             self.aHostTable[sId] = {}
 
     # ----------------------------------------------------------
@@ -63,8 +65,8 @@ class config(object):
         new = self.aHostTable[sId].copy()
         new.update(o)
 
-        self.aHostTable.update({ sId : new})
-        print "INFO : update host in config {}".format(sId)
+        self.aHostTable.update({sId : new})
+        logging.info("update host in config {}".format(sId))
 
     # ----------------------------------------------------------
     def getHostByUid(self, uid):
@@ -86,8 +88,8 @@ class config(object):
 
         try:
             f = file(sFile, 'r')
-        except IOError, e:
-            print "ERROR accessing config {} : {}".format(sFile, e)
+        except IOError:
+            logging.error("accessing config file {}".format(sFile))
             return False
 
         c = f.read()
@@ -97,6 +99,8 @@ class config(object):
         for p in conf['probe']:
             self.addHost(p['id'])
 
+        logging.info("config file loaded in DB {}".format(sFile))
+
     def dump(self):
         """ show the configuration host table """
-        pprint.pprint(self.aHostTable)
+        return self.aHostTable

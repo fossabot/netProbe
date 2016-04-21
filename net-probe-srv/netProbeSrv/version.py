@@ -10,8 +10,8 @@ from flask import make_response, jsonify
 from netProbeSrv import app
 
 aVersion = {
-    "version" : "1.0",
-    "date" : "2016/03/16",
+    "version" : "1.0.1",
+    "date" : "2016/04/21",
     "author" : "Alex Chauvin"
 }
 
