@@ -59,7 +59,7 @@ class sched(object):
         self.aSchedJobs = []
         self.clean()
 
-    def add(self, iFreq, func):
+    def add(self, iFreq, func, args=None):
         """
         add a job to the schedule
         :param iFreq: frequency in seconds
@@ -67,6 +67,7 @@ class sched(object):
         """
         self.aSchedJobs.append({'freq' : iFreq,
                                 'func': func,
+                                'args': args,
                                 'nextExec' : time.time()+iFreq})
 
 
@@ -95,7 +96,11 @@ class sched(object):
                         
             nextJob = self.aSchedJobs.pop()
             nextJob['nextExec'] += nextJob['freq']
-            nextJob['func']()
+            if (nextJob['args'] == None):
+                nextJob['func']()
+            else:
+                nextJob['func'](nextJob['args'])
+
             self.aSchedJobs.append(nextJob)
             return 0
 

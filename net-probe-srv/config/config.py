@@ -7,7 +7,7 @@
 
 import json
 import logging
-# import pprint
+import pprint
 
 class config(object):
     """ class to manipulate the configuration """
@@ -33,25 +33,21 @@ class config(object):
             return False
 
     # ----------------------------------------------------------
-    def addHost(self, sId):
+    def addHost(self, hostData):
         """
         add a host to the database
         """
+
+        sId = hostData['id']
+
+        if hostData.__contains__('jobs'):
+            jobs = hostData['jobs']
+        else:
+            jobs = {}
+
         if sId != "" and sId != None and sId != False:
             logging.info("add host to the DB")
-            self.aHostTable[sId] = {}
-
-    # ----------------------------------------------------------
-    def getHostByUid(self, uid):
-        """ return HostId by uid """
-
-        for hkey in self.aHostTable:
-            h = self.aHostTable[hkey]
-
-            if h.__contains__('uid') and h['uid'] == uid:
-                return hkey
-
-        return None
+            self.aHostTable[sId] = {"jobs" : jobs}
 
     # ----------------------------------------------------------
     def loadFile(self, sFile):
@@ -70,10 +66,20 @@ class config(object):
 
         conf = json.loads(c)
         for p in conf['probe']:
-            self.addHost(p['id'])
+            self.addHost(p)
 
         logging.info("config file loaded in DB {}".format(sFile))
 
+
+    # ----------------------------------------------------------
+    def getConfigForHost(self, sId):
+        """ return the configuration for the host """
+
+        logging.info("get configuration for {}".format(sId))
+
+        return self.aHostTable[sId]['jobs']
+
+    # ----------------------------------------------------------
     def dump(self):
         """ show the configuration host table """
         return self.aHostTable

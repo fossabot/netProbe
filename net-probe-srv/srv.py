@@ -12,6 +12,7 @@ from config import conf
 
 from netProbeSrv import app
 from netProbeSrv import main, ping, version, discover
+from netProbeSrv import job
 
 from werkzeug.serving import WSGIRequestHandler
 

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-23 17:14:00 alex>
+# Time-stamp: <2016-04-24 22:51:11 alex>
 #
 
 """
@@ -9,6 +9,7 @@
 
 import time
 import logging
+import signal
 import pprint
 
 import sched
@@ -27,7 +28,7 @@ logging.basicConfig(format=_logFormat,
 
 logging.info("starting probe")
 
-config = [
+config1 = [
       { "job" : "ping",
         "freq" : 15,
 	"target" : "0.us.pool.ntp.org",
@@ -42,7 +43,7 @@ config = [
     ,
       { "job" : "ping",
         "freq" : 10,
-	"target" : "0.fr.pool.ntp.org",
+	"target" : "10.0.2.1",
         "version" : 4,
 
         "sequence" : 3,
@@ -52,6 +53,30 @@ config = [
         "size": 32
       }
     ]
+
+config = [
+      { "job" : "ping",
+        "freq" : 10,
+	"target" : "10.0.2.1",
+        "version" : 4,
+
+        "sequence" : 3,
+        "wait" : 1,
+        "tos" : 0,
+        "timeout" : 0.025,
+        "size": 32
+      }
+    ]
+
+#
+# -----------------------------------------
+def trap_signal(sig, heap):
+    """
+    """
+    logging.info("exiting after signal received")
+
+    global bRunning
+    bRunning = False
 
 #
 # -----------------------------------------
@@ -186,7 +211,7 @@ def mainLoop():
     """
     global scheduler
 
-    while True:
+    while bRunning:
         f = scheduler.step()
         time.sleep(f)
 
@@ -207,12 +232,20 @@ else:
 # create global scheduler
 #
 scheduler = sched.sched()
-
 scheduler.clean()
+
+# socket.settimeout(1.0)
 
 for c in config:
     if c['job'] == "ping":
         if c['version'] == 4:
             scheduler.add(int(c['freq']), job_ping, c)
 
+bRunning = True
+
+signal.signal(signal.SIGTERM, trap_signal)
+signal.signal(signal.SIGINT, trap_signal)
+
 mainLoop()
+
+logging.info("end probe-icmp")

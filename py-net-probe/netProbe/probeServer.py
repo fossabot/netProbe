@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-21 11:27:36 alex>
+# Time-stamp: <2016-04-24 22:12:23 alex>
 #
 
 """
@@ -23,6 +23,7 @@ import requests
 import time
 import json
 import logging
+# import pprint
 
 class probeServer(object):
     """class to talk to the probe server"""
@@ -168,3 +169,36 @@ class probeServer(object):
 
         self.bServerAvail = False
         return False
+
+    # -----------------------------------------------------------------
+    def getConfig(self):
+        """
+        get configuration for this probe from server
+        """
+
+        if self.bServerAvail == False or self.uid == 0:
+            return None
+
+        try:
+            data = {
+                'uid' : self.uid
+            }
+
+            r = self.session.post(self.sSrvBaseURL+'/myjobs', data)
+            
+            if r.status_code == 200:
+                s = json.loads(r.text)
+                if s.__contains__('answer') and s['answer'] != "OK":
+                    if s.__contains__('reason'):
+                        logging.error("bad answer from job ws : {}".format(s['reason']))
+                    self.bServerAvail = False
+                    return None
+
+                if s.__contains__('jobs'):
+                    return s['jobs']
+
+        except requests.ConnectionError:
+            logging.error("get jobs : connection error")
+            return None
+
+        return None
