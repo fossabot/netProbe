@@ -1,7 +1,9 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-24 22:46:20 alex>
+# Time-stamp: <2016-04-30 17:42:49 alex>
 #
+
+__test__ = False
 
 """
  client module for the probe system
