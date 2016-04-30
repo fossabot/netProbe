@@ -31,7 +31,7 @@ class hostId(object):
             f = file('/proc/cpuinfo', 'r')
         except IOError, e:
             print "ERROR accessing cpuinfo {}".format(e)
-            return
+            raise Exception('ERROR accessing cpuinfo')
 
         sCPU = sUniqueId
         

@@ -1,6 +1,7 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# pylint --rcfile=~/.pylint main.py
+# Time-stamp: <2016-04-30 17:11:35 alex>
+#
 
 """
  server module for the probe system
@@ -26,5 +27,5 @@ conf.loadFile('1.conf')
 
 if __name__ == '__main__':
     WSGIRequestHandler.protocol_version = "HTTP/1.1"
-    app.debug = True
+    app.debug = False
     app.run(host='0.0.0.0')

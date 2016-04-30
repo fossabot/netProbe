@@ -1,5 +1,7 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
+# Time-stamp: <2016-04-30 18:40:16 alex>
+#
 
 """
  probe database for configuration and data
@@ -42,15 +44,17 @@ class database(object):
                 break
 
             except redis.ConnectionError, e:
+                self.backOff *= 1.5
+                if self.backOff > 60:
+                    raise Exception('redis not running ? abort after 60s')
                 logging.error("redis : {}, next try in {:.2f}".format(e.message, self.backOff))
                 time.sleep(self.backOff)
-                self.backOff = backOff*1.5
          
         self.backOff = 1
 
     def cleanJob(self, jobName):
         """ suppress the list from the database """
-        self.db.delete(jobName)
+        return self.db.delete(jobName)
 
     def addJob(self, jobName, job):
         """ add a job in the job list """
@@ -60,5 +64,4 @@ class database(object):
         l = self.db.llen(jobName)
         if l > 0:
             for i in range(l):
-                pprint.pprint(self.db.lindex(jobName, i))
-
+                yield self.db.lindex(jobName, i)

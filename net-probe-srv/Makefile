@@ -5,3 +5,4 @@ clean:
 	rm -f *pyc */*pyc
 	rm -f *~ */*~
 
+test:

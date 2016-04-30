@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-24 22:46:20 alex>
+# Time-stamp: <2016-04-30 20:02:54 alex>
 #
 
 """
@@ -10,7 +10,7 @@
 import time
 import logging
 import os
-import pprint
+# import pprint
 import signal
 
 import netProbe
@@ -27,7 +27,7 @@ logging.basicConfig(format=_logFormat,
 logging.info("starting probe")
 
 # check wether the uid is root (form icmp)
-if (os.getuid() != 0):
+if os.getuid() != 0:
     logging.error("not root")
     exit()
 
@@ -131,8 +131,8 @@ def pushJobsToDB(jobName):
 
     # pprint.pprint(probeJobs)
 
-    for id in probeJobs.keys():
-        j = probeJobs[id]
+    for i in probeJobs.keys():
+        j = probeJobs[i]
         if j['job'] == jobName:
             del j['restart']
             db.addJob(jobName, j)
@@ -204,8 +204,7 @@ def mainLoop():
 
 # -----------------------------------------
 def trap_signal(sig, heap):
-    """
-    """
+    """ trap all signals for stop """
 
     global bRunning
     global bConnected
