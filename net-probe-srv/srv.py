@@ -1,6 +1,7 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# pylint --rcfile=~/.pylint main.py
+# Time-stamp: <2016-04-30 17:11:35 alex>
+#
 
 """
  server module for the probe system
