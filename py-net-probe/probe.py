@@ -1,12 +1,14 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-24 22:49:18 alex>
+# Time-stamp: <2016-04-30 20:07:10 alex>
 #
+
+""" probe management module """
 
 import logging
 import subprocess
 import time
-import pprint
+# import pprint
 
 # -----------------------------------------
 def restartProbe(jobName, probeProcess):
@@ -35,7 +37,7 @@ def restartProbe(jobName, probeProcess):
                 i -= 1
                 if i <= 0:
                     break
-            if i>0:
+            if i > 0:
                 logging.info("probe {} stopped in {:0.1f}s".format(jobName, (10-i)*0.5))
             else:
                 logging.error("probe {} not terminated".format(jobName))
@@ -46,9 +48,8 @@ def restartProbe(jobName, probeProcess):
     if p == None:
         logging.error("need to handle subprocess failure")
 
-    probeProcess[jobName] = { "handler" : p,
-                              "started" : time.time()
-                            }
+    probeProcess[jobName] = {"handler" : p,
+                             "started" : time.time()}
 
     # pprint.pprint(probeProcess)
 

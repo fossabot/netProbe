@@ -3,6 +3,10 @@ clean:
 	cd py-net-probe && make clean
 	rm -f *~ 
 
+test:
+	cd net-probe-srv && make test
+	cd py-net-probe && make test
+
 git-status: clean
 	git status
 

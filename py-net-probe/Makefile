@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2016-04-30 18:42:39 alex>
+# Time-stamp: <2016-04-30 20:08:51 alex>
 #
 
 lint: clean
@@ -9,5 +9,5 @@ clean:
 	rm -f *pyc netProbe/*pyc sched/*pyc hostId/*pyc database/*pyc tests/*pyc
 	rm -f *~ netProbe/*~ sched/*~ hostId/*~ database/*~ tests/*~ 
 
-test:
+test: clean
 	nosetests tests

@@ -70,7 +70,6 @@ class sched(object):
                                 'args': args,
                                 'nextExec' : time.time()+iFreq})
 
-
     def step(self):
         """
         run a step and return the delay till next step
@@ -96,7 +95,7 @@ class sched(object):
                         
             nextJob = self.aSchedJobs.pop()
             nextJob['nextExec'] += nextJob['freq']
-            if (nextJob['args'] == None):
+            if nextJob['args'] == None:
                 nextJob['func']()
             else:
                 nextJob['func'](nextJob['args'])

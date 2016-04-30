@@ -1,5 +1,7 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
+# Time-stamp: <2016-04-30 18:57:47 alex>
+#
 
 """
 >>> import netProbe
