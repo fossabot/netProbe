@@ -26,5 +26,5 @@ conf.loadFile('1.conf')
 
 if __name__ == '__main__':
     WSGIRequestHandler.protocol_version = "HTTP/1.1"
-    app.debug = True
+    app.debug = False
     app.run(host='0.0.0.0')
