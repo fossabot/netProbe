@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-24 22:51:11 alex>
+# Time-stamp: <2016-05-01 12:32:53 alex>
 #
 
 """
@@ -10,15 +10,14 @@
 import time
 import logging
 import signal
-import pprint
+# import pprint
 
 import sched
 from netProbe import ipConf
 
 import select
 import socket
-import time
-import sys
+# import sys
 
 from impacket import ImpactDecoder, ImpactPacket
 
@@ -29,49 +28,46 @@ logging.basicConfig(format=_logFormat,
 logging.info("starting probe")
 
 config1 = [
-      { "job" : "ping",
-        "freq" : 15,
-	"target" : "0.us.pool.ntp.org",
-        "version" : 4,
+    {"job" : "ping",
+     "freq" : 15,
+     "target" : "0.us.pool.ntp.org",
+     "version" : 4,
 
-        "sequence" : 3,
-        "wait" : 1,
-        "tos" : 0,
-        "timeout" : 0.5,
-        "size": 320
-      }
-    ,
-      { "job" : "ping",
-        "freq" : 10,
-	"target" : "10.0.2.1",
-        "version" : 4,
-
-        "sequence" : 3,
-        "wait" : 1,
-        "tos" : 0,
-        "timeout" : 0.025,
-        "size": 32
-      }
-    ]
+     "sequence" : 3,
+     "wait" : 1,
+     "tos" : 0,
+     "timeout" : 0.5,
+     "size": 320},
+    {"job" : "ping",
+     "freq" : 10,
+     "target" : "10.0.2.1",
+     "version" : 4,
+       
+     "sequence" : 3,
+     "wait" : 1,
+     "tos" : 0,
+     "timeout" : 0.025,
+     "size": 32}
+]
 
 config = [
-      { "job" : "ping",
-        "freq" : 10,
-	"target" : "10.0.2.1",
-        "version" : 4,
+    {"job" : "ping",
+     "freq" : 10,
+     "target" : "10.0.2.1",
+     "version" : 4,
 
-        "sequence" : 3,
-        "wait" : 1,
-        "tos" : 0,
-        "timeout" : 0.025,
-        "size": 32
-      }
-    ]
+     "sequence" : 3,
+     "wait" : 1,
+     "tos" : 0,
+     "timeout" : 0.025,
+     "size": 32}
+]
 
 #
 # -----------------------------------------
 def trap_signal(sig, heap):
     """
+    catch the signals to handle the restart of the probe module
     """
     logging.info("exiting after signal received")
 
@@ -80,14 +76,15 @@ def trap_signal(sig, heap):
 
 #
 # -----------------------------------------
-def job_ping(config):
+def job_ping(_config):
     """
+    icmp job
     """
     global ip
 
     src = ip.getIfIPv4()
 
-    target = config['target']
+    target = _config['target']
     try:
         a = socket.getaddrinfo(target, None, socket.AF_INET)
         dst = a[0][4][0]
@@ -101,8 +98,8 @@ def job_ping(config):
     pkt_ip.set_ip_src(src)
     pkt_ip.set_ip_dst(dst)
 
-    if config.__contains__('tos'):
-        tos = int(config['tos'])
+    if _config.__contains__('tos'):
+        tos = int(_config['tos'])
         pkt_ip.set_ip_tos(tos)
         if tos > 0:
             logging.info("set tos to {}".format(tos))
@@ -113,8 +110,8 @@ def job_ping(config):
 
     # Include a 156-character long payload inside the ICMP packet.
     size = 64
-    if config.__contains__('size'):
-        size = int(config['size'])
+    if _config.__contains__('size'):
+        size = int(_config['size'])
 
     pkt_icmp.contains(ImpactPacket.Data("A"*size))
 
@@ -126,16 +123,16 @@ def job_ping(config):
     s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
 
     seq_id = 3
-    if config.__contains__('sequence'):
-        seq_id = int(config['sequence'])
+    if _config.__contains__('sequence'):
+        seq_id = int(_config['sequence'])
 
     sleep_delay = 1
-    if config.__contains__('sleep'):
-        sleep_delay = int(config['sleep'])
+    if _config.__contains__('sleep'):
+        sleep_delay = int(_config['sleep'])
 
     timeout = 1
-    if config.__contains__('timeout'):
-        timeout = float(config['timeout'])
+    if _config.__contains__('timeout'):
+        timeout = float(_config['timeout'])
 
     res_timeout = 0
     res_ok = 0
@@ -157,7 +154,7 @@ def job_ping(config):
         s.sendto(pkt_ip.get_packet(), (dst, 0))
 
         # Wait for incoming replies.
-        if s in select.select([s],[],[],timeout)[0]:
+        if s in select.select([s], [], [], timeout)[0]:
             reply = s.recvfrom(2000)[0]
 
             d = time.time() - now
@@ -181,7 +178,7 @@ def job_ping(config):
                 logging.info("Ping reply for sequence #{} {:0.2f}".format(ricmp.get_icmp_id(), d*1000))
                 res_ok += 1
 
-            if (i+1<=seq_id):
+            if (i+1 <= seq_id):
                 time.sleep(sleep_delay)
         
         else:
@@ -224,8 +221,6 @@ ip = ipConf()
 if ip.hasDefaultRoute() == False:
     logging.error("no default route, abort")
     exit(1)
-else:
-    logging.info("ip route OK")
 
 # -----------------------------------------
 
