@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-01 12:14:04 alex>
+# Time-stamp: <2016-05-01 16:59:46 alex>
 #
 
 """
@@ -14,6 +14,7 @@ __author__ = "Alex Chauvin"
 import redis
 import logging
 import time
+import json
 
 # import pprint
 
@@ -55,19 +56,41 @@ class database(object):
         self.backOff = 1
 
     def cleanJob(self, jobName):
-        """ suppress the list from the database """
+        """suppress the list from the database
+
+        """
         if self.db == None:
             raise Exception("redis not started")
         return self.db.delete(jobName)
 
     def addJob(self, jobName, job):
-        """ add a job in the job list """
+        """add a job in the job list
+
+        """
         if self.db == None:
             raise Exception("redis not started")
-        self.db.rpush(jobName, job)
+        self.db.rpush(jobName, json.dumps(job))
+
+    def getJobs(self, jobName):
+        """extracts all jobs and return an array
+
+        """
+        if self.db == None:
+            raise Exception("redis not started")
+
+        a = []
+        l = self.db.llen(jobName)
+        if l > 0:
+            for i in range(l):
+                s = self.db.lindex(jobName, i)
+                a.append(json.loads(s))
+
+        return a
 
     def dumpJob(self, jobName):
-        """ dump the content of the db for jobname, return a generator """
+        """dump the content of the db for jobname, return a generator
+
+        """
         if self.db == None:
             raise Exception("redis not started")
 

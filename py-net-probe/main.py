@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-30 20:02:54 alex>
+# Time-stamp: <2016-05-01 17:15:26 alex>
 #
 
 """
@@ -10,7 +10,7 @@
 import time
 import logging
 import os
-# import pprint
+import pprint
 import signal
 
 import netProbe
@@ -137,7 +137,7 @@ def pushJobsToDB(jobName):
             del j['restart']
             db.addJob(jobName, j)
             
-            j['version'] = 0
+            # j['version'] = 0
 
     # db.dumpJob(jobName)
 
@@ -168,11 +168,12 @@ def getConfig():
         # update job or create
         if probeJobs.__contains__(c['id']):
             a = probeJobs[c['id']]
-
             if c['version'] > a['version']:
                 a['restart'] = 1
                 a['version'] = c['version']
                 a['data'] = c['data']
+            else:
+                a['restart'] = 0
         else:
             a = c
             a['restart'] = 1

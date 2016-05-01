@@ -1,11 +1,12 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-30 18:40:00 alex>
+# Time-stamp: <2016-05-01 18:16:49 alex>
 #
 
 import sys
 import os
 import nose
+import json
 
 sys.path.append(os.getcwd())
 import database
@@ -28,8 +29,8 @@ def test_addjob():
 
     db.cleanJob("test")
     db.addJob("test", {'name' : 'test'})
-    
-    if db.dumpJob("test").next() != "{'name': 'test'}":
+
+    if db.dumpJob("test").next() != '{"name": "test"}':
         assert False
 
 def test_clean():
@@ -45,7 +46,7 @@ def test_clean():
 
     db.addJob("test", {'name' : 'test'})
 
-    if db.dumpJob("test").next() != "{'name': 'test'}":
+    if db.dumpJob("test").next() != '{"name": "test"}':
         assert False
 
     db.cleanJob("test")
@@ -53,3 +54,4 @@ def test_clean():
         assert False
 
 # test_clean()
+# test_addjob()

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-22 15:10:40 alex>
+# Time-stamp: <2016-05-01 18:04:26 alex>
 #
 
 """
@@ -13,6 +13,8 @@ from liveDB import lDB
 import time
 import logging
 import pprint
+
+from config import conf
 
 @app.route('/myjobs', methods=['POST'])
 def ws_myjobs():
@@ -35,6 +37,8 @@ def ws_myjobs():
         # lDB.updateHost(host, {"last" : time.time()})
         # logging.info("conf : \n%s", pprint.pformat(conf.dump()))
         # logging.info("DB : \n%s", pprint.pformat(lDB.dump()))
+
+        conf.loadFile('1.conf')
 
         return make_response(jsonify({"answer" : "OK",
                                       "jobs" : config}), 200)

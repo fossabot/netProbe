@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-01 12:32:53 alex>
+# Time-stamp: <2016-05-01 18:22:18 alex>
 #
 
 """
@@ -18,14 +18,19 @@ from netProbe import ipConf
 import select
 import socket
 # import sys
+# import json
+
+import database
 
 from impacket import ImpactDecoder, ImpactPacket
 
-_logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+_logFormat = '%(asctime)-15s ICMP [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
 logging.basicConfig(format=_logFormat,
                     level=logging.INFO)
 
 logging.info("starting probe")
+
+db = database.database()
 
 config1 = [
     {"job" : "ping",
@@ -50,7 +55,7 @@ config1 = [
      "size": 32}
 ]
 
-config = [
+config2 = [
     {"job" : "ping",
      "freq" : 10,
      "target" : "10.0.2.1",
@@ -231,10 +236,14 @@ scheduler.clean()
 
 # socket.settimeout(1.0)
 
+config = db.getJobs("icmp")
+
 for c in config:
-    if c['job'] == "ping":
-        if c['version'] == 4:
-            scheduler.add(int(c['freq']), job_ping, c)
+    if c['job'] == "icmp":
+        data = c['data']
+        if data['version'] == 4:
+            scheduler.add(int(c['freq']), job_ping, data)
+            logging.info("add job to scheduler to target {} every {} sec".format(data['target'], c['freq']))
 
 bRunning = True
 
