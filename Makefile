@@ -1,3 +1,12 @@
+#
+# Time-stamp: <2016-05-05 14:21:59 alex>
+#
+
+all:
+	@echo make git-status
+	@echo make clean
+	@echo make test
+
 clean:
 	@cd net-probe-srv && make -s clean
 	@cd py-net-probe && make -s clean

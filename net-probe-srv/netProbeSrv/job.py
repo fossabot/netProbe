@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-01 18:04:26 alex>
+# Time-stamp: <2016-05-05 14:17:27 alex>
 #
 
 """
@@ -10,9 +10,9 @@
 from flask import make_response, jsonify, request
 from netProbeSrv import app
 from liveDB import lDB
-import time
-import logging
-import pprint
+# import time
+# import logging
+# import pprint
 
 from config import conf
 

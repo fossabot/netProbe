@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-21 20:25:13 alex>
+# Time-stamp: <2016-05-05 13:42:38 alex>
 #
 
 """
@@ -9,6 +9,7 @@
 
 from flask import make_response, jsonify, request
 import time
+import logging
 
 from netProbeSrv import app
 from config import conf
@@ -42,6 +43,8 @@ def ws_discover():
 
             return make_response(jsonify({"answer" : "OK",
                                           "uid" : _id}), 200)
+        else:
+            logging.warning("probe not found {} {}".format(_sIpv4, _sIpv6))
 
     return make_response(jsonify({"answer" : "KO"}), 400)
 

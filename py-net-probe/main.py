@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-01 17:15:26 alex>
+# Time-stamp: <2016-05-05 14:10:00 alex>
 #
 
 """
@@ -10,7 +10,7 @@
 import time
 import logging
 import os
-import pprint
+# import pprint
 import signal
 
 import netProbe
@@ -46,6 +46,7 @@ def serverConnect():
 
     global srv
     global bConnected
+    global bRunning
 
     # check IP configuration of probe
     # if no default route !
@@ -94,6 +95,9 @@ def serverConnect():
             logging.error("service ping not working")
             continue
 
+        if bRunning == False:
+            logging.error("stop main probe")
+            exit()
 #
 # -----------------------------------------
 def ping():
