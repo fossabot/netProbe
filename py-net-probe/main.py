@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-05 14:10:00 alex>
+# Time-stamp: <2016-05-05 16:02:21 alex>
 #
 
 """
@@ -61,13 +61,17 @@ def serverConnect():
 
     # get hostId
     #
-    hid = hostId.hostId(ip.getLinkAddr())
+    hid = hostId.hostId(ip.getLinkAddr()+ip.getIfIPv4())
 
     bConnected = False
     
     iSleepConnectDelay = 1
 
     while bConnected == False:
+        if bRunning == False:
+            logging.error("stop main probe")
+            exit()
+
         logging.info("sleep for {:0.0f}s".format(iSleepConnectDelay))
         time.sleep(iSleepConnectDelay)
 
@@ -95,9 +99,6 @@ def serverConnect():
             logging.error("service ping not working")
             continue
 
-        if bRunning == False:
-            logging.error("stop main probe")
-            exit()
 #
 # -----------------------------------------
 def ping():
