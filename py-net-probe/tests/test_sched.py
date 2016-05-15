@@ -1,11 +1,11 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-30 19:58:29 alex>
+# Time-stamp: <2016-05-01 12:34:39 alex>
 #
 
 import sys
 import os
-import nose
+# import nose
 import time
 
 sys.path.insert(0, os.getcwd())
@@ -16,8 +16,10 @@ def test_create():
     scheduler = sched.sched()
 
 fLastFoo1 = time.time()
+fLastFoo2 = time.time()
 iTurn1 = 0
 iTurn2 = 0
+arg = 0
 
 def foo1():
     global r
@@ -35,6 +37,10 @@ def foo2():
     iTurn2 += 1
     fLastFoo2 = time.time()
 
+def foo3(config):
+    global arg
+    arg = config['test']
+
 def test_one_iteration():
     """ one iteration on one job """
     global fLastFoo1
@@ -44,7 +50,7 @@ def test_one_iteration():
 
     fLastFoo1 = 0
 
-    f = scheduler.step()
+    scheduler.step()
         
     if fLastFoo1 == 0:
         assert False, "not any loop"
@@ -82,7 +88,7 @@ def test_deviation():
     scheduler = sched.sched()
     scheduler.add(delay, foo1)
 
-    fLastFoo1 = time.time()
+    time.time()
 
     sum = 0
 
@@ -118,8 +124,23 @@ def test_clean():
     if f != 30:
         assert False, "sched not clean"
 
+def test_arg():
+    """ job called with argument """
+    global arg
+
+    arg = 1
+
+    scheduler = sched.sched()
+    config = { "test" : 10 }
+    scheduler.add(0.1, foo3, config)
+    scheduler.step()
+        
+    if arg != 10:
+        assert False, "argument issue"
+
 # test_create()
 # test_deviation()    
 # test_one_iteration()
 # test_two_jobs()
 # test_clean()
+# test_arg()

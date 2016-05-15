@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-30 19:52:50 alex>
+# Time-stamp: <2016-05-01 18:17:52 alex>
 #
 
 import sys
@@ -12,7 +12,7 @@ sys.path.append(os.getcwd())
 
 import hostId
 
-@nose.tools.timed(0.1)
+@nose.tools.timed(0.2)
 def test_1():
     """ check hostid """
     hid1 = hostId.hostId("test")

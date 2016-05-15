@@ -7,7 +7,7 @@
 
 import json
 import logging
-import pprint
+# import pprint
 
 class config(object):
     """ class to manipulate the configuration """

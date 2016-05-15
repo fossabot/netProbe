@@ -27,7 +27,7 @@ def show_post(post_id):
     return 'Post %d' % post_id
 
 @app.errorhandler(404)
-def not_found():
+def not_found(error):
     """
     handle the 404 error
     """

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-24 22:12:23 alex>
+# Time-stamp: <2016-05-15 17:21:30 alex>
 #
 
 """
@@ -24,6 +24,8 @@ import time
 import json
 import logging
 # import pprint
+import zlib
+from base64 import b64encode
 
 class probeServer(object):
     """class to talk to the probe server"""
@@ -39,11 +41,15 @@ class probeServer(object):
         self.bServerAvail = False
         self.lastCmdRespTime = 0
         self.uid = 0
-        self.session = requests.Session()
 
-        adapter = requests.adapters.HTTPAdapter(pool_connections=1,
-                                                pool_maxsize=2)
-        self.session.mount('http', adapter)
+        if True:
+            self.session = requests.Session()
+            adapter = requests.adapters.HTTPAdapter(pool_connections=2,
+                                                    pool_maxsize=4)
+            self.session.mount('http', adapter)
+
+        else:
+            self.session = requests
 
     # -----------------------------------------------------------------
     def findServer(self):
@@ -151,7 +157,7 @@ class probeServer(object):
         req = self.sSrvBaseURL+'/discover'
 
         try:
-            r = self.session.post(req, data)
+            r = self.session.post(req, data, timeout=2)
         except requests.ConnectionError:
             logging.error("reaching srv : connection refused")
             self.bServerAvail = False
@@ -202,3 +208,44 @@ class probeServer(object):
             return None
 
         return None
+
+    # -----------------------------------------------------------------
+    def pushResults(self, aResult):
+        """push results to the server
+        aResult should be an array
+        """
+
+        if not isinstance(aResult, list):
+            raise Exception("pushResult not provided an array")
+        
+        if self.bServerAvail == False or self.uid == 0:
+            return None
+
+        data = {
+            "uid" : self.uid,
+            "time" : time.time()
+        }
+
+        if len(aResult) > 1:
+            data['compressed'] = "yes"
+            data['data'] = b64encode(zlib.compress(json.dumps(aResult)))
+        else:
+            data['compressed'] = "no"
+            data['data'] = b64encode(json.dumps(aResult[0]))
+
+        try:
+            r = self.session.post(self.sSrvBaseURL+'/results', data)
+            
+            if r.status_code == 200:
+                s = json.loads(r.text)
+                if s.__contains__('answer') and s['answer'] != "OK":
+                    if s.__contains__('reason'):
+                        logging.error("bad answer from result ws : {}".format(s['reason']))
+                    self.bServerAvail = False
+                    return None
+
+        except requests.ConnectionError:
+            logging.error("push results : connection error")
+            return None
+
+        return True

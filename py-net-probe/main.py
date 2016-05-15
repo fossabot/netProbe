@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-30 20:02:54 alex>
+# Time-stamp: <2016-05-15 17:22:22 alex>
 #
 
 """
@@ -17,6 +17,7 @@ import netProbe
 import sched
 import hostId
 import database
+import json
 
 from probe import restartProbe, stopAllProbes
 
@@ -46,6 +47,7 @@ def serverConnect():
 
     global srv
     global bConnected
+    global bRunning
 
     # check IP configuration of probe
     # if no default route !
@@ -60,20 +62,27 @@ def serverConnect():
 
     # get hostId
     #
-    hid = hostId.hostId(ip.getLinkAddr())
+    hid = hostId.hostId(ip.getLinkAddr()+ip.getIfIPv4())
 
     bConnected = False
     
-    iSleepConnectDelay = 1
+    iSleepConnectDelay = 0
 
     while bConnected == False:
+        if bRunning == False:
+            logging.error("stop main probe")
+            exit()
+
         logging.info("sleep for {:0.0f}s".format(iSleepConnectDelay))
         time.sleep(iSleepConnectDelay)
 
-        if iSleepConnectDelay < 60:
-            iSleepConnectDelay = iSleepConnectDelay * 1.5
+        if iSleepConnectDelay == 0:
+            iSleepConnectDelay = 1
         else:
-            iSleepConnectDelay = 60
+            if iSleepConnectDelay < 60:
+                iSleepConnectDelay = iSleepConnectDelay * 1.5
+            else:
+                iSleepConnectDelay = 60
 
         # connect to probe server
         #
@@ -106,8 +115,9 @@ def ping():
 
 # -----------------------------------------
 def showStatus():
-    """
-    called by the scheduler in order to print if the server is available
+    """called by the scheduler in order to print if the server is
+    available
+
     """
     global bConnected
 
@@ -137,7 +147,7 @@ def pushJobsToDB(jobName):
             del j['restart']
             db.addJob(jobName, j)
             
-            j['version'] = 0
+            # j['version'] = 0
 
     # db.dumpJob(jobName)
 
@@ -168,11 +178,12 @@ def getConfig():
         # update job or create
         if probeJobs.__contains__(c['id']):
             a = probeJobs[c['id']]
-
             if c['version'] > a['version']:
                 a['restart'] = 1
                 a['version'] = c['version']
                 a['data'] = c['data']
+            else:
+                a['restart'] = 0
         else:
             a = c
             a['restart'] = 1
@@ -217,6 +228,28 @@ def trap_signal(sig, heap):
     bRunning = False
     bConnected = False
 
+# -----------------------------------------
+def popResults(db):
+    """pop the results from the database queue and push these to the server
+
+    """
+    a = []
+
+    l = db.lenResultQueue()
+    logging.info("result queue len {}".format(l))
+
+    if (l < 5):
+        nb = 3
+    else:
+        nb = int(l/2)
+
+    for i in range(nb):
+        r = db.popResult()
+        if r != None:
+            a.append(json.loads(r))
+
+    if len(a)>0:
+        srv.pushResults(a)
 
 # -----------------------------------------
 
@@ -233,9 +266,10 @@ while bRunning:
     serverConnect()
 
     getConfig()
+    scheduler.add(60, getConfig)
 
-    scheduler.add(30, getConfig)
-    # scheduler.add(15, ping)
-    # scheduler.add(60, showStatus)
+    scheduler.add(8, popResults, db)
+    scheduler.add(60, ping)
+    scheduler.add(300, showStatus)
 
     mainLoop()

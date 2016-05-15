@@ -1,0 +1,48 @@
+#
+# Time-stamp: <2016-05-08 19:03:15 alex>
+
+---
+- hosts: 192.168.16.199
+
+  remote_user: pi
+
+  tasks:
+   - name: get python path
+     command: python -c "import sys; print sys.path[1]"
+     register: pythonpath
+
+   - file: path=/tmp/imp state=directory mode=0755
+
+   - name: install git impacket
+     git: repo=https://github.com/CoreSecurity/impacket
+          dest=/tmp/imp
+
+   - command: mv /tmp/imp/impacket {{ pythonpath.stdout }}
+     become: true
+     become_user: root
+
+   - name: install redis package
+     become: true
+     become_user: root
+     apt: name=redis-server update_cache=yes
+
+   - name: install python-dev package
+     become: true
+     become_user: root
+     apt: name=python-dev update_cache=yes
+
+   - name: install python requests
+     become: true
+     become_user: root
+     pip: name=requests
+
+   - name: install python netifaces
+     become: true
+     become_user: root
+     pip: name=netifaces
+
+   - name: install python redis
+     become: true
+     become_user: root
+     pip: name=redis
+

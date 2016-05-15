@@ -1,20 +1,19 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-30 17:11:10 alex>
+# Time-stamp: <2016-05-07 11:13:39 alex>
 #
 
 """
  ping WS
 """
 
-import pprint
-
 from flask import make_response, jsonify, request
 from netProbeSrv import app
 from liveDB import lDB
-from config import conf
+# from config import conf
 import time
 import logging
+#import pprint
 
 @app.route('/ping', methods=['GET', 'POST'])
 def ws_ping():
@@ -22,8 +21,10 @@ def ws_ping():
     answers ok if everything is good
     """
 
+    logging.info("/ping")
+
     global lDB
-    global conf
+    # global conf
 
     if request.method == 'POST':
         uid = int(request.form['uid'])

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-22 15:10:40 alex>
+# Time-stamp: <2016-05-07 11:13:34 alex>
 #
 
 """
@@ -10,15 +10,19 @@
 from flask import make_response, jsonify, request
 from netProbeSrv import app
 from liveDB import lDB
-import time
+# import time
 import logging
-import pprint
+# import pprint
+
+from config import conf
 
 @app.route('/myjobs', methods=['POST'])
 def ws_myjobs():
     """
     provide job list to probe asking for
     """
+
+    logging.info("/myjobs")
 
     global lDB
 
@@ -35,6 +39,8 @@ def ws_myjobs():
         # lDB.updateHost(host, {"last" : time.time()})
         # logging.info("conf : \n%s", pprint.pformat(conf.dump()))
         # logging.info("DB : \n%s", pprint.pformat(lDB.dump()))
+
+        conf.loadFile('1.conf')
 
         return make_response(jsonify({"answer" : "OK",
                                       "jobs" : config}), 200)
