@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-01 16:59:46 alex>
+# Time-stamp: <2016-05-15 15:47:49 alex>
 #
 
 """
@@ -98,3 +98,25 @@ class database(object):
         if l > 0:
             for i in range(l):
                 yield self.db.lindex(jobName, i)
+
+    def pushResult(self, result):
+        """add a result in the queue for the main process
+        result is a dict
+
+        """
+        if not isinstance(result, dict):
+            raise Exception("pushResult not provided a dict")
+
+        if self.db == None:
+            raise Exception("redis not started")
+
+        self.db.rpush("results", json.dumps(result))
+
+    def popResult(self):
+        """pop a result from the queue
+        return None if nothing in the queue
+        """
+        return self.db.lpop("results")
+
+    def lenResultQueue(self):
+        return self.db.llen("results")

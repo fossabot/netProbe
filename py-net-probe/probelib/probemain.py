@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-05 14:14:52 alex>
+# Time-stamp: <2016-05-15 16:41:35 alex>
 #
 
 """
@@ -18,8 +18,8 @@ from netProbe import ipConf
 import sched
 import database
 
-__version__ = "1.0"
-__date__ = "05/05/2016"
+__version__ = "1.1"
+__date__ = "15/05/2016"
 __author__ = "Alex Chauvin"
 
 class probemain(object):
@@ -111,3 +111,18 @@ class probemain(object):
                 if testf(data):
                     self.addJob(int(c['freq']), f, data)
                     yield c
+
+    # -----------------------------------------
+    def pushResult(self, result):
+        """push a result back to the database for main process to handle
+
+        """
+        if not isinstance(result, dict):
+            raise Exception("pushResult not provided a dict")
+
+        r = {"data" : result,
+             "name" : self.name,
+             "date" : time.time()
+        }
+
+        self.db.pushResult(r)

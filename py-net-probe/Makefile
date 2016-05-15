@@ -1,10 +1,10 @@
 #
-# Time-stamp: <2016-05-05 14:09:42 alex>
+# Time-stamp: <2016-05-15 16:08:15 alex>
 #
 
 all:
-	@echo make lint
 	@echo make flakes
+	@echo make lint
 	@echo make clean
 	@echo make test
 

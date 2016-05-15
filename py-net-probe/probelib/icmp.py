@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-05 14:13:19 alex>
+# Time-stamp: <2016-05-15 15:27:28 alex>
 #
 
 """
@@ -32,18 +32,18 @@ class probe_icmp(probemain):
         self.mainLoop()
 
     # -----------------------------------------
-    def f_test(self, data):
-        """testing method for insertion in the job list
+    def f_testv4(self, data):
+        """testing method for insertion in the job list, check if ip version 4
 
         """
         return data['version'] == 4
 
     # -----------------------------------------
     def getConfig(self, name, f):
-        """get the configuration from the database if f_test passed
+        """get the configuration from the database if f_testv4 passed
 
         """
-        jobs = super(probe_icmp, self).getConfig(name, f, self.f_test)
+        jobs = super(probe_icmp, self).getConfig(name, f, self.f_testv4)
         for j in jobs:
             logging.info("add job to scheduler to target {} every {} sec".format(j['data']['target'], j['freq']))
 
@@ -172,3 +172,4 @@ class probe_icmp(probemain):
         }
 
         logging.info("icmp results : {}".format(result))
+        self.pushResult(result)
