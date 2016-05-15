@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-15 16:41:35 alex>
+# Time-stamp: <2016-05-15 18:27:17 alex>
 #
 
 """
@@ -18,7 +18,7 @@ from netProbe import ipConf
 import sched
 import database
 
-__version__ = "1.1"
+__version__ = "1.2"
 __date__ = "15/05/2016"
 __author__ = "Alex Chauvin"
 
@@ -111,6 +111,19 @@ class probemain(object):
                 if testf(data):
                     self.addJob(int(c['freq']), f, data)
                     yield c
+
+    # -----------------------------------------
+    def getConfig(self, name, f):
+        """get config in database and extract 'name' jobs
+
+        """
+        config = self.db.getJobs(name)
+
+        for c in config:
+            if c['job'] == name:
+                data = c['data']
+                self.addJob(int(c['freq']), f, data)
+                yield c
 
     # -----------------------------------------
     def pushResult(self, result):
