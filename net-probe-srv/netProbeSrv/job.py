@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-05 14:17:27 alex>
+# Time-stamp: <2016-05-07 11:13:34 alex>
 #
 
 """
@@ -11,7 +11,7 @@ from flask import make_response, jsonify, request
 from netProbeSrv import app
 from liveDB import lDB
 # import time
-# import logging
+import logging
 # import pprint
 
 from config import conf
@@ -21,6 +21,8 @@ def ws_myjobs():
     """
     provide job list to probe asking for
     """
+
+    logging.info("/myjobs")
 
     global lDB
 

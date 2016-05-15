@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-24 22:12:23 alex>
+# Time-stamp: <2016-05-07 12:36:19 alex>
 #
 
 """
@@ -39,11 +39,15 @@ class probeServer(object):
         self.bServerAvail = False
         self.lastCmdRespTime = 0
         self.uid = 0
-        self.session = requests.Session()
 
-        adapter = requests.adapters.HTTPAdapter(pool_connections=1,
-                                                pool_maxsize=2)
-        self.session.mount('http', adapter)
+        if True:
+            self.session = requests.Session()
+            adapter = requests.adapters.HTTPAdapter(pool_connections=2,
+                                                    pool_maxsize=4)
+            self.session.mount('http', adapter)
+
+        else:
+            self.session = requests
 
     # -----------------------------------------------------------------
     def findServer(self):
@@ -151,7 +155,7 @@ class probeServer(object):
         req = self.sSrvBaseURL+'/discover'
 
         try:
-            r = self.session.post(req, data)
+            r = self.session.post(req, data, timeout=2)
         except requests.ConnectionError:
             logging.error("reaching srv : connection refused")
             self.bServerAvail = False

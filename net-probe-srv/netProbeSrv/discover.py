@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-05 13:42:38 alex>
+# Time-stamp: <2016-05-07 11:13:45 alex>
 #
 
 """
@@ -22,7 +22,9 @@ def ws_discover():
     discover web service
     checks host in the configuration and returns its unique id
     """
-    
+
+    logging.info("/discover")
+
     global conf
     global liveDB
 

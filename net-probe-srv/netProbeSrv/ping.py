@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-05 14:19:19 alex>
+# Time-stamp: <2016-05-07 11:13:39 alex>
 #
 
 """
@@ -12,7 +12,7 @@ from netProbeSrv import app
 from liveDB import lDB
 # from config import conf
 import time
-# import logging
+import logging
 #import pprint
 
 @app.route('/ping', methods=['GET', 'POST'])
@@ -20,6 +20,8 @@ def ws_ping():
     """
     answers ok if everything is good
     """
+
+    logging.info("/ping")
 
     global lDB
     # global conf

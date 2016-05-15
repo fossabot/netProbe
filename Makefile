@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2016-05-05 14:21:59 alex>
+# Time-stamp: <2016-05-15 11:10:17 alex>
 #
 
 all:
@@ -11,6 +11,7 @@ clean:
 	@cd net-probe-srv && make -s clean
 	@cd py-net-probe && make -s clean
 	@rm -f *~ 
+	@rm -f ansible/files/*~ ansible/playbooks/*~ ansible/playbooks/*retry
 
 test:
 	@cd net-probe-srv && make -s test
