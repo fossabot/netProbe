@@ -15,6 +15,7 @@ on the probe
 pip install requests
 pip install netifaces
 pip install redis
+pip install psutil
 ```
 
 requires impacket from :

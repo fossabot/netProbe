@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-15 16:41:35 alex>
+# Time-stamp: <2016-05-16 15:55:12 alex>
 #
 
 """
@@ -18,7 +18,7 @@ from netProbe import ipConf
 import sched
 import database
 
-__version__ = "1.1"
+__version__ = "1.2"
 __date__ = "15/05/2016"
 __author__ = "Alex Chauvin"
 
@@ -62,6 +62,13 @@ class probemain(object):
         
         if self.ip.hasDefaultRoute() == False:
             assert False, "no default route, abort"
+
+    # -----------------------------------------
+    def getEthName(self):
+        """get the name of the default route interface
+        """
+
+        return self.ip.getIfName()
 
     # -----------------------------------------
     def getIP(self):
@@ -113,6 +120,10 @@ class probemain(object):
                     yield c
 
     # -----------------------------------------
+    def fTestNone(self, data):
+        return True
+
+    # -----------------------------------------
     def pushResult(self, result):
         """push a result back to the database for main process to handle
 
@@ -120,9 +131,10 @@ class probemain(object):
         if not isinstance(result, dict):
             raise Exception("pushResult not provided a dict")
 
-        r = {"data" : result,
-             "name" : self.name,
-             "date" : time.time()
+        r = {
+            "data" : result,
+            "name" : self.name,
+            "date" : time.time()
         }
 
         self.db.pushResult(r)
