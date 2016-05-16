@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-16 15:09:22 alex>
+# Time-stamp: <2016-05-16 15:55:12 alex>
 #
 
 """
@@ -120,7 +120,7 @@ class probemain(object):
                     yield c
 
     # -----------------------------------------
-    def fTestNone(self):
+    def fTestNone(self, data):
         return True
 
     # -----------------------------------------
@@ -131,9 +131,10 @@ class probemain(object):
         if not isinstance(result, dict):
             raise Exception("pushResult not provided a dict")
 
-        r = {"data" : result,
-             "name" : self.name,
-             "date" : time.time()
+        r = {
+            "data" : result,
+            "name" : self.name,
+            "date" : time.time()
         }
 
         self.db.pushResult(r)
