@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-15 18:27:17 alex>
+# Time-stamp: <2016-05-16 15:09:22 alex>
 #
 
 """
@@ -64,6 +64,13 @@ class probemain(object):
             assert False, "no default route, abort"
 
     # -----------------------------------------
+    def getEthName(self):
+        """get the name of the default route interface
+        """
+
+        return self.ip.getIfName()
+
+    # -----------------------------------------
     def getIP(self):
         """returns the ip module
 
@@ -113,17 +120,8 @@ class probemain(object):
                     yield c
 
     # -----------------------------------------
-    def getConfig(self, name, f):
-        """get config in database and extract 'name' jobs
-
-        """
-        config = self.db.getJobs(name)
-
-        for c in config:
-            if c['job'] == name:
-                data = c['data']
-                self.addJob(int(c['freq']), f, data)
-                yield c
+    def fTestNone(self):
+        return True
 
     # -----------------------------------------
     def pushResult(self, result):
