@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-15 18:25:59 alex>
+# Time-stamp: <2016-05-16 14:51:55 alex>
 #
 
 """
@@ -9,4 +9,7 @@
 
 from probelib.health import probe_health
 
-probe_health()
+p = probe_health(True)
+
+p.job_health({})
+
