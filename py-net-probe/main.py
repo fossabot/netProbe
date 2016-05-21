@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-15 17:22:22 alex>
+# Time-stamp: <2016-05-16 15:54:14 alex>
 #
 
 """
@@ -27,7 +27,7 @@ logging.basicConfig(format=_logFormat,
 
 logging.info("starting probe")
 
-# check wether the uid is root (form icmp)
+# check wether the uid is root (for icmp)
 if os.getuid() != 0:
     logging.error("not root")
     exit()
@@ -193,13 +193,20 @@ def getConfig():
             # check for each job type
             if a['job'] == "icmp":
                 restart['icmp'] = 1
-    
+            else:
+                if a['job'] == "health":
+                    restart['health'] = 1
+
     if len(restart) == 0:
         return
 
     if restart.__contains__('icmp'):
         pushJobsToDB("icmp")
         restartProbe("icmp", probeProcess)
+
+    if restart.__contains__('health'):
+        pushJobsToDB("health")
+        restartProbe("health", probeProcess)
 
 # -----------------------------------------
 def mainLoop():
@@ -229,26 +236,26 @@ def trap_signal(sig, heap):
     bConnected = False
 
 # -----------------------------------------
-def popResults(db):
+def popResults(_db):
     """pop the results from the database queue and push these to the server
 
     """
     a = []
 
-    l = db.lenResultQueue()
+    l = _db.lenResultQueue()
     logging.info("result queue len {}".format(l))
 
-    if (l < 5):
+    if l < 5:
         nb = 3
     else:
         nb = int(l/2)
 
     for i in range(nb):
-        r = db.popResult()
+        r = _db.popResult()
         if r != None:
             a.append(json.loads(r))
 
-    if len(a)>0:
+    if len(a) > 0:
         srv.pushResults(a)
 
 # -----------------------------------------
