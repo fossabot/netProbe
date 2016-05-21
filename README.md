@@ -7,6 +7,7 @@ on the server
 -------------
 ```
 pip install Flask
+pip install elasticsearch
 ```
 
 on the probe
