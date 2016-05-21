@@ -46,12 +46,16 @@ __date__ = "08/04/2016"
 __author__ = "Alex Chauvin"
 
 import time
+import random
+import logging
+import re
 
 class sched(object):
     """
     scheduler class
     """
-
+    
+    # ------------------------------------
     def __init__(self):
         """
         constructor, calls once the step() method
@@ -59,17 +63,103 @@ class sched(object):
         self.aSchedJobs = []
         self.clean()
 
-    def add(self, iFreq, func, args=None):
+    # ------------------------------------
+    def add(self, iFreq, func, args=None, startIn=0):
         """
         add a job to the schedule
         :param iFreq: frequency in seconds
         :param func: function to call each iteration
+        :param args: argument to pass to the job
+        :param startIn: next execution of the job in 
+           0: iFreq
+           1: now+1
+           2: random between 5s and iFreq
         """
+
+        iNextExec = time.time()
+        if startIn == 0:
+            iNextExec += iFreq
+        else:
+            if startIn == 1:
+                iNextExec += 1
+            else:
+                if startIn == 2:
+                    if iFreq<5:
+                        iNextExec += 5
+                    else:
+                        iNextExec += int(random.random() * (iFreq-5)) + 5
+            
+        print "add job : freq = {}, next = {}".format(iFreq, iNextExec-time.time())
+
         self.aSchedJobs.append({'freq' : iFreq,
                                 'func': func,
                                 'args': args,
-                                'nextExec' : time.time()+iFreq})
+                                'nextExec' : iNextExec})
 
+    # ------------------------------------
+    def addAt(self, iFreq, func, args=None, atTime=0):
+        """
+        add a job to the schedule, will run once
+        :param iFreq: frequency in seconds
+        :param func: function to call each iteration
+        :param args: argument to pass to the job
+        :param atTime: time for first iteration
+        """
+
+        now = time.time()
+
+        if atTime < now:
+            assert False, "at time prior to now"
+
+        print "add job : freq = {}, next = {}".format(iFreq, atTime-now)
+
+        self.aSchedJobs.append({'freq' : iFreq,
+                                'func': func,
+                                'args': args,
+                                'nextExec' : atTime})
+        
+    # ------------------------------------
+    def str2atTime(self, s):
+        """ convert a time string to a atTime usable in addAt()
+        HH:MM in 24h00 format
+        """
+
+        # print s
+
+        (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
+
+        # print "before",(tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst)
+
+        r = re.match("(\d\d):(\d\d)", s)
+        if r != None:
+            hour = int(r.group(1))
+            minute = int(r.group(2))
+
+            if hour < tm_hour:
+                # tomorow ?
+                tm_day += 1
+                tm_hour = hour
+                tm_min = minute
+            else:
+                if hour == tm_hour:
+                    if minute < tm_min:
+                        # tomorow
+                        tm_day += 1
+                        tm_hour = hour
+                        tm_min = minute
+                    else:
+                        # today
+                        tm_hour = hour
+                        tm_min = minute
+                else:
+                    tm_hour = hour
+                    tm_min = minute
+                
+        # print "after ",(tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst)
+
+        return time.mktime((tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst))
+
+    # ------------------------------------
     def step(self):
         """
         run a step and return the delay till next step
@@ -103,6 +193,7 @@ class sched(object):
             self.aSchedJobs.append(nextJob)
             return 0
 
+    # ------------------------------------
     def clean(self):
         """
         suppress all jobs scheduled
