@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-22 15:03:00 alex>
+# Time-stamp: <2016-05-21 15:45:12 alex>
 #
 
 """
@@ -79,6 +79,12 @@ class liveDB(object):
         """ return the probe config """
 
         return conf.getConfigForHost(host)
+
+    # ----------------------------------------------------------
+    def getNameForHost(self, host):
+        """ return the probe name """
+
+        return conf.getNameForHost(host)
 
     # ----------------------------------------------------------
     def dump(self):

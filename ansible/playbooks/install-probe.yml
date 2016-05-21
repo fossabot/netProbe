@@ -1,8 +1,8 @@
 #
-# Time-stamp: <2016-05-08 19:03:15 alex>
+# Time-stamp: <2016-05-21 18:16:02 alex>
 
 ---
-- hosts: 192.168.16.199
+- hosts: 192.168.16.192
 
   remote_user: pi
 
@@ -11,13 +11,27 @@
      command: python -c "import sys; print sys.path[1]"
      register: pythonpath
 
-   - file: path=/tmp/imp state=directory mode=0755
+   - name: clean old impacket git
+     file: path=/tmp/imp
+           state=absent
+     become: true
+     become_user: root
+
+   - name: create directory for imp
+     file: path=/tmp/imp state=directory mode=0755
 
    - name: install git impacket
      git: repo=https://github.com/CoreSecurity/impacket
           dest=/tmp/imp
 
-   - command: mv /tmp/imp/impacket {{ pythonpath.stdout }}
+   - name: clean old impacket
+     file: path={{ pythonpath.stdout }}/impacket
+           state=absent
+     become: true
+     become_user: root
+
+   - name: install impacket
+     command: mv /tmp/imp/impacket {{ pythonpath.stdout }}
      become: true
      become_user: root
 
@@ -46,3 +60,10 @@
      become_user: root
      pip: name=redis
 
+   - name: install python psutil
+     become: true
+     become_user: root
+     pip: name=psutil
+
+   - name: copy sources
+     unarchive: src=../files/netprobe.tgz dest=/home/pi

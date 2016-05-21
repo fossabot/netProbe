@@ -1,0 +1,19 @@
+---
+- hosts: piprobes
+
+  become: true
+  become_user: root
+  remote_user: pi
+
+  tasks:
+   - name: version
+     command: uname -a
+     register: uptime
+
+   - debug: var=uptime.stdout
+
+   - name: temp
+     command: /opt/vc/bin/vcgencmd measure_temp
+     register: temp
+
+   - debug: var=temp.stdout

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-16 14:45:04 alex>
+# Time-stamp: <2016-05-21 15:55:09 alex>
 #
 
 """
@@ -161,14 +161,14 @@ class probe_icmp(probemain):
         avg_rtt = (avg_rtt / seq_id)
 
         result = {
-            "seq" : seq_id,
-            "ok" : res_ok,
-            "target" : target,
-            "targetIP" : dst,
-            "timeout" : res_timeout,
-            "avg_rtt" : avg_rtt * 1000,
-            "min_rtt" : min_rtt * 1000,
-            "max_rtt" : max_rtt * 1000
+            "icmp-seq" : seq_id,
+            "icmp-ok" : res_ok,
+            "icmp-target" : target,
+            "icmp-targetIP" : dst,
+            "icmp-timeout" : res_timeout,
+            "icmp-avg_rtt" : avg_rtt * 1000,
+            "icmp-min_rtt" : min_rtt * 1000,
+            "icmp-max_rtt" : max_rtt * 1000
         }
 
         logging.info("icmp results : {}".format(result))

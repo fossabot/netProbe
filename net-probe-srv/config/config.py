@@ -45,9 +45,14 @@ class config(object):
         else:
             jobs = {}
 
+        if hostData.__contains__('probename'):
+            probename = hostData['probename']
+        else:
+            probename = "unknown"
+
         if sId != "" and sId != None and sId != False:
-            logging.info("add host to the DB")
-            self.aHostTable[sId] = {"jobs" : jobs}
+            logging.info("add host {} to the DB".format(probename))
+            self.aHostTable[sId] = {"jobs" : jobs, "probename": probename}
 
     # ----------------------------------------------------------
     def loadFile(self, sFile):
@@ -78,6 +83,17 @@ class config(object):
         logging.info("get configuration for {}".format(sId))
 
         return self.aHostTable[sId]['jobs']
+
+    # ----------------------------------------------------------
+    def getNameForHost(self, sId):
+        """ return the probe name for the host """
+
+        logging.info("get name for {}".format(sId))
+
+        if self.aHostTable.__contains__(sId):
+            return self.aHostTable[sId]['probename']
+        else:
+            return "unknown"
 
     # ----------------------------------------------------------
     def dump(self):
