@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-21 15:45:12 alex>
+# Time-stamp: <2016-05-22 21:48:03 alex>
 #
 
 """
@@ -19,8 +19,8 @@ class liveDB(object):
     
     # ----------------------------------------------------------
     def __init__(self):
-        """
-        constructor
+        """constructor
+
         """
         self.aProbeTable = {}
         self.uid = 0
@@ -75,6 +75,20 @@ class liveDB(object):
         return None
 
     # ----------------------------------------------------------
+    def getHostContentByUid(self, uid):
+        """return Host content by uid
+
+        """
+
+        for hkey in self.aProbeTable:
+            h = self.aProbeTable[hkey]
+
+            if h.__contains__('uid') and h['uid'] == uid:
+                return h
+
+        return None
+
+    # ----------------------------------------------------------
     def getConfigForHost(self, host):
         """ return the probe config """
 
@@ -90,3 +104,13 @@ class liveDB(object):
     def dump(self):
         """ show the configuration host table """
         return self.aProbeTable
+
+    # ----------------------------------------------------------
+    def cleanDB(self):
+        """clean the whole database
+
+        """
+        self.aProbeTable = {}
+        self.uid = 0
+
+    
