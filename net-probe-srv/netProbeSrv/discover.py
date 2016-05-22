@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-07 11:13:45 alex>
+# Time-stamp: <2016-05-22 21:21:13 alex>
 #
 
 """
@@ -26,7 +26,7 @@ def ws_discover():
     logging.info("/discover")
 
     global conf
-    global liveDB
+    # global liveDB
 
     if request.method == 'POST':
         _sHostId = request.form['hostId']
