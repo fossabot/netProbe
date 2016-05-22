@@ -1,5 +1,7 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
+# Time-stamp: <2016-05-22 22:19:29 alex>
+#
 
 """
  config class
@@ -14,16 +16,16 @@ class config(object):
     
     # ----------------------------------------------------------
     def __init__(self):
-        """
-        constructor
+        """constructor
+
         """
         self.aHostTable = {}
         return
 
     # ----------------------------------------------------------
     def checkHost(self, sId):
-        """
-        check if the host is in the database
+        """check if the host is in the database
+
         """
         if self.aHostTable.__contains__(sId):
             logging.info("checkHost OK {}".format(sId))
@@ -34,8 +36,8 @@ class config(object):
 
     # ----------------------------------------------------------
     def addHost(self, hostData):
-        """
-        add a host to the database
+        """add a host to the database
+
         """
 
         sId = hostData['id']
@@ -47,6 +49,14 @@ class config(object):
 
         if hostData.__contains__('probename'):
             probename = hostData['probename']
+
+            for hkey in self.aHostTable:
+                h = self.aHostTable[hkey]
+
+                if h.__contains__('probename') and h['probename'] == probename:
+                    logging.error("this probename is already registered: {}".format(probename))
+                    return
+
         else:
             probename = "unknown"
 
@@ -56,8 +66,8 @@ class config(object):
 
     # ----------------------------------------------------------
     def loadFile(self, sFile):
-        """
-        load host file and update configuraion
+        """load host file and update configuraion
+
         """
 
         try:
@@ -78,7 +88,9 @@ class config(object):
 
     # ----------------------------------------------------------
     def getConfigForHost(self, sId):
-        """ return the configuration for the host """
+        """return the configuration for the host
+
+        """
 
         logging.info("get configuration for {}".format(sId))
 
@@ -86,7 +98,9 @@ class config(object):
 
     # ----------------------------------------------------------
     def getNameForHost(self, sId):
-        """ return the probe name for the host """
+        """return the probe name for the host
+
+        """
 
         logging.info("get name for {}".format(sId))
 
@@ -97,5 +111,7 @@ class config(object):
 
     # ----------------------------------------------------------
     def dump(self):
-        """ show the configuration host table """
+        """show the configuration host table
+
+        """
         return self.aHostTable
