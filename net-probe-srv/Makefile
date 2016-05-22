@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2016-05-05 14:22:26 alex>
+# Time-stamp: <2016-05-22 21:50:39 alex>
 #
 
 all:
@@ -18,4 +18,5 @@ clean:
 	rm -f *pyc */*pyc
 	rm -f *~ */*~
 
-test:
+test: clean
+	@nosetests tests
