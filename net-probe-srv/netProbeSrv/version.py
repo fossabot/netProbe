@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-30 17:11:26 alex>
+# Time-stamp: <2016-05-22 23:25:12 alex>
 #
 
 """
@@ -11,8 +11,9 @@ from flask import make_response, jsonify
 from netProbeSrv import app
 
 aVersion = {
-    "version" : "1.0.1",
-    "date" : "2016/04/21",
+    "answer" : "OK",
+    "version" : "1.0.2",
+    "date" : "2016/05/22",
     "author" : "Alex Chauvin"
 }
 

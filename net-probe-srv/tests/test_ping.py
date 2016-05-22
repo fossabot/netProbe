@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-22 23:18:43 alex>
+# Time-stamp: <2016-05-22 23:21:39 alex>
 #
 
 import sys
@@ -21,7 +21,7 @@ from netProbeSrv import main, ping, version, discover, results
 from netProbeSrv import job
 
 def test_ping_get():
-    """ get /ping
+    """/ping GET
 
     """
     global app
@@ -33,7 +33,7 @@ def test_ping_get():
         assert False, "ping GET not working"
 
 def test_ping_put_empty():
-    """ post /ping empty
+    """/ping POST empty
 
     """
     global app
@@ -45,7 +45,7 @@ def test_ping_put_empty():
         assert False, "missing uid not working"
 
 def test_ping_put_ukn():
-    """ post /ping unknown
+    """/ping POST unknown
 
     """
     global app
@@ -57,7 +57,7 @@ def test_ping_put_ukn():
         assert False, "ping GET not working"
 
 def test_pingHost_ok():
-    """ ping host ok
+    """/ping host ok
 
     """
     global lDB
@@ -75,7 +75,7 @@ def test_pingHost_ok():
         assert False, "ping known host"
 
 def test_pingHost_ukn():
-    """ ping host ukn
+    """/ping host ukn
 
     """
     global lDB
@@ -93,7 +93,7 @@ def test_pingHost_ukn():
         assert False, "ping known ukn"
 
 def test_pingUpdate():
-    """check update
+    """/ping check update
 
     """
     test_pingHost_ok()
