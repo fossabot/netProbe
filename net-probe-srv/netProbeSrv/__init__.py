@@ -14,10 +14,11 @@
 from flask import Flask
 
 app = Flask(__name__)
+es_server = "127.0.0.1"
 
 from elasticsearch import Elasticsearch
 
-es = Elasticsearch(host="192.168.16.144")
+es = Elasticsearch(host=es_server)
 
 res = es.indices.create(index="pyprobe",
                         body={
