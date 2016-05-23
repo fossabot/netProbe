@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-22 21:21:13 alex>
+# Time-stamp: <2016-05-22 23:34:36 alex>
 #
 
 """
@@ -29,6 +29,11 @@ def ws_discover():
     # global liveDB
 
     if request.method == 'POST':
+        if not (request.form.__contains__('hostid') and 
+                request.form.__contains__('ipv4') and 
+                request.form.__contains__('ipv6')):
+            return make_response(jsonify({"answer" : "missing argument"}), 400)
+
         _sHostId = request.form['hostId']
         _sIpv4 = request.form['ipv4']
         _sIpv6 = request.form['ipv6']
