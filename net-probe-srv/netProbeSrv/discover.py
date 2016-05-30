@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-22 23:34:36 alex>
+# Time-stamp: <2016-05-29 17:47:31 alex>
 #
 
 """
@@ -26,12 +26,13 @@ def ws_discover():
     logging.info("/discover")
 
     global conf
-    # global liveDB
+    global lDB
 
     if request.method == 'POST':
-        if not (request.form.__contains__('hostid') and 
+        if not (request.form.__contains__('hostId') and 
                 request.form.__contains__('ipv4') and 
                 request.form.__contains__('ipv6')):
+            logging.error("probe passing bad args")
             return make_response(jsonify({"answer" : "missing argument"}), 400)
 
         _sHostId = request.form['hostId']
@@ -41,6 +42,7 @@ def ws_discover():
         # if the probe is in the configuration db
         # update the probe db
         #
+
         if conf.checkHost(_sHostId):
             _id = lDB.getUniqueId(_sHostId)
             lDB.updateHost(_sHostId, {'uid' : _id,

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-22 22:19:29 alex>
+# Time-stamp: <2016-05-29 17:46:18 alex>
 #
 
 """
@@ -27,6 +27,7 @@ class config(object):
         """check if the host is in the database
 
         """
+
         if self.aHostTable.__contains__(sId):
             logging.info("checkHost OK {}".format(sId))
             return True

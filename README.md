@@ -49,3 +49,21 @@ specific changes :
 * add host="xxxxx" in the database/database.py file on the call to redis.Redis since the redis database is local to the probe host and not supposed to be elswhere
 
 start the client with python main.py
+
+Install with ansible
+====================
+
+* install a raspbian lite image on the probe memory card, connect on network and boot (requires DHCP and internet access)
+* need an ssh key from the ansible user installed in id_rsa.pub
+* find the raspberry ip address and install it in the files/hosts piprobes group
+* exec the init playbook, this will install ssh key for future use and upgrade the pi version if required
+
+```
+ansible-playbook --ask-pass -i files/hosts playbooks/pi-init.yml --limit %ip of the pi%
+```
+
+* exec the installation playbook
+
+```
+ansible-playbook -i files/hosts playbooks/install-probe.yml --limit %ip of the pi%
+```
