@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-21 15:54:17 alex>
+# Time-stamp: <2016-06-05 17:33:54 alex>
 #
 
 """
@@ -8,12 +8,14 @@
 """
 
 from flask import make_response, jsonify, request
-from netProbeSrv import app, es
+from netProbeSrv import app
+from output import outputer
+
 from liveDB import lDB
 # from config import conf
 # import time
 import logging
-import pprint
+# import pprint
 import json
 import zlib
 from base64 import b64decode
@@ -28,6 +30,7 @@ def ws_results():
     logging.info("/results")
 
     # global lDB
+    # global outputer
 
     if request.method != 'POST':
         return make_response(jsonify({"answer" : "KO"}), 300)
@@ -39,7 +42,7 @@ def ws_results():
 
     probename = lDB.getNameForHost(host)
 
-    fTime = float(request.form['time'])
+    # fTime = float(request.form['time'])
     bCompressed = False
     if request.form['compressed'] == "yes":
         bCompressed = True
@@ -55,9 +58,8 @@ def ws_results():
         d['timestamp'] = datetime.datetime.utcfromtimestamp(d['date'])
         d['probeuid'] = uid
         d['probename'] = probename
-        # pprint.pprint(d)
-        res = es.index(index="pyprobe", doc_type='result', body=d)
-        if res['created'] != True:
-            logging.error("insert in ES {}".format(res))
+
+        for o in outputer:
+            o.send(d)
         
     return make_response(jsonify({"answer" : "OK"}), 200)

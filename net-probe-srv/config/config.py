@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-29 17:46:18 alex>
+# Time-stamp: <2016-06-05 17:24:54 alex>
 #
 
 """
@@ -9,6 +9,9 @@
 
 import json
 import logging
+from output import outputer
+import output
+
 # import pprint
 
 class config(object):
@@ -20,6 +23,8 @@ class config(object):
 
         """
         self.aHostTable = {}
+        self.outputMethodName = "none"
+
         return
 
     # ----------------------------------------------------------
@@ -81,11 +86,44 @@ class config(object):
         f.close()
 
         conf = json.loads(c)
+
+        # probes
+        if not conf.__contains__('probe'):
+            logging.error("cannot find probe configuration, exiting")
+            assert False, "no probe config"
+
         for p in conf['probe']:
             self.addHost(p)
 
-        logging.info("config file loaded in DB {}".format(sFile))
+        # output
+        if conf.__contains__('output'):
+            iOutput = 0
+            for outputConf in conf['output']:
+                o = outputer[iOutput]
 
+                if outputConf['active'] == "True":
+
+                    if not o.checkMethodName(outputConf['engine']):
+                        logging.error("unknown output method name, possible values are : {}. Exiting".format(o.getMethodName()))
+                        assert False, "bad output name"
+                    else:
+                        if outputConf['engine'] == "debug":
+                            outputer[iOutput] = output.debug()
+
+                        if outputConf['engine'] == "elastic":
+                            if outputConf.__contains__('parameters'):
+                                outputer[iOutput] = output.elastic(outputConf['parameters'][0])
+                            else:
+                                logging.error("elastic output without parameters, exiting")
+                                assert False, "missing parameters for elastic output"
+
+                        iOutput += 1
+                        outputer.append(output.output())
+
+        else:
+            outputer[0] = output.debug()
+
+        logging.info("config file loaded in DB {}".format(sFile))
 
     # ----------------------------------------------------------
     def getConfigForHost(self, sId):

@@ -1,6 +1,7 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# pylint --rcfile=~/.pylint main.py
+# Time-stamp: <2016-05-30 21:20:22 alex>
+#
 
 """
  server WS
@@ -14,20 +15,5 @@
 from flask import Flask
 
 app = Flask(__name__)
-es_server = "127.0.0.1"
-
-from elasticsearch import Elasticsearch
-
-es = Elasticsearch(host=es_server)
-
-res = es.indices.create(index="pyprobe",
-                        body={
-                            'settings': {
-                                'number_of_shards': 5,
-                                'number_of_replicas': 0
-                                }
-                        },
-                        ignore=400
-                    )
 
 # print res
