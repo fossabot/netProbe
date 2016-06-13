@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-05 17:37:16 alex>
+# Time-stamp: <2016-06-12 21:49:06 alex>
 #
 
 """
@@ -24,7 +24,7 @@ class output(object):
 
         """
 
-        self.lKnownMethod = ("debug", "elastic")
+        self.lKnownMethod = ("debug", "elastic", "logstash")
 
     # ----------------------------------------------------------
     def getMethodName(self):

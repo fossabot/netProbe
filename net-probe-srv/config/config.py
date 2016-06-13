@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-05 17:24:54 alex>
+# Time-stamp: <2016-06-12 21:47:26 alex>
 #
 
 """
@@ -116,6 +116,13 @@ class config(object):
                             else:
                                 logging.error("elastic output without parameters, exiting")
                                 assert False, "missing parameters for elastic output"
+
+                        if outputConf['engine'] == "logstash":
+                            if outputConf.__contains__('parameters'):
+                                outputer[iOutput] = output.logstash(outputConf['parameters'][0])
+                            else:
+                                logging.error("logstash output without parameters, exiting")
+                                assert False, "missing parameters for logstash output"
 
                         iOutput += 1
                         outputer.append(output.output())

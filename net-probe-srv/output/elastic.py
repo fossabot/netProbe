@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-05 17:35:04 alex>
+# Time-stamp: <2016-06-12 21:41:42 alex>
 #
 
 """
@@ -24,7 +24,7 @@ class elastic(output):
         if not conf.__contains__('server'):
             assert False, "elastic configuration missing server"
 
-        if conf.__contains__('server'):
+        if conf.__contains__('index'):
             sConfIndex = conf['index']
         else:
             sConfIndex = "pyprobe"
