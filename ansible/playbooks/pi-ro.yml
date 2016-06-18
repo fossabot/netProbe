@@ -1,0 +1,132 @@
+#
+# turn the pi in ro
+#
+# Time-stamp: <2016-06-18 15:27:30 alex>
+#
+#
+# usage :
+#  ansible-playbook -i files/hosts playbooks/pi-ro.yml --limit %IP%
+
+---
+- name: PI RO
+  hosts: piprobes
+  become: true
+  become_user: root
+  remote_user: pi
+
+  tasks:
+   - name: hwclock
+     copy: src=../files/fake-hwclock dest=/etc/cron.hourly/ owner=root group=root mode=0755
+
+   - name: stat for x11-common
+     stat: path=/etc/init.d/x11-common
+     register: file_x11common
+
+   - name: insserv x11
+     command: insserv -r x11-common
+     when: file_x11common.stat.exists == True
+
+   - name: stat for bootlogs
+     stat: path=/etc/init.d/bootlogs
+     register: file_bootlogs
+
+   - name: insserv bootlogs
+     command: insserv -r bootlogs
+     when: file_bootlogs.stat.exists == True
+
+   - name: stat for console
+     stat: path=/etc/init.d/console-setup
+     register: file_console
+
+   - name: insserv console
+     command: insserv -r console-setup
+     when: file_console.stat.exists == True
+
+   - name: boot console
+     command: systemctl set-default multi-user.target
+
+   - name: remove triggerhappy
+     apt: name=triggerhappy update_cache=yes cache_valid_time=3600 state=absent
+
+   - name: remove logrotate
+     apt: name=logrotate update_cache=yes cache_valid_time=3600 state=absent
+
+   - name: remove dbus
+     apt: name=dbus update_cache=yes cache_valid_time=3600 state=absent
+
+   - name: remove dphys-swapfile
+     apt: name=dphys-swapfile update_cache=yes cache_valid_time=3600 state=absent
+
+   - name: remove xserver-common
+     apt: name=xserver-common update_cache=yes cache_valid_time=3600 state=absent
+
+   - name: remove lightdm
+     apt: name=lightdm update_cache=yes cache_valid_time=3600 state=absent
+
+   - name: apt clean
+     command: apt-get -y autoremove --purge
+
+   - name: busybox
+     apt: name=busybox-syslogd update_cache=yes cache_valid_time=3600
+
+   - name: suppress rsyslog
+     command: dpkg --purge rsyslog
+
+   - name: modprobe blacklist
+     copy: src=../files/raspi-blacklist.conf dest=/etc/modprobe.d/ owner=root group=root mode=0644
+
+   - name: suppress /var/run
+     file: path=/var/run state=absent
+   - name: link /var/run
+     file: src=/tmp path=/var/run state=link owner=root group=root
+
+   - name: suppress /var/lib/dhcpcd5
+     file: path=/var/lib/dhcpcd5 state=absent
+   - name: link /var/lib/dhcpcd5
+     file: src=/tmp path=/var/lib/dhcpcd5 state=link owner=root group=root
+
+   - name: suppress /var/lock
+     file: path=/var/lock state=absent
+   - name: link /var/lock
+     file: src=/tmp path=/var/lock state=link owner=root group=root
+
+   - name: suppress /var/spool
+     file: path=/var/spool state=absent
+   - name: link /var/spool
+     file: src=/tmp path=/var/spool state=link owner=root group=root
+
+   - name: dhcp pid
+     lineinfile: dest=/etc/systemd/system/dhcpcd5 regexp=^PIDFile= line=PIDFile=/var/run/dhcpcd.pid
+
+   - name: tmp in memory
+     lineinfile: dest=/etc/fstab line="tmpfs           /tmp            tmpfs   nosuid,nodev         0       0"
+
+   - name: log in memory
+     lineinfile: dest=/etc/fstab line="tmpfs           /var/log        tmpfs   nosuid,nodev         0       0"
+
+   - name: var tmp in memory
+     lineinfile: dest=/etc/fstab line="tmpfs           /var/tmp        tmpfs   nosuid,nodev         0       0"
+
+   - name: boot ro
+     lineinfile: dest=/boot/cmdline.txt regexp='^(dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait)$' line='\1 fastboot noswap ro' backrefs=yes
+
+   - name: fstab boot ro
+     lineinfile: dest=/etc/fstab regexp='^/dev/mmcblk0p1  /boot           vfat    defaults          0       2$' line='/dev/mmcblk0p1  /boot           vfat    defaults,ro          0       2'
+
+   - name: fstab / ro
+     lineinfile: dest=/etc/fstab regexp='^/dev/mmcblk0p2  /               ext4    defaults,noatime  0       1$' line='/dev/mmcblk0p2  /               ext4    defaults,noatime,ro  0       1'
+
+   - name: ssh key only
+     lineinfile: dest=/etc/ssh/sshd_config regexp="^#PasswordAuthentication yes" line="PasswordAuthentication no"
+
+   - name: ssh X11
+     lineinfile: dest=/etc/ssh/sshd_config regexp="X11Forwarding yes" line="X11Forwarding no"
+
+   - name: ssh sftp
+     lineinfile: dest=/etc/ssh/sshd_config regexp="(Subsystem sftp.*)" line="#\1" backrefs=yes
+
+   - name: ssh root pwd
+     lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin .*" line="PermitRootLogin no"
+
+   - name: reboot
+     command: reboot

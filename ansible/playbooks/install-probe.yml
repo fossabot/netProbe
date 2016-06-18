@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2016-05-29 18:04:29 alex>
+# Time-stamp: <2016-06-18 15:23:52 alex>
 
 ---
 - name: INSTALL PROBE
@@ -69,9 +69,29 @@
      become: true
      pip: name=redis
 
+   - name: redis save 1/3
+     become: true
+     lineinfile: dest=/etc/redis/redis.conf regexp='^(save 900 1)$' line='#\1' backrefs=yes
+
+   - name: redis save 2/3
+     become: true
+     lineinfile: dest=/etc/redis/redis.conf regexp='^(save 300 10)$' line='#\1' backrefs=yes
+
+   - name: redis save 3/3
+     become: true
+     lineinfile: dest=/etc/redis/redis.conf regexp='^(save 60 10000)$' line='#\1' backrefs=yes
+
+   - name: redis log
+     become: true
+     lineinfile: dest=/etc/redis/redis.conf regexp=^logfile line="logfile /dev/null"
+
    - name: install python psutil
      become: true
      pip: name=psutil
 
    - name: copy sources
      unarchive: src=../files/netprobe.tgz dest=/home/pi
+
+   - name: probe at boot
+     become: true
+     lineinfile: dest=/etc/rc.local line="/home/pi/py-net-probe/start.sh &" state=present insertbefore="^exit 0"
