@@ -1,0 +1,19 @@
+#
+# install host if DNS not set
+#
+# Time-stamp: <2016-06-18 15:19:21 alex>
+#
+#
+# usage :
+#  ansible-playbook -i files/hosts playbooks/probe-host.yml --limit %IP%
+
+---
+- name: PROBE HOST
+  hosts: piprobes
+  become: true
+  become_user: root
+  remote_user: pi
+
+  tasks:
+   - name: host
+     lineinfile: dest=/etc/hosts line="192.168.16.144 probe-srv"

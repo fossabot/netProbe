@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2016-05-22 21:50:39 alex>
+# Time-stamp: <2016-06-05 17:32:34 alex>
 #
 
 all:
@@ -9,7 +9,7 @@ all:
 	@echo make test
 
 lint: clean
-	pylint --rcfile=~/.pylint srv.py netProbeSrv/*py config/*py
+	pylint --rcfile=~/.pylint srv.py netProbeSrv/*py config/*py output/*py
 
 flakes: clean
 	@pyflakes *py */*py

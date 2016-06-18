@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-21 12:51:03 alex>
+# Time-stamp: <2016-05-30 22:48:34 alex>
 #
 
 """
@@ -11,9 +11,8 @@ import logging
 
 from config import conf
 
-from netProbeSrv import app
-from netProbeSrv import main, ping, version, discover, results
-from netProbeSrv import job
+from output import outputer
+import output
 
 # from werkzeug.serving import WSGIRequestHandler
 
@@ -24,7 +23,11 @@ logging.basicConfig(format=_logFormat,
 logging.info("starting server")
 
 conf.loadFile('1.conf')
-    
+
+from netProbeSrv import app
+from netProbeSrv import main, ping, version, discover, results
+from netProbeSrv import job
+
 if __name__ == '__main__':
     # WSGIRequestHandler.protocol_version = "HTTP/1.1"
     app.debug = True
