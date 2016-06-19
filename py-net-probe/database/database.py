@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-15 15:47:49 alex>
+# Time-stamp: <2016-06-19 13:45:35 alex>
 #
 
 """
@@ -119,4 +119,6 @@ class database(object):
         return self.db.lpop("results")
 
     def lenResultQueue(self):
+        """get queue size
+        """
         return self.db.llen("results")

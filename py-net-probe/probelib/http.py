@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-19 13:40:22 alex>
+# Time-stamp: <2016-06-19 13:46:33 alex>
 #
 
 """
@@ -9,7 +9,6 @@
 
 import logging
 import urllib2
-import socket
 import time
 import re
 
@@ -50,7 +49,7 @@ class probe_http(probemain):
         if _config.__contains__('timeout'):
             fTimeout = float(_config['timeout'])
         else:
-            iTimeout = 10
+            fTimeout = 10.0
 
         if _config.__contains__('content'):
             sReContent = str(_config['content'])

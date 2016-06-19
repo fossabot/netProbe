@@ -85,7 +85,7 @@ class sched(object):
                 iNextExec += 1
             else:
                 if startIn == 2:
-                    if iFreq<5:
+                    if iFreq < 5:
                         iNextExec += 5
                     else:
                         iNextExec += int(random.random() * (iFreq-5)) + 5
