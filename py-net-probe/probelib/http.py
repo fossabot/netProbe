@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-19 13:34:38 alex>
+# Time-stamp: <2016-06-19 13:40:22 alex>
 #
 
 """
@@ -108,3 +108,4 @@ class probe_http(probemain):
         result['http-time'] = fTime.__format__('0.4f')
 
         logging.info("http result : {}".format(result))
+        self.pushResult(result)
