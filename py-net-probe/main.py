@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-16 15:54:14 alex>
+# Time-stamp: <2016-06-19 12:07:09 alex>
 #
 
 """
@@ -196,6 +196,10 @@ def getConfig():
             else:
                 if a['job'] == "health":
                     restart['health'] = 1
+                else:
+                    if a['job'] == "http":
+                        restart['http'] = 1
+                    
 
     if len(restart) == 0:
         return
@@ -207,6 +211,10 @@ def getConfig():
     if restart.__contains__('health'):
         pushJobsToDB("health")
         restartProbe("health", probeProcess)
+
+    if restart.__contains__('http'):
+        pushJobsToDB("http")
+        restartProbe("http", probeProcess)
 
 # -----------------------------------------
 def mainLoop():
@@ -273,10 +281,10 @@ while bRunning:
     serverConnect()
 
     getConfig()
-    scheduler.add(60, getConfig)
+    scheduler.add("get configuration", 60, getConfig)
 
-    scheduler.add(8, popResults, db)
-    scheduler.add(60, ping)
-    scheduler.add(300, showStatus)
+    scheduler.add("push results", 8, popResults, db)
+    scheduler.add("ping server", 60, ping)
+    scheduler.add("show status", 300, showStatus)
 
     mainLoop()

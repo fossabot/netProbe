@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-21 13:13:50 alex>
+# Time-stamp: <2016-06-19 12:09:04 alex>
 #
 
 """
@@ -18,8 +18,8 @@ from netProbe import ipConf
 import sched
 import database
 
-__version__ = "1.2"
-__date__ = "15/05/2016"
+__version__ = "1.3"
+__date__ = "19/06/2016"
 __author__ = "Alex Chauvin"
 
 class probemain(object):
@@ -103,7 +103,7 @@ class probemain(object):
         """add a job in the scheduler
 
         """
-        self.scheduler.add(freq, f, data)
+        self.scheduler.add(self.name, freq, f, data)
 
     # -----------------------------------------
     def getConfig(self, name, f, testf):
@@ -138,3 +138,10 @@ class probemain(object):
         }
 
         self.db.pushResult(r)
+
+    # -----------------------------------------
+    def f_testOK(self, data):
+        """testing method that is always ok
+
+        """
+        return True

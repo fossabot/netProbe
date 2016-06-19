@@ -64,9 +64,10 @@ class sched(object):
         self.clean()
 
     # ------------------------------------
-    def add(self, iFreq, func, args=None, startIn=0):
+    def add(self, name, iFreq, func, args=None, startIn=0):
         """
         add a job to the schedule
+        :param name: name of the job, for information
         :param iFreq: frequency in seconds
         :param func: function to call each iteration
         :param args: argument to pass to the job
@@ -89,7 +90,7 @@ class sched(object):
                     else:
                         iNextExec += int(random.random() * (iFreq-5)) + 5
             
-        print "add job : freq = {}, next = {}".format(iFreq, iNextExec-time.time())
+        logging.info("add job {} : freq = {}, next = {:0.2f}".format(name, iFreq, iNextExec-time.time()))
 
         self.aSchedJobs.append({'freq' : iFreq,
                                 'func': func,
@@ -97,9 +98,10 @@ class sched(object):
                                 'nextExec' : iNextExec})
 
     # ------------------------------------
-    def addAt(self, iFreq, func, args=None, atTime=0):
+    def addAt(self, name, iFreq, func, args=None, atTime=0):
         """
         add a job to the schedule, will run once
+        :param name: name of the job, for information
         :param iFreq: frequency in seconds
         :param func: function to call each iteration
         :param args: argument to pass to the job
@@ -111,7 +113,7 @@ class sched(object):
         if atTime < now:
             assert False, "at time prior to now"
 
-        print "add job : freq = {}, next = {}".format(iFreq, atTime-now)
+        logging.info("add at job {} : freq = {}, next = {:0.3f}".format(name, iFreq, atTime-now))
 
         self.aSchedJobs.append({'freq' : iFreq,
                                 'func': func,
