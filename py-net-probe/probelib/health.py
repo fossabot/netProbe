@@ -1,10 +1,10 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-21 15:57:30 alex>
+# Time-stamp: <2016-06-19 11:45:30 alex>
 #
 
 """
- probe for the icmp protocol
+ probe for the health module (cpu, memory, disk...)
 """
 
 import time

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-20 21:54:56 alex>
+# Time-stamp: <2016-06-19 12:12:00 alex>
 #
 
 import sys
@@ -46,7 +46,7 @@ def test_one_iteration():
     global fLastFoo1
 
     scheduler = sched.sched()
-    scheduler.add(0.1, foo1)
+    scheduler.add("test_one_iteration", 0.1, foo1)
 
     fLastFoo1 = 0
 
@@ -63,8 +63,8 @@ def test_two_jobs():
     global iTurn1, iTurn2
 
     scheduler = sched.sched()
-    scheduler.add(0.1, foo1)
-    scheduler.add(0.25, foo2)
+    scheduler.add("two_jobs 1",0.1, foo1)
+    scheduler.add("two_jobs 2",0.25, foo2)
 
     fLastFoo1 = 0
     fLastFoo2 = 0
@@ -86,7 +86,7 @@ def test_deviation():
     iter = 25
 
     scheduler = sched.sched()
-    scheduler.add(delay, foo1)
+    scheduler.add("deviation", delay, foo1)
 
     time.time()
 
@@ -106,7 +106,7 @@ def test_clean():
     """ suppress jobs """
 
     scheduler = sched.sched()
-    scheduler.add(1.01, foo1)
+    scheduler.add("clean", 1.01, foo1)
 
     f = scheduler.step()
     print f
@@ -132,7 +132,7 @@ def test_arg():
 
     scheduler = sched.sched()
     config = { "test" : 10 }
-    scheduler.add(0.1, foo3, config)
+    scheduler.add("arg", 0.1, foo3, config)
     scheduler.step()
         
     if arg != 10:
@@ -145,7 +145,7 @@ def test_next0():
 
     scheduler = sched.sched()
     waitTime = 0.5
-    scheduler.add(waitTime, foo1, None, 0)
+    scheduler.add("next0", waitTime, foo1, None, 0)
 
     b = time.time()
     scheduler.step()
@@ -161,7 +161,7 @@ def test_next1():
 
     scheduler = sched.sched()
     waitTime = 5
-    scheduler.add(waitTime, foo1, None, 1)
+    scheduler.add("next1", waitTime, foo1, None, 1)
 
     b = time.time()
     scheduler.step()
@@ -176,7 +176,7 @@ def test_next2():
     """
 
     scheduler = sched.sched()
-    scheduler.add(30, foo1, None, 2)
+    scheduler.add("next2", 30, foo1, None, 2)
 
     t = scheduler.step()
 
@@ -192,7 +192,7 @@ def test_at0():
 
     ok = 0
     try:
-        scheduler.addAt(30, foo1, None, time.time()-1)
+        scheduler.addAt("at0", 30, foo1, None, time.time()-1)
         ok = 1
     except:
         ok = 2
@@ -206,7 +206,7 @@ def test_at1():
     """
 
     scheduler = sched.sched()
-    scheduler.addAt(30, foo1, None, time.time()+10)
+    scheduler.addAt("at1", 30, foo1, None, time.time()+10)
 
 def test_at2():
     """start time in exactly 600
@@ -214,7 +214,7 @@ def test_at2():
     """
 
     scheduler = sched.sched()
-    scheduler.addAt(30, foo1, None, time.time()+600)
+    scheduler.addAt("at2", 30, foo1, None, time.time()+600)
 
     t = scheduler.step()
 
