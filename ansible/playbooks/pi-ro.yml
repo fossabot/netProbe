@@ -129,4 +129,4 @@
      lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin .*" line="PermitRootLogin no"
 
    - name: reboot
-     command: reboot
+     command: /sbin/reboot
