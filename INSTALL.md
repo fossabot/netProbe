@@ -8,6 +8,8 @@ pip install Flask
 pip install elasticsearch
 ```
 
+add iperf3
+
 on the probe
 ------------
 ```
@@ -48,8 +50,8 @@ specific changes :
 
 start the client with python main.py
 
-Install with ansible
-====================
+Install the probe with ansible
+==============================
 
 * install a raspbian lite image on the probe memory card, connect on network and boot (requires DHCP and internet access)
 * need an ssh key from the ansible user installed in id_rsa.pub
@@ -64,4 +66,9 @@ ansible-playbook --ask-pass -i files/hosts playbooks/pi-init.yml --limit %ip of 
 
 ```
 ansible-playbook -i files/hosts playbooks/install-probe.yml --limit %ip of the pi%
+```
+
+* turn the pi in read-only mode to preserve SD and allow power stop
+```
+ansible-playbook -i files/hosts playbooks/pi-ro.yml --limit %ip of the pi%
 ```

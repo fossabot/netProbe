@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2016-06-18 15:23:52 alex>
+# Time-stamp: <2016-06-26 22:03:39 alex>
 
 ---
 - name: INSTALL PROBE
@@ -95,3 +95,7 @@
    - name: probe at boot
      become: true
      lineinfile: dest=/etc/rc.local line="/home/pi/py-net-probe/start.sh &" state=present insertbefore="^exit 0"
+
+   - name: install iperf3
+     become: true
+     apt: name=iperf3 update_cache=yes cache_valid_time=3600
