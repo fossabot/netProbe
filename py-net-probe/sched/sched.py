@@ -2,47 +2,11 @@
 #
 
 """
-fLastFoo1 = 0
-def foo1():
-	global fLastFoo1
-	print("foo1", round(time.time()-fLastFoo1,2))
-	fLastFoo1 = time.time()
-
-fLastFoo3 = 0
-def foo3():
-	global fLastFoo3
-	print("foo3", round(time.time()-fLastFoo3,2))
-	fLastFoo3 = time.time()
-
-fLastFoo5 = 0
-def foo5():
-	global fLastFoo5
-	print("foo5", round(time.time()-fLastFoo5,2))
-	fLastFoo5 = time.time()
-
-fLastFoo10 = 0
-def foo10():
-	global fLastFoo10
-	print("foo10", round(time.time()-fLastFoo10,2))
-	fLastFoo10 = time.time()
-
-schedStep()
-
-schedAdd(5, foo5)
-schedAdd(1, foo1)
-schedAdd(3, foo3)
-schedAdd(10, foo10)
-
-# pprint.pprint(aSchedJobs)
-
-while (True):
-	f = schedStep()
-	# print(f)
-	time.sleep(f)
+scheduler for the jobs
 """
 
-__version__ = "1.0"
-__date__ = "08/04/2016"
+__version__ = "1.1"
+__date__ = "26/06/2016"
 __author__ = "Alex Chauvin"
 
 import time
