@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-19 12:09:04 alex>
+# Time-stamp: <2016-06-26 22:06:32 alex>
 #
 
 """
@@ -12,6 +12,7 @@ import sys
 import logging
 import signal
 import time
+import random
 
 sys.path.insert(0, os.getcwd())
 from netProbe import ipConf
@@ -103,7 +104,7 @@ class probemain(object):
         """add a job in the scheduler
 
         """
-        self.scheduler.add(self.name, freq, f, data)
+        self.scheduler.add(self.name, freq, f, data, 2)
 
     # -----------------------------------------
     def getConfig(self, name, f, testf):

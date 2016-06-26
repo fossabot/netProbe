@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-19 12:07:09 alex>
+# Time-stamp: <2016-06-26 20:49:34 alex>
 #
 
 """
@@ -199,8 +199,10 @@ def getConfig():
                 else:
                     if a['job'] == "http":
                         restart['http'] = 1
+                    else:
+                        if a['job'] == "iperf":
+                            restart['iperf'] = 1
                     
-
     if len(restart) == 0:
         return
 
@@ -215,6 +217,10 @@ def getConfig():
     if restart.__contains__('http'):
         pushJobsToDB("http")
         restartProbe("http", probeProcess)
+
+    if restart.__contains__('iperf'):
+        pushJobsToDB("iperf")
+        restartProbe("iperf", probeProcess)
 
 # -----------------------------------------
 def mainLoop():
