@@ -14,7 +14,7 @@ used to set the TOS on each of the iperf frames. DSCP is using the
 first 6 bits, ECN the last 2. Options for DSCP are listed below with
 CS for class selector stated in RFC2474, AFxy for assured forwarding
 (x=class, y=drop) as in RFC2597:
-``
+```
 AF11	40
 AF12	48
 AF13	56
@@ -36,4 +36,4 @@ CS5	160
 CS6	192
 CS7	224
 EF	184
-``
+```
