@@ -1,7 +1,7 @@
 #
 # turn the pi in ro
 #
-# Time-stamp: <2016-06-18 15:27:30 alex>
+# Time-stamp: <2016-06-25 18:18:08 alex>
 #
 #
 # usage :
@@ -15,6 +15,12 @@
   remote_user: pi
 
   tasks:
+   - name: dhcp mount rw
+     copy: src=../files/00-mount-rw dest=/lib/dhcpcd/dhcpcd-hooks/ owner=root group=root mode=0644
+
+   - name: dhcp mount ro
+     copy: src=../files/99-mount-ro dest=/lib/dhcpcd/dhcpcd-hooks/ owner=root group=root mode=0644
+
    - name: hwclock
      copy: src=../files/fake-hwclock dest=/etc/cron.hourly/ owner=root group=root mode=0755
 
@@ -129,4 +135,4 @@
      lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin .*" line="PermitRootLogin no"
 
    - name: reboot
-     command: reboot
+     command: /sbin/reboot
