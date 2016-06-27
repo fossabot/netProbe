@@ -1,11 +1,15 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-26 20:49:34 alex>
+# Time-stamp: <2016-06-27 22:37:57 alex>
 #
 
 """
  client module for the probe system
 """
+
+__version__ = "1.1"
+__date__ = "27/06/2016"
+__author__ = "Alex Chauvin"
 
 import time
 import logging
@@ -33,11 +37,14 @@ if os.getuid() != 0:
     exit()
 
 srv = {}
+stats = netProbe.stats()
 bConnected = False
 bRunning = True
 probeJobs = {}
 db = database.database()
 probeProcess = {}
+
+stats.setVar("probe version", __version__)
 
 # -----------------------------------------
 def serverConnect():
@@ -46,6 +53,7 @@ def serverConnect():
     """
 
     global srv
+    global stats
     global bConnected
     global bRunning
 
@@ -63,6 +71,9 @@ def serverConnect():
     # get hostId
     #
     hid = hostId.hostId(ip.getLinkAddr()+ip.getIfIPv4())
+
+    stats.setIPv4(ip.getIfIPv4())
+    stats.setIPv6(ip.getIfIPv6())
 
     bConnected = False
     
@@ -110,8 +121,12 @@ def ping():
     call the ping ws of the server
     called by the scheduler
     """
+
+    global stats
+
     if srv.ping():
         logging.info("ping delta time = {:0.2f}ms".format(srv.getLastCmdDeltaTime()*1000))
+        stats.setVar("ping server (ms)", srv.getLastCmdDeltaTime()*1000)
 
 # -----------------------------------------
 def showStatus():
@@ -135,21 +150,17 @@ def pushJobsToDB(jobName):
     """
     global db
     global probeJobs
+    global stats
 
     # suppress the old definition in db
     db.cleanJob(jobName)
-
-    # pprint.pprint(probeJobs)
 
     for i in probeJobs.keys():
         j = probeJobs[i]
         if j['job'] == jobName:
             del j['restart']
             db.addJob(jobName, j)
-            
-            # j['version'] = 0
-
-    # db.dumpJob(jobName)
+            stats.setJob(j)
 
 # -----------------------------------------
 def getConfig():
@@ -158,6 +169,8 @@ def getConfig():
     """
     global probeJobs
     global bConnected
+
+    aModules = ['icmp', 'health', 'http', 'iperf']
 
     if bConnected == False:
         return
@@ -174,7 +187,6 @@ def getConfig():
         return None
 
     for c in config:
-        # pprint.pprint(c)
         # update job or create
         if probeJobs.__contains__(c['id']):
             a = probeJobs[c['id']]
@@ -190,37 +202,18 @@ def getConfig():
 
         if a['restart'] == 1:
             probeJobs[c['id']] = a
-            # check for each job type
-            if a['job'] == "icmp":
-                restart['icmp'] = 1
-            else:
-                if a['job'] == "health":
-                    restart['health'] = 1
-                else:
-                    if a['job'] == "http":
-                        restart['http'] = 1
-                    else:
-                        if a['job'] == "iperf":
-                            restart['iperf'] = 1
-                    
+
+            for m in aModules:
+                if a['job'] == m:
+                    restart[m] = 1
+
     if len(restart) == 0:
         return
 
-    if restart.__contains__('icmp'):
-        pushJobsToDB("icmp")
-        restartProbe("icmp", probeProcess)
-
-    if restart.__contains__('health'):
-        pushJobsToDB("health")
-        restartProbe("health", probeProcess)
-
-    if restart.__contains__('http'):
-        pushJobsToDB("http")
-        restartProbe("http", probeProcess)
-
-    if restart.__contains__('iperf'):
-        pushJobsToDB("iperf")
-        restartProbe("iperf", probeProcess)
+    for m in aModules:
+        if restart.__contains__(m):
+            pushJobsToDB(m)
+            restartProbe(m, probeProcess)
 
 # -----------------------------------------
 def mainLoop():
@@ -229,6 +222,7 @@ def mainLoop():
     """
     global scheduler
     global bConnected
+    global stats
 
     while bConnected:
         f = scheduler.step()
@@ -254,6 +248,8 @@ def popResults(_db):
     """pop the results from the database queue and push these to the server
 
     """
+    global stats
+
     a = []
 
     l = _db.lenResultQueue()
@@ -267,7 +263,9 @@ def popResults(_db):
     for i in range(nb):
         r = _db.popResult()
         if r != None:
-            a.append(json.loads(r))
+            j = json.loads(r)
+            stats.setLastRun(j['name'].lower(), j['date'])
+            a.append(j)
 
     if len(a) > 0:
         srv.pushResults(a)
@@ -287,10 +285,12 @@ while bRunning:
     serverConnect()
 
     getConfig()
-    scheduler.add("get configuration", 60, getConfig)
+    scheduler.add("get configuration", 60, getConfig, None, 2)
 
-    scheduler.add("push results", 8, popResults, db)
-    scheduler.add("ping server", 60, ping)
-    scheduler.add("show status", 300, showStatus)
+    scheduler.add("push results", 8, popResults, db, 2)
+    scheduler.add("ping server", 60, ping, None, 2)
+    # scheduler.add("show status", 300, showStatus, None, 2)
+    # scheduler.add("stats", 10, stats.debug, None, 2)
+    scheduler.add("stats", 60, stats.push, srv, 2)
 
     mainLoop()

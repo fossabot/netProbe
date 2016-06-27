@@ -1,0 +1,5 @@
+/ansible/files/netprobe.tgz
+/net-probe-srv/1.conf
+/ansible/files/hosts
+**/*.pyc
+**/*~
