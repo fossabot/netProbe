@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-26 20:49:34 alex>
+# Time-stamp: <2016-06-27 21:22:34 alex>
 #
 
 """
@@ -139,8 +139,6 @@ def pushJobsToDB(jobName):
     # suppress the old definition in db
     db.cleanJob(jobName)
 
-    # pprint.pprint(probeJobs)
-
     for i in probeJobs.keys():
         j = probeJobs[i]
         if j['job'] == jobName:
@@ -148,8 +146,6 @@ def pushJobsToDB(jobName):
             db.addJob(jobName, j)
             
             # j['version'] = 0
-
-    # db.dumpJob(jobName)
 
 # -----------------------------------------
 def getConfig():
