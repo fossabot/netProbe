@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-26 22:06:32 alex>
+# Time-stamp: <2016-06-28 22:16:01 alex>
 #
 
 """
@@ -85,8 +85,14 @@ class probemain(object):
         """
 
         while self.bRunning:
-            f = self.scheduler.step()
-            time.sleep(f)
+            ppid = os.getppid()
+            if (ppid == 1):
+                self.bRunning = False
+                # print "ppid = {} exists ? {}".format(ppid, os.path.isdir("/proc/"+str(ppid)))
+
+            else:
+                f = self.scheduler.step()
+                time.sleep(f)
 
         logging.info("end probe {}".format(self.name))
 
