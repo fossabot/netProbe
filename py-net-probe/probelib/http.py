@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-19 13:46:33 alex>
+# Time-stamp: <2016-06-28 22:21:43 alex>
 #
 
 """
@@ -98,6 +98,8 @@ class probe_http(probemain):
 
         except urllib2.URLError, e:
             sError = str(e.reason)
+        except:
+            sError = "unknown"
 
         if fTime == 0:
             fTime = fTimeout
