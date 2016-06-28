@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-27 22:37:57 alex>
+# Time-stamp: <2016-06-28 22:00:24 alex>
 #
 
 """
@@ -23,7 +23,7 @@ import hostId
 import database
 import json
 
-from probe import restartProbe, stopAllProbes
+from probe import restartProbe, stopAllProbes, checkProbe
 
 _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
 logging.basicConfig(format=_logFormat,
@@ -216,6 +216,16 @@ def getConfig():
             restartProbe(m, probeProcess)
 
 # -----------------------------------------
+def checkProbes():
+    """ check all started probes
+    """
+    global probeProcess
+
+    for k in probeProcess.keys():
+        if checkProbe(k, probeProcess) == False:
+            restartProbe(k, probeProcess)
+    
+# -----------------------------------------
 def mainLoop():
     """
     main scheduler loop
@@ -290,7 +300,7 @@ while bRunning:
     scheduler.add("push results", 8, popResults, db, 2)
     scheduler.add("ping server", 60, ping, None, 2)
     # scheduler.add("show status", 300, showStatus, None, 2)
-    # scheduler.add("stats", 10, stats.debug, None, 2)
+    scheduler.add("check probe", 10, checkProbes)
     scheduler.add("stats", 60, stats.push, srv, 2)
 
     mainLoop()
