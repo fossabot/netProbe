@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-04-30 20:07:10 alex>
+# Time-stamp: <2016-06-28 22:01:55 alex>
 #
 
 """ probe management module """
@@ -73,3 +73,21 @@ def stopAllProbes(probeProcess):
         p.wait()
 
     logging.info("all probes are stoppped")
+
+# -----------------------------------------
+def checkProbe(jobName, probeProcess):
+    """
+    check the probe for presence
+    """
+
+    logging.info("check probe {}".format(jobName))
+
+    if probeProcess.__contains__(jobName):
+        p = probeProcess[jobName]['handler']
+        
+        # is the process stopped ?
+        if p.poll() != None:
+            logging.info("probe-{} stopped, code {}".format(jobName, p.returncode))
+            return False
+
+    return True
