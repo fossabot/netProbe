@@ -1,0 +1,14 @@
+#
+# initialize a raspberry pi from a raspbian lite image
+#
+# Time-stamp: <2016-07-02 11:46:46 alex>
+#
+
+   - name: update
+     apt: update_cache=yes cache_valid_time=3600
+
+   - name: suppress bluetooth
+     apt: name=bluez update_cache=yes state=absent
+
+   - name: upgrade
+     apt: upgrade=yes cache_valid_time=3600

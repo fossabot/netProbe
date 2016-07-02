@@ -1,0 +1,20 @@
+#
+# initialize a raspberry pi from a raspbian lite image
+#
+# Time-stamp: <2016-07-02 11:46:02 alex>
+#
+#
+# usage :
+#  ansible-playbook -i files/hosts playbooks/pi-init.yml --limit %IP%
+#   --ask-pass: first use
+#   --tags "upgrade": for OS upgrade
+
+   - name: set variables
+     set_fact:
+       ssh_key: "{{ lookup('env','HOME') }}/.ssh/id_rsa.pub"
+
+   - name: add ssh key
+     authorized_key:
+       user: pi
+       key: "{{ lookup('file', ssh_key) }}"
+       key_options: 'no-port-forwarding'

@@ -1,0 +1,23 @@
+#
+# install pi from scratch (raspbian lite)
+#
+# Time-stamp: <2016-07-02 11:48:53 alex>
+#
+#
+# usage :
+#  ssh direct in order to add the hash in the known_hosts
+#  ansible-playbook -i files/hosts playbooks/pi-all.yml --ask-pass
+#   --limit %IP%
+
+---
+- name: PI PROBE
+  hosts: new
+  become: true
+  become_user: root
+  remote_user: pi
+
+  tasks:
+    - include : pi-init-init.yml
+    - include : pi-init-upgrade.yml
+    - include : install-probe.yml
+    - include : pi-ro.yml
