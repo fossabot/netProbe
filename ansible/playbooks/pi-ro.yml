@@ -1,20 +1,10 @@
 #
 # turn the pi in ro
 #
-# Time-stamp: <2016-06-25 18:18:08 alex>
+# Time-stamp: <2016-07-02 11:49:45 alex>
 #
 #
-# usage :
-#  ansible-playbook -i files/hosts playbooks/pi-ro.yml --limit %IP%
 
----
-- name: PI RO
-  hosts: piprobes
-  become: true
-  become_user: root
-  remote_user: pi
-
-  tasks:
    - name: dhcp mount rw
      copy: src=../files/00-mount-rw dest=/lib/dhcpcd/dhcpcd-hooks/ owner=root group=root mode=0644
 
@@ -135,4 +125,4 @@
      lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin .*" line="PermitRootLogin no"
 
    - name: reboot
-     command: /sbin/reboot
+     command: /sbin/shutdown -r
