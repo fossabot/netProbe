@@ -1,7 +1,7 @@
 #
 # initialize a raspberry pi from a raspbian lite image
 #
-# Time-stamp: <2016-05-29 15:53:17 alex>
+# Time-stamp: <2016-07-02 11:47:24 alex>
 #
 #
 # usage :
@@ -18,15 +18,7 @@
   remote_user: pi
 
   tasks:
-   - name: set variables
-     set_fact:
-       ssh_key: "{{ lookup('env','HOME') }}/.ssh/id_rsa.pub"
-
-   - name: add ssh key
-     authorized_key:
-       user: pi
-       key: "{{ lookup('file', ssh_key) }}"
-       key_options: 'no-port-forwarding'
+   - include : pi-init-init.yml
 
 - name: PI UPGRADE
   hosts: piprobes
@@ -36,11 +28,4 @@
   remote_user: pi
 
   tasks:
-   - name: update
-     apt: update_cache=yes cache_valid_time=3600
-
-   - name: suppress bluetooth
-     apt: name=bluez update_cache=yes state=absent
-
-   - name: upgrade
-     apt: upgrade=yes cache_valid_time=3600
+    - include : pi-init-upgrade.yml

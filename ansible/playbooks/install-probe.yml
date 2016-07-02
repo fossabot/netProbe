@@ -1,13 +1,6 @@
 #
-# Time-stamp: <2016-06-26 22:03:39 alex>
+# Time-stamp: <2016-07-02 11:49:33 alex>
 
----
-- name: INSTALL PROBE
-  hosts: piprobes
-  remote_user: pi
-  become_user: root
-
-  tasks:
    - name: update apt
      become: true
      apt: update_cache=yes
@@ -90,7 +83,12 @@
      pip: name=psutil
 
    - name: copy sources
-     unarchive: src=../files/netprobe.tgz dest=/home/pi
+     git: repo=https://github.com/achauvinhameau/netProbe.git
+          dest=/tmp/netProbe
+
+   - name: install py-probe
+     command: mv /tmp/netProbe/py-net-probe {{ pythonpath.stdout }}
+     become: true
 
    - name: probe at boot
      become: true
