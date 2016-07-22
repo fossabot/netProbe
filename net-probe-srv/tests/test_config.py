@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-22 22:18:34 alex>
+# Time-stamp: <2016-07-22 20:32:41 alex>
 #
 
 import sys
@@ -87,8 +87,13 @@ def test_getConf():
     if a[0]['job'] != "health":
         assert False, "bad job returned"
 
-# test_addHost()
-# test_probename()
-# test_checkHost()
-# test_duplicateProbeName()
-# test_getConf()
+# ---------------------------------------------
+if __name__ == '__main__':
+    _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+    logging.basicConfig(format=_logFormat,
+                        level=logging.INFO)
+    test_addHost()
+    test_probename()
+    test_checkHost()
+    test_duplicateProbeName()
+    test_getConf()
