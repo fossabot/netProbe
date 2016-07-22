@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-15 17:21:30 alex>
+# Time-stamp: <2016-07-17 22:41:20 alex>
 #
 
 """
@@ -86,6 +86,8 @@ class probeServer(object):
         to know if it is available for other transaction
         gather the response time and store the server status
 
+        this channel is used by the server to push actions
+
         returns boolean
         """
         if self.bServerAvail == False:
@@ -96,6 +98,8 @@ class probeServer(object):
 
         if self.sPingURL == "":
             self.sPingURL = self.sSrvBaseURL+'/ping'
+            
+        delta = -1
 
         try:
             now = time.time()
@@ -158,7 +162,7 @@ class probeServer(object):
 
         try:
             r = self.session.post(req, data, timeout=2)
-        except requests.ConnectionError:
+        except:
             logging.error("reaching srv : connection refused")
             self.bServerAvail = False
             return False
