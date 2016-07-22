@@ -49,7 +49,7 @@ class hostId(object):
 
             r = re.match("model[^:]+: (.*)", l)
             if r != None:
-                sCPU = sCPU+'@'+r.group(1)
+                sCPU = str(sCPU)+'@'+str(r.group(1))
 
         self.id = hashlib.md5(sCPU).hexdigest()
 
