@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-22 23:12:13 alex>
+# Time-stamp: <2016-07-17 22:47:07 alex>
 #
 
 """
@@ -26,6 +26,10 @@ def ws_ping():
     global lDB
     # global conf
 
+    r = {
+        "answer" : "OK"
+    }
+
     if request.method == 'POST':
         if not request.form.__contains__('uid'):
             return make_response(jsonify({"answer" : "missing uid"}), 400)
@@ -34,10 +38,14 @@ def ws_ping():
 
         host = lDB.getHostByUid(uid)
         if host == None:
-            return make_response(jsonify({"answer" : "host not found"}), 200)
+            return make_response(jsonify({"answer" : "host not found"}), 400)
 
         lDB.updateHost(host, {"last" : time.time()})
         # logging.info("conf : \n%s", pprint.pformat(conf.dump()))
         # logging.info("DB : \n%s", pprint.pformat(lDB.dump()))
 
-    return make_response(jsonify({"answer" : "OK"}), 200)
+        a = lDB.getAction(host)
+        if a != None:
+            r['action'] = a
+
+    return make_response(jsonify(r), 200)
