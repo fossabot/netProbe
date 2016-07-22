@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-28 22:16:01 alex>
+# Time-stamp: <2016-07-17 22:15:11 alex>
 #
 
 """
@@ -19,7 +19,7 @@ from netProbe import ipConf
 import sched
 import database
 
-__version__ = "1.3"
+__version__ = "1.4"
 __date__ = "19/06/2016"
 __author__ = "Alex Chauvin"
 
@@ -62,7 +62,7 @@ class probemain(object):
         self.ip = ipConf()
         
         if self.ip.hasDefaultRoute() == False:
-            assert False, "no default route, abort"
+            logging.warning("no default route")
 
     # -----------------------------------------
     def getEthName(self):
