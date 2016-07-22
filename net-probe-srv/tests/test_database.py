@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-22 21:49:12 alex>
+# Time-stamp: <2016-07-22 19:45:40 alex>
 #
 
 import sys
@@ -8,6 +8,8 @@ import os
 import nose
 
 sys.path.append(os.getcwd())
+
+import logging
 
 from liveDB import lDB
 
@@ -105,9 +107,12 @@ def test_getHostContent():
     if _sHost['b'] != 2:
         assert False, "should return 2 as content of the b part"
 
-
-# test_getUniqueId()
-# test_getUniqueId_2()
-# test_getHost()
-# test_getHost_not()
-# test_getHostContent()
+if __name__ == '__main__':
+    _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+    logging.basicConfig(format=_logFormat,
+                        level=logging.INFO)
+    test_getUniqueId()
+    test_getUniqueId_2()
+    test_getHost()
+    test_getHost_not()
+    test_getHostContent()
