@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-22 20:12:01 alex>
+# Time-stamp: <2016-07-22 20:31:04 alex>
 #
 
 """
@@ -33,7 +33,6 @@ def ws_discover():
                 request.form.__contains__('ipv4') and 
                 request.form.__contains__('ipv6')):
             logging.error("probe passing bad args")
-            print request
             return make_response(jsonify({"answer" : "missing argument"}), 400)
 
         _sHostId = request.form['hostId']
