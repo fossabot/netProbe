@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-22 21:48:03 alex>
+# Time-stamp: <2016-07-22 20:10:43 alex>
 #
 
 """
@@ -10,6 +10,7 @@
 
 import json
 import logging
+import time
 
 from config import conf
 # import pprint
@@ -100,6 +101,35 @@ class liveDB(object):
 
         return conf.getNameForHost(host)
 
+    # ----------------------------------------------------------
+    def getListProbes(self):
+        """ return the probes list """
+
+        r = []
+        for p in self.aProbeTable:
+            s = self.aProbeTable[p]
+            r.append({ "uid" : s['uid'],
+                       "ipv4" : s['ipv4'],
+                       "ipv6" : s['ipv6'],
+                       "last" : int(time.time() - s['last'])
+                      }
+                     )
+
+        return r
+
+    # ----------------------------------------------------------
+    def getAction(self, sId):
+        """ return next action for the host if set """
+
+        if self.aProbeTable.__contains__(sId) == False:
+            logging.info("sId not found")
+            return None
+
+        if self.aProbeTable[sId].__contains__('action'):
+            a = self.aProbeTable[sId]['action']
+            del(self.aProbeTable[sId]['action'])
+            return a
+    
     # ----------------------------------------------------------
     def dump(self):
         """ show the configuration host table """
