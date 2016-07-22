@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-29 17:47:31 alex>
+# Time-stamp: <2016-07-22 20:12:01 alex>
 #
 
 """
@@ -33,6 +33,7 @@ def ws_discover():
                 request.form.__contains__('ipv4') and 
                 request.form.__contains__('ipv6')):
             logging.error("probe passing bad args")
+            print request
             return make_response(jsonify({"answer" : "missing argument"}), 400)
 
         _sHostId = request.form['hostId']
@@ -47,6 +48,7 @@ def ws_discover():
             _id = lDB.getUniqueId(_sHostId)
             lDB.updateHost(_sHostId, {'uid' : _id,
                                       'discoverTime': time.time(),
+                                      'last': time.time(),
                                       'ipv4' : _sIpv4,
                                       'ipv6' : _sIpv6})
 
@@ -54,6 +56,6 @@ def ws_discover():
                                           "uid" : _id}), 200)
         else:
             logging.warning("probe not found {} {}".format(_sIpv4, _sIpv6))
+            return make_response(jsonify({"answer" : "KO", "reason" : "not found"}), 400)
 
-    return make_response(jsonify({"answer" : "KO"}), 400)
-
+    return make_response(jsonify({"answer" : "KO", "reason" : "other"}), 400)
