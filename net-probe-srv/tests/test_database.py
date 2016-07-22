@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-22 19:45:40 alex>
+# Time-stamp: <2016-07-22 20:28:26 alex>
 #
 
 import sys
@@ -25,7 +25,8 @@ def test_getUniqueId():
     if _id != 1:
         assert False, "should return 1 as first id"
 
-    print lDB.dump()
+    # print lDB.dump()
+    lDB.cleanDB()
 
 def test_getUniqueId_2():
     """
@@ -46,6 +47,7 @@ def test_getUniqueId_2():
 
     if _id != 1:
         assert False, "should return 1 as first id"
+    lDB.cleanDB()
 
 def test_getHost():
     """ getHostByUid
@@ -66,6 +68,7 @@ def test_getHost():
 
     if _sHost != "test":
         assert False, "should return name of the host"
+    lDB.cleanDB()
 
 def test_getHost_not():
     """ getHostByUid return false on unknown host
@@ -86,6 +89,7 @@ def test_getHost_not():
 
     if _sHost != None:
         assert False, "should return None"
+    lDB.cleanDB()
 
 def test_getHostContent():
     """ getHostContentByUid
@@ -106,6 +110,8 @@ def test_getHostContent():
 
     if _sHost['b'] != 2:
         assert False, "should return 2 as content of the b part"
+
+    lDB.cleanDB()
 
 if __name__ == '__main__':
     _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
