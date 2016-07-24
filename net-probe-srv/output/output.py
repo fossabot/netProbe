@@ -1,13 +1,13 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-12 21:49:06 alex>
+# Time-stamp: <2016-07-24 21:56:28 alex>
 #
 
 """
  outputer
 """
 
-# import logging
+import logging
 
 class output(object):
     """class to handle output generic
@@ -47,4 +47,5 @@ class output(object):
     # ----------------------------------------------------------
     def send(self, data):
         """send"""
+        logging.info("send {}".format(data))
         return
