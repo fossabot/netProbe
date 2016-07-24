@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-28 22:22:07 alex>
+# Time-stamp: <2016-07-17 22:39:11 alex>
 #
 
 """
@@ -298,7 +298,7 @@ while bRunning:
     scheduler.add("get configuration", 60, getConfig, None, 2)
 
     scheduler.add("push results", 8, popResults, db, 2)
-    scheduler.add("ping server", 60, ping, None, 2)
+    scheduler.add("ping server", 15, ping, None, 2)
     # scheduler.add("show status", 300, showStatus, None, 2)
     scheduler.add("check probe", 10, checkProbes)
     scheduler.add("stats", 60, stats.push, srv, 2)

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-12 21:47:26 alex>
+# Time-stamp: <2016-07-24 22:50:42 alex>
 #
 
 """
@@ -24,6 +24,7 @@ class config(object):
         """
         self.aHostTable = {}
         self.outputMethodName = "none"
+        self.fileName = "none"
 
         return
 
@@ -60,7 +61,8 @@ class config(object):
                 h = self.aHostTable[hkey]
 
                 if h.__contains__('probename') and h['probename'] == probename:
-                    logging.error("this probename is already registered: {}".format(probename))
+                    self.aHostTable[hkey] = {"jobs" : jobs, "probename": probename}
+                    logging.info("update probename {}".format(probename))
                     return
 
         else:
@@ -130,7 +132,19 @@ class config(object):
         else:
             outputer[0] = output.debug()
 
+        self.fileName = sFile
+
         logging.info("config file loaded in DB {}".format(sFile))
+
+    # ----------------------------------------------------------
+    def reload(self):
+        """reload the configuration
+
+        """
+        if self.fileName == "none":
+            assert False, "no file loaded previously"
+
+        self.loadFile(self.fileName)
 
     # ----------------------------------------------------------
     def getConfigForHost(self, sId):

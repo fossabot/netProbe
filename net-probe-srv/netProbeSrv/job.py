@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-07 11:13:34 alex>
+# Time-stamp: <2016-07-24 22:16:33 alex>
 #
 
 """
@@ -40,7 +40,7 @@ def ws_myjobs():
         # logging.info("conf : \n%s", pprint.pformat(conf.dump()))
         # logging.info("DB : \n%s", pprint.pformat(lDB.dump()))
 
-        conf.loadFile('1.conf')
+        conf.reload()
 
         return make_response(jsonify({"answer" : "OK",
                                       "jobs" : config}), 200)

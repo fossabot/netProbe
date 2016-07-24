@@ -3,3 +3,6 @@
 /ansible/files/hosts
 **/*.pyc
 **/*~
+ansible/files/hosts
+net-probe-srv/1.conf
+/net-probe-srv/test_config.conf
