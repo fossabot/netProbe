@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-25 14:51:53 alex>
+# Time-stamp: <2016-07-24 21:55:28 alex>
 #
 
 """
@@ -12,10 +12,10 @@ from .output import output
 import json
 import socket
 import logging
-import time
+# import time
 import datetime
 
-import pprint
+# import pprint
 
 class logstash(output):
     """ class to handle logstash json output """
