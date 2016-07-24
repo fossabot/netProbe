@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-22 20:34:01 alex>
+# Time-stamp: <2016-07-24 21:19:34 alex>
 #
 
 import sys
@@ -113,6 +113,7 @@ def test_getProbes():
 # ---------------------------------------------
 def test_discover_3():
     """/discover 127.1.0.3 in probe list
+    check with ws getProbes
 
     """
     global app
@@ -141,15 +142,22 @@ def test_discover_3():
     if j['answer'] != "OK" or j['probes'][0]['ipv4'] != "127.1.0.3":
         assert False, "probe not found"
 
+# ---------------------------------------------
+def all(b=True):
+    if b:
+        test_discover_get()
+        test_discover_empty()
+        test_discover_1()
+        test_discover_2()
+        test_getProbes()
+    test_discover_3()
 
 # ---------------------------------------------
 if __name__ == '__main__':
     _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
     logging.basicConfig(format=_logFormat,
                         level=logging.INFO)
-    test_discover_get()
-    test_discover_empty()
-    test_discover_1()
-    test_discover_2()
-    test_getProbes()
-    test_discover_3()
+
+    all(False)
+
+    logging.info("***** ok ******")
