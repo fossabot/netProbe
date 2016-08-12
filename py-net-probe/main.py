@@ -1,13 +1,13 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-17 22:39:11 alex>
+# Time-stamp: <2016-07-31 22:01:56 alex>
 #
 
 """
  client module for the probe system
 """
 
-__version__ = "1.1.1"
+__version__ = "1.2"
 __date__ = "28/06/2016"
 __author__ = "Alex Chauvin"
 

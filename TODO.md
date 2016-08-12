@@ -1,23 +1,30 @@
 server
 ======
-* configuration with fields by probe, not only globals
-* template for probe config (can include multiple at probe level)
+* templates for probe config (can include multiple at probe level)
 * push regular stats to back office on probe connected or discovered, last hello...
 * schedule on job definition
-* set the configuration name on command line
-* force reload the configuration on sighup
-* set last seen on results (as ping)
+* configuration with fields by probe, not only globals
 
 probe
 =====
-* check whether configuration reload is working
+* add cpu temp in health
 * add an exit command for the main process to restart everything
-* add an "active" flag on a job
+* don't run a job with active flag set to false
 * add job process statistics in the stat message
 * http probe can use a target IP address different than URL server name
 * DNS job
-* add cpu temp in health
 
 raspberry
 =========
 * suppress the man pages
+
+History
+=======
+
+1.2
+-----
+* FIX : configuration reload not working
+* set the configuration file name on command line for the server part
+* set last seen on ping
+* force reload the configuration on sighup
+* add an "active" flag on a job in the server configuration
