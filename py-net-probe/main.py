@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-31 22:01:56 alex>
+# Time-stamp: <2016-08-12 20:01:19 alex>
 #
 
 """
@@ -25,11 +25,37 @@ import json
 
 from probe import restartProbe, stopAllProbes, checkProbe
 
+# ----------- parse args
+try:
+    import argparse
+    parser = argparse.ArgumentParser(description='raspberry net probe system')
+
+    parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level', nargs='?', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
+
+    args = parser.parse_args()
+
+except ImportError:
+    log.error('parse error')
+    exit()
+
 _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
-logging.basicConfig(format=_logFormat,
-                    level=logging.INFO)
+logLevel = logging.ERROR
+
+if args.log == 'INFO':
+    logLevel=logging.INFO
+if args.log == 'DEBUG':
+    logLevel=logging.DEBUG
+if args.log == 'WARNING':
+    logLevel=logging.WARNING
+if args.log == 'ERROR':
+    logLevel=logging.ERROR
+
+logging.basicConfig(format=_logFormat, level=logLevel)
 
 logging.info("starting probe")
+
+logging.info(" version {}".format(__version__))
+logging.debug("pid {}".format(os.getpid()))
 
 # check wether the uid is root (for icmp)
 if os.getuid() != 0:
