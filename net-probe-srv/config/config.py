@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-24 22:50:42 alex>
+# Time-stamp: <2016-08-12 19:43:47 alex>
 #
 
 """
@@ -51,6 +51,10 @@ class config(object):
 
         if hostData.__contains__('jobs'):
             jobs = hostData['jobs']
+            # check if active present, or put it to True
+            for j in jobs:
+                if not j.__contains__('active'):
+                    j['active'] = "True"
         else:
             jobs = {}
 
@@ -78,10 +82,12 @@ class config(object):
 
         """
 
+        logging.info("load config file {}".format(sFile))
+
         try:
             f = file(sFile, 'r')
         except IOError:
-            logging.error("accessing config file {}".format(sFile))
+            logging.error("cannot access config file {}".format(sFile))
             return False
 
         c = f.read()
