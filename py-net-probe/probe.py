@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-28 22:01:55 alex>
+# Time-stamp: <2016-08-15 22:51:18 alex>
 #
 
 """ probe management module """
@@ -91,3 +91,12 @@ def checkProbe(jobName, probeProcess):
             return False
 
     return True
+
+# -----------------------------------------
+def checkProbes(probeProcess):
+    """ check all started probes
+    """
+
+    for k in probeProcess.keys():
+        if checkProbe(k, probeProcess) == False:
+            restartProbe(k, probeProcess)
