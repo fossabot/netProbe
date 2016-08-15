@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-17 22:41:20 alex>
+# Time-stamp: <2016-08-15 21:27:13 alex>
 #
 
 """
@@ -88,18 +88,20 @@ class probeServer(object):
 
         this channel is used by the server to push actions
 
-        returns boolean
+        returns None or structure with action
         """
         if self.bServerAvail == False:
             self.uid = 0
 
         if self.sServerName == "":
-            return False
+            return None
 
         if self.sPingURL == "":
             self.sPingURL = self.sSrvBaseURL+'/ping'
             
         delta = -1
+
+        dReturn = { 'status' : 'OK' }
 
         try:
             now = time.time()
@@ -113,7 +115,11 @@ class probeServer(object):
                     s = json.loads(r.text)
                     if s.__contains__('answer') and s['answer'] != "OK":
                         self.bServerAvail = False
-                        return False
+                        return None
+
+                    # action in the return ?
+                    if s.__contains__('action'):
+                        dReturn['action'] = s['action']
             else:
                 self.session.get(self.sPingURL)
                 delta = time.time() - now
@@ -123,9 +129,9 @@ class probeServer(object):
         except requests.ConnectionError:
             logging.error("reaching srv : connection refused")
             self.bServerAvail = False
-            return False
+            return None
 
-        return True
+        return dReturn
 
     # -----------------------------------------------------------------
     def getLastCmdDeltaTime(self):
