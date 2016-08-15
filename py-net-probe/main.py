@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-08-12 20:01:19 alex>
+# Time-stamp: <2016-08-15 22:24:06 alex>
 #
 
 """
@@ -24,6 +24,8 @@ import database
 import json
 
 from probe import restartProbe, stopAllProbes, checkProbe
+
+aModules = ['icmp', 'health', 'http', 'iperf']
 
 # ----------- parse args
 try:
@@ -142,6 +144,37 @@ def serverConnect():
 
 #
 # -----------------------------------------
+def action(a):
+    global bRunning
+    global bConnected
+    global probeProcess
+    global aModules
+
+    if a['name'] == "restart":
+        args = a['args']
+        if args['module'] == "all":
+            logging.info("restart received from server, exiting")
+            # stopAllProbes(probeProcess)
+
+            bRunning = False
+            bConnected = False
+            return
+
+        if args['module'] == "job":
+            job = args['job']
+            logging.info("restart job {} received from server".format(job))
+
+            if job in aModules:
+                restartProbe(job, probeProcess)
+                return
+            else:
+                logging.error("job not found {}".format(job))
+                return
+
+    logging.info("action not handled {}".format(a))
+
+#
+# -----------------------------------------
 def ping():
     """
     call the ping ws of the server
@@ -150,9 +183,17 @@ def ping():
 
     global stats
 
-    if srv.ping():
-        logging.info("ping delta time = {:0.2f}ms".format(srv.getLastCmdDeltaTime()*1000))
-        stats.setVar("ping server (ms)", srv.getLastCmdDeltaTime()*1000)
+    r = srv.ping()
+
+    if r == None:
+        return
+
+    logging.info("ping delta time = {:0.2f}ms".format(srv.getLastCmdDeltaTime()*1000))
+    stats.setVar("ping server (ms)", srv.getLastCmdDeltaTime()*1000)
+
+    # action handle
+    if r.__contains__('action') and type(r['action']) == dict:
+        action(r['action'])
 
 # -----------------------------------------
 def showStatus():
@@ -195,8 +236,7 @@ def getConfig():
     """
     global probeJobs
     global bConnected
-
-    aModules = ['icmp', 'health', 'http', 'iperf']
+    global aModules
 
     if bConnected == False:
         return
@@ -274,7 +314,7 @@ def trap_signal(sig, heap):
 
     logging.info("exit signal received, wait for next step")
 
-    stopAllProbes(probeProcess)
+    # stopAllProbes(probeProcess)
 
     bRunning = False
     bConnected = False
@@ -330,3 +370,7 @@ while bRunning:
     scheduler.add("stats", 60, stats.push, srv, 2)
 
     mainLoop()
+
+logging.info("stop all jobs")
+stopAllProbes(probeProcess)
+logging.info("exiting")
