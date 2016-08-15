@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-24 21:47:27 alex>
+# Time-stamp: <2016-08-15 22:00:46 alex>
 #
 
 import sys
@@ -85,7 +85,7 @@ def test_push_1():
 
 # ---------------------------------------------
 def test_push_2():
-    """check action ws : restart
+    """check action ws : restart all
 
     """
     global app
@@ -103,27 +103,70 @@ def test_push_2():
 
     uid = insertOneHost("p2", "test_push2", aJobs, "127.2.0.2", ":2:2")
 
-    rv = c.post("/pushAction", data=dict(uid=uid, action="restart"))
+    rv = c.post("/pushAction", data=dict(uid=uid, action="restart", module="all"))
 
     j = json.loads(rv.data)
     if j['answer'] != 'OK':
-        assert False, "action error"
+        assert False, "action error {}".format(j)
 
     # ping the server and check the return
     rv = c.post("/ping", data=dict(uid=uid))
 
     j = json.loads(rv.data)
+
     if j['answer'] != "OK":
         assert False, "ping known host"
-    if j['action'] != "restart":
+    a = j['action']
+    if a['name'] != "restart" or type(a['args']) != dict:
         assert False, "action not in ping reply"
+
+# ---------------------------------------------
+def test_push_3():
+    """check action ws : restart job health
+
+    """
+    global app
+    global conf
+    global lDB
+    lDB.cleanDB()
+
+    c = app.test_client()
+
+    aJobs = [{"id" : 1,
+             "job" : "health",
+             "freq" : 10,
+             "version" : 1,
+             "data" : {}}]
+
+    uid = insertOneHost("p3", "test_push3", aJobs, "127.2.0.3", ":2:3")
+
+    rv = c.post("/pushAction", data=dict(uid=uid, action="restart", module="job", job="health"))
+
+    j = json.loads(rv.data)
+    if j['answer'] != 'OK':
+        assert False, "action error {}".format(j)
+
+    # ping the server and check the return
+    rv = c.post("/ping", data=dict(uid=uid))
+
+    j = json.loads(rv.data)
+
+    if j['answer'] != "OK":
+        assert False, "ping known host"
+    a = j['action']
+    if a['name'] != "restart" or type(a['args']) != dict:
+        assert False, "action not in ping reply"
+
+    args = a['args']
+    if args['module'] != "job" or args['job'] != "health":
+        assert False, "bad job to restart"
 
 # ---------------------------------------------
 def all(b=True):
     if b:
-        None
         test_push_1()
-    test_push_2()
+        test_push_2()
+    test_push_3()
 
 # ---------------------------------------------
 if __name__ == '__main__':
