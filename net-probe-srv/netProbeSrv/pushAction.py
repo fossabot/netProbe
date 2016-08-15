@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-24 21:53:45 alex>
+# Time-stamp: <2016-08-15 22:27:03 alex>
 #
 
 """
@@ -45,12 +45,48 @@ def ws_pushAction():
     }
 
     if action == "restart":
+        if request.form.__contains__('module') == False:
+            return make_response(jsonify({"answer":"KO", "reason":"missing module"}), 400)
+
+        module = str(request.form['module'])
         r['action'] = "restart"
-        lDB.updateHost(host, {"action" : "restart"})
         r['target_uid'] = uid
+
+        sAction = { "name" : "restart" }
+
+        if module == "all":
+            sAction['args'] = { "module" : module }
+            lDB.updateHost(host, {"action" : sAction })
+
+        if module == "job":
+            if request.form.__contains__('job') == False:
+                return make_response(jsonify({"answer":"KO", "reason":"missing job"}), 400)
+            
+            job = str(request.form['job'])
+            sAction['args'] = { "module" : module, "job" : job }
+
+            lDB.updateHost(host, {"action" : sAction })
+
         return make_response(jsonify(r), 200)
 
     # exception
     r['answer'] = "KO"
     r['reason'] = "action not found"
     return make_response(jsonify(r), 400)
+
+
+# -----------------------
+"""
+
+postman :
+http://192.168.56.103:5000/pushAction
+
+uid:1
+action:restart
+module:job
+job:health
+
+uid:1
+action:restart
+module:all
+"""
