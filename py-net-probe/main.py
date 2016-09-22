@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-08-15 22:47:49 alex>
+# Time-stamp: <2016-09-22 12:18:12 alex>
 #
 
 """
@@ -23,7 +23,7 @@ import hostId
 import database
 import json
 
-from probe import restartProbe, stopAllProbes, checkProbe, checkProbes
+from probe import restartProbe, stopAllProbes, checkProbe, checkProbes, statsProbes
 
 aModules = ['icmp', 'health', 'http', 'iperf']
 
@@ -357,7 +357,9 @@ while bRunning:
     scheduler.add("ping server", 15, ping, None, 2)
     # scheduler.add("show status", 300, showStatus, None, 2)
     scheduler.add("check probe", 10, checkProbes, probeProcess)
-    scheduler.add("stats", 60, stats.push, srv, 2)
+
+    scheduler.add("stats probes", 60, statsProbes, [probeProcess, stats], 2)
+    scheduler.add("stats", 60, stats.push, srv)
 
     mainLoop()
 
