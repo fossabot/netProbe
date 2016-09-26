@@ -8,7 +8,6 @@ server
 probe
 =====
 * add cpu temp in health
-* add job process statistics in the stat message
 * http probe can use a target IP address different than URL server name
 * DNS job
 
@@ -31,3 +30,4 @@ History
 * restart job from the server action
 * add an exit command for the main process to restart everything
 * don't run a job with active flag set to false
+* add job process statistics in the stat message
