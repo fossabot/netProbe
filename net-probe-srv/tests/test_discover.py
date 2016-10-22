@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-24 21:19:34 alex>
+# Time-stamp: <2016-10-22 12:34:10 alex>
 #
 
 import sys
@@ -96,7 +96,7 @@ def test_discover_2():
 
 # ---------------------------------------------
 def test_getProbes():
-    """/db/getProbes
+    """/admin/getProbes
 
     """
     global app
@@ -104,7 +104,7 @@ def test_getProbes():
     lDB.cleanDB()
 
     c = app.test_client()
-    rv = c.get("/db/getProbes")
+    rv = c.get("/admin/getProbes")
 
     j = json.loads(rv.data)
     if j['answer'] != "OK":
@@ -136,7 +136,7 @@ def test_discover_3():
     if j['answer'] != "OK":
         assert False, "should have found this host"
 
-    rv = c.get("/db/getProbes")
+    rv = c.get("/admin/getProbes")
 
     j = json.loads(rv.data)
     if j['answer'] != "OK" or j['probes'][0]['ipv4'] != "127.1.0.3":

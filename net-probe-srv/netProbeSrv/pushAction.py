@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-08-15 22:27:03 alex>
+# Time-stamp: <2016-10-22 12:18:18 alex>
 #
 
 """
@@ -18,7 +18,7 @@ import logging
 @app.route('/pushAction', methods=['POST'])
 def ws_pushAction():
     """ add an action for the uid
-    params : uid, action
+    params : uid, action, module
     actions : restart
     """
 

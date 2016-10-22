@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-24 21:53:10 alex>
+# Time-stamp: <2016-10-22 12:32:42 alex>
 #
 
 """
@@ -15,12 +15,12 @@ from liveDB import lDB
 # import time
 import logging
 
-@app.route('/db/getProbes', methods=['GET'])
+@app.route('/admin/getProbes', methods=['GET'])
 def ws_dbGetProbes():
     """ ask for the list of the probes in the system
     """
 
-    logging.info("/db/getProbes")
+    logging.info("/admin/getProbes")
 
     global lDB
 

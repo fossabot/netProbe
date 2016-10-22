@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-08-15 22:00:46 alex>
+# Time-stamp: <2016-10-22 12:34:34 alex>
 #
 
 import sys
@@ -40,7 +40,7 @@ def insertOneHost(id, probename, jobs, ipv4, ipv6):
     if j['answer'] != "OK":
         assert False, "should have found this host"
 
-    rv = c.get("/db/getProbes")
+    rv = c.get("/admin/getProbes")
 
     j = json.loads(rv.data)
     if j['answer'] != "OK":
