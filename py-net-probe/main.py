@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-09-22 12:18:12 alex>
+# Time-stamp: <2016-11-01 18:14:17 alex>
 #
 
 """
@@ -25,7 +25,7 @@ import json
 
 from probe import restartProbe, stopAllProbes, checkProbe, checkProbes, statsProbes
 
-aModules = ['icmp', 'health', 'http', 'iperf']
+aModules = ['icmp', 'health', 'http', 'iperf', 'temp']
 
 # ----------- parse args
 try:
@@ -221,7 +221,11 @@ def getConfig():
         bConnected = False
         return None
 
+    print(config)
+
     for c in config:
+        print(c)
+
         # update job or create
         if probeJobs.__contains__(c['id']):
             a = probeJobs[c['id']]

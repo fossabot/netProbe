@@ -7,14 +7,13 @@ server
 
 probe
 =====
-* add cpu temp in health
 * http probe can use a target IP address different than URL server name
 * DNS job
 
 raspberry
 =========
-* suppress the man pages
 * install watchdog
+* add vcgencmd display_power 0 (?)
 
 History
 =======
@@ -31,3 +30,4 @@ History
 * add an exit command for the main process to restart everything
 * don't run a job with active flag set to false
 * add job process statistics in the stat message
+* add cpu temp in health
