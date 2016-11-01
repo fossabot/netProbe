@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-05 17:33:54 alex>
+# Time-stamp: <2016-11-01 21:18:15 alex>
 #
 
 """
@@ -28,9 +28,6 @@ def ws_results():
     """
 
     logging.info("/results")
-
-    # global lDB
-    # global outputer
 
     if request.method != 'POST':
         return make_response(jsonify({"answer" : "KO"}), 300)

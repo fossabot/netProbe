@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-08-12 19:43:47 alex>
+# Time-stamp: <2016-11-01 21:17:41 alex>
 #
 
 """
@@ -103,12 +103,15 @@ class config(object):
         for p in conf['probe']:
             self.addHost(p)
 
-        # output
-        if conf.__contains__('output'):
-            iOutput = 0
-            for outputConf in conf['output']:
-                o = outputer[iOutput]
+        # clean outputer array before inserting new configuration
+        while (len(outputer) > 0):
+            outputer.pop()
 
+        # create a fake object for checking method name
+        o = output.output()
+
+        if conf.__contains__('output'):
+            for outputConf in conf['output']:
                 if outputConf['active'] == "True":
 
                     if not o.checkMethodName(outputConf['engine']):
@@ -116,27 +119,24 @@ class config(object):
                         assert False, "bad output name"
                     else:
                         if outputConf['engine'] == "debug":
-                            outputer[iOutput] = output.debug()
+                            outputer.append(output.debug())
 
                         if outputConf['engine'] == "elastic":
                             if outputConf.__contains__('parameters'):
-                                outputer[iOutput] = output.elastic(outputConf['parameters'][0])
+                                outputer.append(output.elastic(outputConf['parameters'][0]))
                             else:
                                 logging.error("elastic output without parameters, exiting")
                                 assert False, "missing parameters for elastic output"
 
                         if outputConf['engine'] == "logstash":
                             if outputConf.__contains__('parameters'):
-                                outputer[iOutput] = output.logstash(outputConf['parameters'][0])
+                                outputer.append(output.logstash(outputConf['parameters'][0]))
                             else:
                                 logging.error("logstash output without parameters, exiting")
                                 assert False, "missing parameters for logstash output"
 
-                        iOutput += 1
-                        outputer.append(output.output())
-
         else:
-            outputer[0] = output.debug()
+            outputer.append(output.debug())
 
         self.fileName = sFile
 
