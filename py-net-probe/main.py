@@ -1,13 +1,13 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-28 22:22:07 alex>
+# Time-stamp: <2016-11-01 18:14:17 alex>
 #
 
 """
  client module for the probe system
 """
 
-__version__ = "1.1.1"
+__version__ = "1.2"
 __date__ = "28/06/2016"
 __author__ = "Alex Chauvin"
 
@@ -23,13 +23,41 @@ import hostId
 import database
 import json
 
-from probe import restartProbe, stopAllProbes, checkProbe
+from probe import restartProbe, stopAllProbes, checkProbe, checkProbes, statsProbes
+
+aModules = ['icmp', 'health', 'http', 'iperf', 'temp']
+
+# ----------- parse args
+try:
+    import argparse
+    parser = argparse.ArgumentParser(description='raspberry net probe system')
+
+    parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level', nargs='?', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
+
+    args = parser.parse_args()
+
+except ImportError:
+    log.error('parse error')
+    exit()
 
 _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
-logging.basicConfig(format=_logFormat,
-                    level=logging.INFO)
+logLevel = logging.ERROR
+
+if args.log == 'INFO':
+    logLevel=logging.INFO
+if args.log == 'DEBUG':
+    logLevel=logging.DEBUG
+if args.log == 'WARNING':
+    logLevel=logging.WARNING
+if args.log == 'ERROR':
+    logLevel=logging.ERROR
+
+logging.basicConfig(format=_logFormat, level=logLevel)
 
 logging.info("starting probe")
+
+logging.info(" version {}".format(__version__))
+logging.debug("pid {}".format(os.getpid()))
 
 # check wether the uid is root (for icmp)
 if os.getuid() != 0:
@@ -124,9 +152,17 @@ def ping():
 
     global stats
 
-    if srv.ping():
-        logging.info("ping delta time = {:0.2f}ms".format(srv.getLastCmdDeltaTime()*1000))
-        stats.setVar("ping server (ms)", srv.getLastCmdDeltaTime()*1000)
+    r = srv.ping()
+
+    if r == None:
+        return
+
+    logging.info("ping delta time = {:0.2f}ms".format(srv.getLastCmdDeltaTime()*1000))
+    stats.setVar("ping server (ms)", srv.getLastCmdDeltaTime()*1000)
+
+    # action handle
+    if r.__contains__('action') and type(r['action']) == dict:
+        action(r['action'])
 
 # -----------------------------------------
 def showStatus():
@@ -169,8 +205,7 @@ def getConfig():
     """
     global probeJobs
     global bConnected
-
-    aModules = ['icmp', 'health', 'http', 'iperf']
+    global aModules
 
     if bConnected == False:
         return
@@ -186,7 +221,11 @@ def getConfig():
         bConnected = False
         return None
 
+    print(config)
+
     for c in config:
+        print(c)
+
         # update job or create
         if probeJobs.__contains__(c['id']):
             a = probeJobs[c['id']]
@@ -216,16 +255,6 @@ def getConfig():
             restartProbe(m, probeProcess)
 
 # -----------------------------------------
-def checkProbes():
-    """ check all started probes
-    """
-    global probeProcess
-
-    for k in probeProcess.keys():
-        if checkProbe(k, probeProcess) == False:
-            restartProbe(k, probeProcess)
-    
-# -----------------------------------------
 def mainLoop():
     """
     main scheduler loop
@@ -248,10 +277,41 @@ def trap_signal(sig, heap):
 
     logging.info("exit signal received, wait for next step")
 
-    stopAllProbes(probeProcess)
+    # stopAllProbes(probeProcess)
 
     bRunning = False
     bConnected = False
+
+#
+# -----------------------------------------
+def action(a):
+    global bRunning
+    global bConnected
+    global probeProcess
+    global aModules
+
+    if a['name'] == "restart":
+        args = a['args']
+        if args['module'] == "all":
+            logging.info("restart received from server, exiting")
+            # stopAllProbes(probeProcess)
+
+            bRunning = False
+            bConnected = False
+            return
+
+        if args['module'] == "job":
+            job = args['job']
+            logging.info("restart job {} received from server".format(job))
+
+            if job in aModules:
+                restartProbe(job, probeProcess)
+                return
+            else:
+                logging.error("job not found {}".format(job))
+                return
+
+    logging.info("action not handled {}".format(a))
 
 # -----------------------------------------
 def popResults(_db):
@@ -298,9 +358,15 @@ while bRunning:
     scheduler.add("get configuration", 60, getConfig, None, 2)
 
     scheduler.add("push results", 8, popResults, db, 2)
-    scheduler.add("ping server", 60, ping, None, 2)
+    scheduler.add("ping server", 15, ping, None, 2)
     # scheduler.add("show status", 300, showStatus, None, 2)
-    scheduler.add("check probe", 10, checkProbes)
-    scheduler.add("stats", 60, stats.push, srv, 2)
+    scheduler.add("check probe", 10, checkProbes, probeProcess)
+
+    scheduler.add("stats probes", 60, statsProbes, [probeProcess, stats], 2)
+    scheduler.add("stats", 60, stats.push, srv)
 
     mainLoop()
+
+logging.info("stop all jobs")
+stopAllProbes(probeProcess)
+logging.info("exiting")

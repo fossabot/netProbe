@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-28 22:01:55 alex>
+# Time-stamp: <2016-09-22 12:18:35 alex>
 #
 
 """ probe management module """
@@ -8,7 +8,8 @@
 import logging
 import subprocess
 import time
-# import pprint
+import psutil
+import pprint
 
 # -----------------------------------------
 def restartProbe(jobName, probeProcess):
@@ -91,3 +92,71 @@ def checkProbe(jobName, probeProcess):
             return False
 
     return True
+
+# -----------------------------------------
+def checkProbes(probeProcess):
+    """ check all started probes
+    """
+
+    for k in probeProcess.keys():
+        if checkProbe(k, probeProcess) == False:
+            restartProbe(k, probeProcess)
+
+# -----------------------------------------
+def statsProbes(a):
+    """
+    gather stats from all started probes
+    """
+
+    (probeProcess, stats) = a
+
+    for k in probeProcess.keys():
+        if checkProbe(k, probeProcess) == True:
+            statsProbe(k, probeProcess, stats)
+
+# -----------------------------------------
+def statsProbe(jobName, probeProcess, stats):
+    """
+    get stats for the job process in order to push these towards server
+    """
+
+    logging.info("gather stats for probe {}".format(jobName))
+
+    if probeProcess.__contains__(jobName):
+        pid = probeProcess[jobName]['handler'].pid
+        p = psutil.Process(pid) # may raise error NoSuchProcess
+
+        stats.setVar("stats-{}-{}".format(jobName, "create_time"), int(p.create_time()))
+        stats.setVar("stats-{}-{}".format(jobName, "nice"), p.nice())
+
+        a = p.io_counters()
+        stats.setVar("stats-{}-{}".format(jobName, "io_read_count"), a[0])
+        stats.setVar("stats-{}-{}".format(jobName, "io_write_count"),a[1])
+        stats.setVar("stats-{}-{}".format(jobName, "io_read_bytes"), a[2])
+        stats.setVar("stats-{}-{}".format(jobName, "io_write_bytes"), a[3])
+
+        a = p.num_ctx_switches()
+        stats.setVar("stats-{}-{}".format(jobName, "ctx_switch"), a[0]+a[1])
+
+        stats.setVar("stats-{}-{}".format(jobName, "fds"), p.num_fds())
+        stats.setVar("stats-{}-{}".format(jobName, "threads"), p.num_threads())
+        
+        a = p.cpu_times()
+        stats.setVar("stats-{}-{}".format(jobName, "cpu_times_user"), a[0])
+        stats.setVar("stats-{}-{}".format(jobName, "cpu_times_system"), a[1])
+
+        stats.setVar("stats-{}-{}".format(jobName, "cpu_cores"), len(p.cpu_affinity()))
+
+        a = p.memory_info()
+        stats.setVar("stats-{}-{}".format(jobName, "mem_rss"), a[0])
+        stats.setVar("stats-{}-{}".format(jobName, "mem_vms"), a[1])
+        stats.setVar("stats-{}-{}".format(jobName, "mem_shared"), a[2])
+        stats.setVar("stats-{}-{}".format(jobName, "mem_text"), a[3])
+        stats.setVar("stats-{}-{}".format(jobName, "mem_lib"), a[4])
+        stats.setVar("stats-{}-{}".format(jobName, "mem_data"), a[5])
+
+        stats.setVar("stats-{}-{}".format(jobName, "mem_percent"), p.memory_percent())
+
+        stats.setVar("stats-{}-{}".format(jobName, "connections"), len(p.connections()))
+
+        stats.setVar("stats-{}-{}".format(jobName, "open_files"), len(p.open_files()))

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-19 11:45:30 alex>
+# Time-stamp: <2016-08-12 20:39:46 alex>
 #
 
 """
@@ -85,12 +85,12 @@ class probe_health(probemain):
 
         # -------- NET  --------------
         ifName = self.getEthName()
-
-        a = psutil.net_io_counters(pernic=True)
-        result['health-netio_bytes_sent'] = a[ifName][0]
-        result['health-netio_bytes_recv'] = a[ifName][1]
-        result['health-netio_pkts_sent'] = a[ifName][2]
-        result['health-netio_pkts_recv'] = a[ifName][3]
+        if ifName != '':
+            a = psutil.net_io_counters(pernic=True)
+            result['health-netio_bytes_sent'] = a[ifName][0]
+            result['health-netio_bytes_recv'] = a[ifName][1]
+            result['health-netio_pkts_sent'] = a[ifName][2]
+            result['health-netio_pkts_recv'] = a[ifName][3]
 
         # pprint.pprint(result)
 

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-28 22:16:01 alex>
+# Time-stamp: <2016-08-12 20:30:09 alex>
 #
 
 """
@@ -18,10 +18,6 @@ sys.path.insert(0, os.getcwd())
 from netProbe import ipConf
 import sched
 import database
-
-__version__ = "1.3"
-__date__ = "19/06/2016"
-__author__ = "Alex Chauvin"
 
 class probemain(object):
     """
@@ -62,7 +58,7 @@ class probemain(object):
         self.ip = ipConf()
         
         if self.ip.hasDefaultRoute() == False:
-            assert False, "no default route, abort"
+            logging.warning("no default route")
 
     # -----------------------------------------
     def getEthName(self):
@@ -120,11 +116,16 @@ class probemain(object):
         config = self.db.getJobs(name)
 
         for c in config:
-            if c['job'] == name:
-                data = c['data']
-                if testf(data):
-                    self.addJob(int(c['freq']), f, data)
-                    yield c
+            if c['active'] == "True":
+                if c['job'] == name:
+                    data = c['data']
+                    if testf(data):
+                        self.addJob(int(c['freq']), f, data)
+                        yield c
+                else:
+                    logging.error("should not happen!")
+            else:
+                logging.info("job inactive")
 
     # -----------------------------------------
     def fTestNone(self, data):

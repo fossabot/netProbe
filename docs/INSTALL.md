@@ -54,10 +54,21 @@ Install the probe with ansible
 ==============================
 
 * install a raspbian lite image on the probe memory card, connect on network and boot (requires DHCP and internet access)
-* need an ssh key from the ansible user installed in id_rsa.pub
-* find the raspberry ip address and install it in the files/hosts piprobes group
+* need an ssh key from the ansible user installed in ~/.ssh/id_rsa.pub
+* ssh to the pi with pi login in order to add its fingerprint in the known_hosts file (password should be raspberry)
+* find the raspberry ip address and install it in the files/hosts piprobes group, in the new section
 * exec the init playbook, this will install ssh key for future use and upgrade the pi version if required
 
+
+All in one
+----------
+```
+ansible-playbook --ask-pass -i files/hosts playbooks/pi-all.yml
+option: --limit %ip of the pi%
+```
+
+Step by Step
+------------
 ```
 ansible-playbook --ask-pass -i files/hosts playbooks/pi-init.yml --limit %ip of the pi%
 ```

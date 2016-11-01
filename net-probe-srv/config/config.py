@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-12 21:47:26 alex>
+# Time-stamp: <2016-11-01 21:17:41 alex>
 #
 
 """
@@ -24,6 +24,7 @@ class config(object):
         """
         self.aHostTable = {}
         self.outputMethodName = "none"
+        self.fileName = "none"
 
         return
 
@@ -50,6 +51,10 @@ class config(object):
 
         if hostData.__contains__('jobs'):
             jobs = hostData['jobs']
+            # check if active present, or put it to True
+            for j in jobs:
+                if not j.__contains__('active'):
+                    j['active'] = "True"
         else:
             jobs = {}
 
@@ -60,7 +65,8 @@ class config(object):
                 h = self.aHostTable[hkey]
 
                 if h.__contains__('probename') and h['probename'] == probename:
-                    logging.error("this probename is already registered: {}".format(probename))
+                    self.aHostTable[hkey] = {"jobs" : jobs, "probename": probename}
+                    logging.info("update probename {}".format(probename))
                     return
 
         else:
@@ -76,10 +82,12 @@ class config(object):
 
         """
 
+        logging.info("load config file {}".format(sFile))
+
         try:
             f = file(sFile, 'r')
         except IOError:
-            logging.error("accessing config file {}".format(sFile))
+            logging.error("cannot access config file {}".format(sFile))
             return False
 
         c = f.read()
@@ -95,12 +103,15 @@ class config(object):
         for p in conf['probe']:
             self.addHost(p)
 
-        # output
-        if conf.__contains__('output'):
-            iOutput = 0
-            for outputConf in conf['output']:
-                o = outputer[iOutput]
+        # clean outputer array before inserting new configuration
+        while (len(outputer) > 0):
+            outputer.pop()
 
+        # create a fake object for checking method name
+        o = output.output()
+
+        if conf.__contains__('output'):
+            for outputConf in conf['output']:
                 if outputConf['active'] == "True":
 
                     if not o.checkMethodName(outputConf['engine']):
@@ -108,29 +119,38 @@ class config(object):
                         assert False, "bad output name"
                     else:
                         if outputConf['engine'] == "debug":
-                            outputer[iOutput] = output.debug()
+                            outputer.append(output.debug())
 
                         if outputConf['engine'] == "elastic":
                             if outputConf.__contains__('parameters'):
-                                outputer[iOutput] = output.elastic(outputConf['parameters'][0])
+                                outputer.append(output.elastic(outputConf['parameters'][0]))
                             else:
                                 logging.error("elastic output without parameters, exiting")
                                 assert False, "missing parameters for elastic output"
 
                         if outputConf['engine'] == "logstash":
                             if outputConf.__contains__('parameters'):
-                                outputer[iOutput] = output.logstash(outputConf['parameters'][0])
+                                outputer.append(output.logstash(outputConf['parameters'][0]))
                             else:
                                 logging.error("logstash output without parameters, exiting")
                                 assert False, "missing parameters for logstash output"
 
-                        iOutput += 1
-                        outputer.append(output.output())
-
         else:
-            outputer[0] = output.debug()
+            outputer.append(output.debug())
+
+        self.fileName = sFile
 
         logging.info("config file loaded in DB {}".format(sFile))
+
+    # ----------------------------------------------------------
+    def reload(self):
+        """reload the configuration
+
+        """
+        if self.fileName == "none":
+            assert False, "no file loaded previously"
+
+        self.loadFile(self.fileName)
 
     # ----------------------------------------------------------
     def getConfigForHost(self, sId):

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-22 21:49:12 alex>
+# Time-stamp: <2016-07-22 20:28:26 alex>
 #
 
 import sys
@@ -8,6 +8,8 @@ import os
 import nose
 
 sys.path.append(os.getcwd())
+
+import logging
 
 from liveDB import lDB
 
@@ -23,7 +25,8 @@ def test_getUniqueId():
     if _id != 1:
         assert False, "should return 1 as first id"
 
-    print lDB.dump()
+    # print lDB.dump()
+    lDB.cleanDB()
 
 def test_getUniqueId_2():
     """
@@ -44,6 +47,7 @@ def test_getUniqueId_2():
 
     if _id != 1:
         assert False, "should return 1 as first id"
+    lDB.cleanDB()
 
 def test_getHost():
     """ getHostByUid
@@ -64,6 +68,7 @@ def test_getHost():
 
     if _sHost != "test":
         assert False, "should return name of the host"
+    lDB.cleanDB()
 
 def test_getHost_not():
     """ getHostByUid return false on unknown host
@@ -84,6 +89,7 @@ def test_getHost_not():
 
     if _sHost != None:
         assert False, "should return None"
+    lDB.cleanDB()
 
 def test_getHostContent():
     """ getHostContentByUid
@@ -105,9 +111,14 @@ def test_getHostContent():
     if _sHost['b'] != 2:
         assert False, "should return 2 as content of the b part"
 
+    lDB.cleanDB()
 
-# test_getUniqueId()
-# test_getUniqueId_2()
-# test_getHost()
-# test_getHost_not()
-# test_getHostContent()
+if __name__ == '__main__':
+    _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+    logging.basicConfig(format=_logFormat,
+                        level=logging.INFO)
+    test_getUniqueId()
+    test_getUniqueId_2()
+    test_getHost()
+    test_getHost_not()
+    test_getHostContent()

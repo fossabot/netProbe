@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-12 21:41:42 alex>
+# Time-stamp: <2016-07-24 21:55:19 alex>
 #
 
 """
@@ -53,14 +53,14 @@ class elastic(output):
         except:
             assert False, "cannot find elastic server, exiting"
 
-        res = self.es.indices.create(index=sConfIndex,
-                                     body={
-                                         'settings': {
-                                             'number_of_shards': iConfShard,
-                                             'number_of_replicas': iConfReplica
-                                         }
-                                     },
-                                     ignore=400)
+        self.es.indices.create(index=sConfIndex,
+                               body={
+                                   'settings': {
+                                       'number_of_shards': iConfShard,
+                                       'number_of_replicas': iConfReplica
+                                   }
+                               },
+                               ignore=400)
 
     # ----------------------------------------------------------
     def send(self, data):
