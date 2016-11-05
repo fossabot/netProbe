@@ -10,6 +10,11 @@ pip install elasticsearch
 
 add iperf3
 
+need fpm :
+https://github.com/jordansissel/fpm
+yum install ruby-devel gcc make rpm-build
+gem install fpm
+
 on the probe
 ------------
 ```
