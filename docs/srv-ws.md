@@ -15,6 +15,7 @@
 the action is added to the host action list, action will be added to
 the next ping request from the probe
 
+
 ## ping
 
 * method: POST
@@ -40,17 +41,20 @@ DB
   * answer: OK
   * uid
 
+
 ## admin/reload
 
 * method: POST
 
 reload the configuration file
 
+
 ## version
 
 returns the version information of the server
 
 * method: GET
+
 
 ## admin/getProbes
 

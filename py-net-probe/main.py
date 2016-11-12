@@ -1,14 +1,14 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-01 18:14:17 alex>
+# Time-stamp: <2016-11-12 16:18:41 alex>
 #
 
 """
  client module for the probe system
 """
 
-__version__ = "1.2"
-__date__ = "28/06/2016"
+__version__ = "1.3.1"
+__date__ = "12/11/16-16:03:04"
 __author__ = "Alex Chauvin"
 
 import time
@@ -135,7 +135,7 @@ def serverConnect():
 
         # send identification to get id & certificate
         #
-        if srv.discover(hid.get(), ip.getIfIPv4(), ip.getIfIPv6()) == True:
+        if srv.discover(hid.get(), ip.getIfIPv4(), ip.getIfIPv6(), __version__) == True:
             bConnected = True
 
         if bConnected and srv.ping() == False:

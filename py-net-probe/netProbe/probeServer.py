@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-08-15 21:27:13 alex>
+# Time-stamp: <2016-11-12 16:19:15 alex>
 #
 
 """
@@ -148,7 +148,7 @@ class probeServer(object):
         return self.bServerAvail
 
     # -----------------------------------------------------------------
-    def discover(self, sHostId, sIpV4, sIpV6):
+    def discover(self, sHostId, sIpV4, sIpV6, sVersion):
         """
         calls the discover web service on the server in order to
         announce the probe itself
@@ -156,12 +156,14 @@ class probeServer(object):
         :param sHostId: hostid string to uniquely identify the probe
         :param sIpV4: IP v4 address of the probe
         :param sIpV6: IP v6 address of the probe
+        :param sVersion: current version of the probe software
         """
 
         data = {
             'hostId':sHostId,
             'ipv4':sIpV4,
-            'ipv6':sIpV6
+            'ipv6':sIpV6,
+            'version':sVersion
         }
 
         req = self.sSrvBaseURL+'/discover'

@@ -4,6 +4,8 @@ server
 * push regular stats to back office on probe connected or discovered, last hello...
 * schedule on job definition
 * configuration with fields by probe, not only globals
+* upgrade the software to the probe
+* clean the probe DB after inactivity
 
 probe
 =====
@@ -17,6 +19,10 @@ raspberry
 
 History
 =======
+
+1.3
+-----
+
 
 1.2
 -----

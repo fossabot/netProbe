@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-24 22:22:08 alex>
+# Time-stamp: <2016-11-12 16:32:57 alex>
 #
 
 """
@@ -11,7 +11,7 @@
 
 from flask import make_response, jsonify, request
 from netProbeSrv import app
-#from liveDB import lDB
+from liveDB import lDB
 # import time
 from config import conf
 import logging
@@ -29,6 +29,25 @@ def ws_adminReload():
 
     r = {
         "answer" : "OK"
+    }
+
+    return make_response(jsonify(r), 200)
+
+# -----------------------------------------------
+@app.route('/admin/getProbes', methods=['GET'])
+def ws_dbGetProbes():
+    """ ask for the list of the probes in the system
+    """
+
+    logging.info("/admin/getProbes")
+
+    global lDB
+
+    p = lDB.getListProbes()
+
+    r = {
+        "answer" : "OK",
+        "probes" : p
     }
 
     return make_response(jsonify(r), 200)

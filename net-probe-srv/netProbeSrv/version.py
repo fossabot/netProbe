@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-22 23:25:12 alex>
+# Time-stamp: <2016-11-12 16:11:28 alex>
 #
 
 """
@@ -12,8 +12,8 @@ from netProbeSrv import app
 
 aVersion = {
     "answer" : "OK",
-    "version" : "1.0.2",
-    "date" : "2016/05/22",
+    "version" : "1.3",
+    "date" : "12/11/2016",
     "author" : "Alex Chauvin"
 }
 

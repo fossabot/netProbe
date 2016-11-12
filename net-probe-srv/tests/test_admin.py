@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-24 22:49:07 alex>
+# Time-stamp: <2016-11-12 16:32:08 alex>
 #
 
 import sys
@@ -20,7 +20,7 @@ from liveDB import lDB
 from netProbeSrv import app
 from netProbeSrv import main, ping, version, discover, results
 from netProbeSrv import job
-from netProbeSrv import dbGetProbes, pushAction, admin
+from netProbeSrv import pushAction, admin
 
 # ---------------------------------------------
 def test_admin_reload():
