@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-12 16:30:22 alex>
+# Time-stamp: <2016-11-12 16:59:59 alex>
 #
 
 """
@@ -68,6 +68,7 @@ from netProbeSrv import app
 from netProbeSrv import main, ping, version, discover, results
 from netProbeSrv import job
 from netProbeSrv import pushAction, admin
+from netProbeSrv import upgrade
 
 # -----------------------------------------
 def trap_HUP_signal(sig, heap):

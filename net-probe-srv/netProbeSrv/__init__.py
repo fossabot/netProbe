@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-05-30 21:20:22 alex>
+# Time-stamp: <2016-11-12 17:17:24 alex>
 #
 
 """
@@ -15,5 +15,3 @@
 from flask import Flask
 
 app = Flask(__name__)
-
-# print res
