@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2016-11-12 16:02:40 alex>
+# Time-stamp: <2016-11-13 18:22:07 alex>
 #
 
 all:
@@ -19,9 +19,9 @@ deb: clean
 	@awk '/^__version/ { $$0="__version__ = \"'`cat ../VERSION`'\"" }; /^__date__/ { $$0="__date__ = \"'`date +%0d/%0m/%y-%H:%M:%S`'\"" } ; { print }' < main.py > /tmp/main.py
 	@cp /tmp/main.py main.py
 	@mkdir -p deb/home/pi/py-net-probe
-	@cp -r *py netProbe probelib sched database hostId deb/home/pi/py-net-probe
+	@cp -r start.sh *py netProbe probelib sched database hostId deb/home/pi/py-net-probe
 	@rm -f netprobe_`cat ../VERSION`_all.deb
-	fpm -s dir -t deb -n "netprobe" -a noarch --description "netProbe Pi client" -v `cat ../VERSION` --before-install deb/pre.sh --after-install deb/post.sh -C deb --deb-no-default-config-files home
+	fpm -s dir -t deb -n "netprobe" -a noarch --description "netProbe Pi client" -v `cat ../VERSION` --before-install deb/pre.sh --after-install deb/post.sh -C deb --deb-no-default-config-files --license GPL-3.0 --maintainer "ach@meta-x.org" --url "https://github.com/achauvinhameau/netProbe" --vendor none home
 
 clean:
 	@rm -f *pyc netProbe/*pyc sched/*pyc hostId/*pyc database/*pyc tests/*pyc probelib/*pyc

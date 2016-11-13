@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-12 16:19:15 alex>
+# Time-stamp: <2016-11-13 20:31:20 alex>
 #
 
 """
@@ -14,10 +14,6 @@ True
 True
 """
 
-__version__ = "1.1"
-__date__ = "10/04/2016"
-__author__ = "Alex Chauvin"
-
 import socket
 import requests
 import time
@@ -26,6 +22,10 @@ import logging
 # import pprint
 import zlib
 from base64 import b64encode
+import os
+import re
+import time
+from subprocess import call,check_output, CalledProcessError
 
 class probeServer(object):
     """class to talk to the probe server"""
@@ -261,3 +261,63 @@ class probeServer(object):
             return None
 
         return True
+
+    # -----------------------------------------------------------------
+    def upgrade(self):
+        """upgrade the software
+        """
+
+        logging.info("check for software upgrade")
+        s = check_output(["uname", "-m"])
+        if re.match("arm", s) == None:
+            logging.info(" avoid on non ARM platform")
+            return
+
+        try:
+            data = {
+                'uid' : self.uid
+            }
+            r = self.session.post(self.sSrvBaseURL+'/upgrade', data, stream=True)
+            if r.status_code == 201:
+                logging.info("no need to upgrade")
+                return
+
+            if r.status_code != 200:
+                logging.info("error in upgrade")
+                return
+
+            logging.info("turning FS to RW")
+
+            call(["mount", "-o", "remount,rw", "/"])
+
+            with open("/home/pi/new.deb", 'wb') as fd:
+                for chunk in r.iter_content(1024):
+                    fd.write(chunk)
+
+        except requests.ConnectionError:
+            logging.error("reaching srv : connection refused")
+
+
+        try:
+            logging.info("check downloaded package")
+            s = check_output(["/usr/bin/dpkg-deb", "-f", "/home/pi/new.deb"])
+            if re.match("Package: netprobe", s) != None:
+                # package is correct, install it
+                logging.info("install new version")
+                call(["dpkg", "-i", "/home/pi/new.deb"])
+            else:
+                logging.error("bad package deb")
+
+        except CalledProcessError,e:
+            logging.error("error in call for dpkg")
+            print(e)
+            exit()
+            None
+
+        os.unlink("/home/pi/new.deb")
+
+        logging.info("turning FS back to RO")
+        call(["sync"])
+
+        logging.info("exiting")
+        exit()
