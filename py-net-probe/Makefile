@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2016-11-13 18:22:07 alex>
+# Time-stamp: <2016-11-20 10:40:17 alex>
 #
 
 all:
@@ -27,6 +27,7 @@ clean:
 	@rm -f *pyc netProbe/*pyc sched/*pyc hostId/*pyc database/*pyc tests/*pyc probelib/*pyc
 	@rm -f *~ netProbe/*~ sched/*~ hostId/*~ database/*~ tests/*~ probelib/*~
 	@rm -rf deb/home
+	@rm -f docker/*~
 
 test: clean
 	@nosetests tests

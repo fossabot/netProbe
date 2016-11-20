@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-19 13:45:35 alex>
+# Time-stamp: <2016-11-19 11:14:03 alex>
 #
 
 """
@@ -23,16 +23,17 @@ class database(object):
     database class based on redis (db=1)
     """
 
-    def __init__(self):
+    def __init__(self, host=None):
         """
         constructor
         """
         self.backOff = 1
         self.db = None
         self.dbRedisId = 1
-        self.connect()
 
-    def connect(self):
+        self.connect(host)
+
+    def connect(self, host=None):
         """
         connect to the redis server
         wait until it connects
@@ -40,7 +41,11 @@ class database(object):
 
         while True:
             logging.info("connect to redis")
-            self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2)
+            if host == None:
+                self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2)
+            else:
+                self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2, host=host)
+
             try:
                 self.db.ping()
                 break

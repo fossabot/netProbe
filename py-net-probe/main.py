@@ -1,14 +1,14 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-13 20:28:41 alex>
+# Time-stamp: <2016-11-19 11:16:58 alex>
 #
 
 """
  client module for the probe system
 """
 
-__version__ = "1.3.1b"
-__date__ = "13/11/16-20:31:51"
+__version__ = "1.3.1c"
+__date__ = "19/11/16-20:27:01"
 __author__ = "Alex Chauvin"
 
 import time
@@ -33,6 +33,8 @@ try:
     parser = argparse.ArgumentParser(description='raspberry net probe system')
 
     parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level', nargs='?', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
+
+    parser.add_argument('--redis', '-r', metavar='none', help='redis server', default=None, nargs='?')
 
     args = parser.parse_args()
 
@@ -69,7 +71,7 @@ stats = netProbe.stats()
 bConnected = False
 bRunning = True
 probeJobs = {}
-db = database.database()
+db = database.database(args.redis)
 probeProcess = {}
 
 stats.setVar("probe version", __version__)
