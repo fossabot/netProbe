@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-17 22:47:07 alex>
+# Time-stamp: <2016-11-20 11:44:57 alex>
 #
 
 """
@@ -41,8 +41,6 @@ def ws_ping():
             return make_response(jsonify({"answer" : "host not found"}), 400)
 
         lDB.updateHost(host, {"last" : time.time()})
-        # logging.info("conf : \n%s", pprint.pformat(conf.dump()))
-        # logging.info("DB : \n%s", pprint.pformat(lDB.dump()))
 
         a = lDB.getAction(host)
         if a != None:

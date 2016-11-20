@@ -1,13 +1,11 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
+# Time-stamp: <2016-11-20 11:40:03 alex>
+#
 
 """
 scheduler for the jobs
 """
-
-__version__ = "1.1"
-__date__ = "26/06/2016"
-__author__ = "Alex Chauvin"
 
 import time
 import random
