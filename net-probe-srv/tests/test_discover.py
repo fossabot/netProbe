@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-10-22 12:34:10 alex>
+# Time-stamp: <2016-11-12 16:53:26 alex>
 #
 
 import sys
@@ -19,7 +19,8 @@ from liveDB import lDB
 from netProbeSrv import app
 from netProbeSrv import main, ping, version, discover, results
 from netProbeSrv import job
-from netProbeSrv import dbGetProbes, pushAction
+from netProbeSrv import pushAction
+from netProbeSrv import admin
 
 # ---------------------------------------------
 def test_discover_get():
@@ -62,7 +63,7 @@ def test_discover_1():
     lDB.cleanDB()
 
     c = app.test_client()
-    rv = c.post("/discover", data=dict(hostId="x1",ipv4="127.1.0.1",ipv6="::1"))
+    rv = c.post("/discover", data=dict(hostId="x1",ipv4="127.1.0.1",ipv6="::1",version="0.0"))
 
     j = json.loads(rv.data)
     if j['answer'] != "KO" and j['reason'] != "not found":
@@ -88,7 +89,7 @@ def test_discover_2():
                               "data" : {}}]})
 
     c = app.test_client()
-    rv = c.post("/discover", data=dict(hostId="x2",ipv4="127.1.0.2",ipv6="::1"))
+    rv = c.post("/discover", data=dict(hostId="x2",ipv4="127.1.0.2",ipv6="::1",version="0.0"))
 
     j = json.loads(rv.data)
     if j['answer'] != "OK":
@@ -101,12 +102,18 @@ def test_getProbes():
     """
     global app
     global lDB
+
+    # clean DB first
     lDB.cleanDB()
 
     c = app.test_client()
     rv = c.get("/admin/getProbes")
 
     j = json.loads(rv.data)
+    if not j.__contains__('answer'):
+        print(j)
+        assert False, "no answer"
+
     if j['answer'] != "OK":
         assert False, "db should be browsable"
 
@@ -130,7 +137,7 @@ def test_discover_3():
                               "data" : {}}]})
 
     c = app.test_client()
-    rv = c.post("/discover", data=dict(hostId="x3",ipv4="127.1.0.3",ipv6="::3"))
+    rv = c.post("/discover", data=dict(hostId="x3",ipv4="127.1.0.3",ipv6="::3",version="0.0"))
 
     j = json.loads(rv.data)
     if j['answer'] != "OK":
@@ -143,6 +150,38 @@ def test_discover_3():
         assert False, "probe not found"
 
 # ---------------------------------------------
+def test_discover_4():
+    """/discover 127.1.0.4 in probe list with good version
+    check with ws getProbes
+
+    """
+    global app
+    global conf
+    global lDB
+    lDB.cleanDB()
+
+    conf.addHost( {"id" : "x4",
+                   "probename": "test_db4",
+                   "jobs" : [{"id" : 1,
+                              "job" : "health",
+                              "freq" : 10,
+                              "version" : 1,
+                              "data" : {}}]})
+
+    c = app.test_client()
+    rv = c.post("/discover", data=dict(hostId="x4",ipv4="127.1.0.4",ipv6="::4",version="1.3"))
+
+    j = json.loads(rv.data)
+    if j['answer'] != "OK":
+        assert False, "should have found this host"
+
+    rv = c.get("/admin/getProbes")
+
+    j = json.loads(rv.data)
+    if j['answer'] != "OK" or j['probes'][0]['version'] != "1.3":
+        assert False, "probe not found with good version"
+
+# ---------------------------------------------
 def all(b=True):
     if b:
         test_discover_get()
@@ -150,7 +189,8 @@ def all(b=True):
         test_discover_1()
         test_discover_2()
         test_getProbes()
-    test_discover_3()
+        test_discover_3()
+    test_discover_4()
 
 # ---------------------------------------------
 if __name__ == '__main__':

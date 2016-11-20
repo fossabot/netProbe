@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-10-22 12:34:34 alex>
+# Time-stamp: <2016-11-12 16:54:26 alex>
 #
 
 import sys
@@ -19,7 +19,8 @@ from liveDB import lDB
 from netProbeSrv import app
 from netProbeSrv import main, ping, version, discover, results
 from netProbeSrv import job
-from netProbeSrv import dbGetProbes, pushAction
+from netProbeSrv import pushAction
+from netProbeSrv import admin
 
 # ---------------------------------------------
 def insertOneHost(id, probename, jobs, ipv4, ipv6):
@@ -34,7 +35,7 @@ def insertOneHost(id, probename, jobs, ipv4, ipv6):
                    "jobs" : jobs} )
 
     c = app.test_client()
-    rv = c.post("/discover", data=dict(hostId=id,ipv4=ipv4,ipv6=ipv6))
+    rv = c.post("/discover", data=dict(hostId=id,ipv4=ipv4,ipv6=ipv6,version="0.0"))
 
     j = json.loads(rv.data)
     if j['answer'] != "OK":

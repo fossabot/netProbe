@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-08-12 19:51:22 alex>
+# Time-stamp: <2016-11-12 16:54:50 alex>
 #
 
 import sys
@@ -147,7 +147,7 @@ def test_active_flag():
     c = app.test_client()
 
     # register the probe
-    rv = c.post("/discover", data=dict(hostId="xx6",ipv4="127.1.0.2",ipv6="::1"))
+    rv = c.post("/discover", data=dict(hostId="xx6",ipv4="127.1.0.2",ipv6="::1",version="0.0"))
     j = json.loads(rv.data)
     if j['answer'] != "OK":
         assert False, "should have found this host"

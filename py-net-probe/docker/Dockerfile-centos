@@ -1,6 +1,6 @@
 # Docker file for testing the probe
 #
-# Time-stamp: <2016-05-05 15:50:08 alex>
+# Time-stamp: <2016-11-19 09:48:41 alex>
 #
 
 FROM centos:7

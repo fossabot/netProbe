@@ -1,14 +1,14 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-01 18:14:17 alex>
+# Time-stamp: <2016-11-19 11:16:58 alex>
 #
 
 """
  client module for the probe system
 """
 
-__version__ = "1.2"
-__date__ = "28/06/2016"
+__version__ = "1.3.1c"
+__date__ = "19/11/16-20:27:01"
 __author__ = "Alex Chauvin"
 
 import time
@@ -33,6 +33,8 @@ try:
     parser = argparse.ArgumentParser(description='raspberry net probe system')
 
     parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level', nargs='?', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
+
+    parser.add_argument('--redis', '-r', metavar='none', help='redis server', default=None, nargs='?')
 
     args = parser.parse_args()
 
@@ -69,7 +71,7 @@ stats = netProbe.stats()
 bConnected = False
 bRunning = True
 probeJobs = {}
-db = database.database()
+db = database.database(args.redis)
 probeProcess = {}
 
 stats.setVar("probe version", __version__)
@@ -135,7 +137,7 @@ def serverConnect():
 
         # send identification to get id & certificate
         #
-        if srv.discover(hid.get(), ip.getIfIPv4(), ip.getIfIPv6()) == True:
+        if srv.discover(hid.get(), ip.getIfIPv4(), ip.getIfIPv6(), __version__) == True:
             bConnected = True
 
         if bConnected and srv.ping() == False:
@@ -355,15 +357,19 @@ while bRunning:
     serverConnect()
 
     getConfig()
-    scheduler.add("get configuration", 60, getConfig, None, 2)
+    scheduler.add("get configuration", 3600, getConfig, None, 2)
 
     scheduler.add("push results", 8, popResults, db, 2)
-    scheduler.add("ping server", 15, ping, None, 2)
+    scheduler.add("ping server", 60, ping, None, 2)
+
     # scheduler.add("show status", 300, showStatus, None, 2)
+
     scheduler.add("check probe", 10, checkProbes, probeProcess)
 
     scheduler.add("stats probes", 60, statsProbes, [probeProcess, stats], 2)
     scheduler.add("stats", 60, stats.push, srv)
+
+    scheduler.add("upgrade", 3600, srv.upgrade, None)
 
     mainLoop()
 

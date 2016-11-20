@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-22 20:31:04 alex>
+# Time-stamp: <2016-11-12 16:20:13 alex>
 #
 
 """
@@ -31,13 +31,15 @@ def ws_discover():
     if request.method == 'POST':
         if not (request.form.__contains__('hostId') and 
                 request.form.__contains__('ipv4') and 
-                request.form.__contains__('ipv6')):
+                request.form.__contains__('ipv6') and
+                request.form.__contains__('version') ):
             logging.error("probe passing bad args")
             return make_response(jsonify({"answer" : "missing argument"}), 400)
 
         _sHostId = request.form['hostId']
         _sIpv4 = request.form['ipv4']
         _sIpv6 = request.form['ipv6']
+        _sVersion = request.form['version']
 
         # if the probe is in the configuration db
         # update the probe db
@@ -49,7 +51,8 @@ def ws_discover():
                                       'discoverTime': time.time(),
                                       'last': time.time(),
                                       'ipv4' : _sIpv4,
-                                      'ipv6' : _sIpv6})
+                                      'ipv6' : _sIpv6,
+                                      'version' : _sVersion})
 
             return make_response(jsonify({"answer" : "OK",
                                           "uid" : _id}), 200)

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-24 21:58:21 alex>
+# Time-stamp: <2016-11-12 16:35:43 alex>
 #
 
 """
@@ -89,6 +89,19 @@ class liveDB(object):
 
         return None
 
+
+    # ----------------------------------------------------------
+    def getHostVersionByUid(self, uid):
+        """return Host version by uid
+
+        """
+
+        a = self.getHostContentByUid(uid)
+        if a == None:
+            return None
+
+        return a['version']
+
     # ----------------------------------------------------------
     def getConfigForHost(self, host):
         """ return the probe config """
@@ -111,6 +124,7 @@ class liveDB(object):
             r.append({"uid" : s['uid'],
                       "ipv4" : s['ipv4'],
                       "ipv6" : s['ipv6'],
+                      "version" : s['version'],
                       "last" : int(time.time() - s['last'])})
 
         return r

@@ -1,8 +1,15 @@
+/.gitignore
 /ansible/files/netprobe.tgz
 /net-probe-srv/1.conf
 /ansible/files/hosts
 **/*.pyc
 **/*~
 ansible/files/hosts
+/ansible/playbooks/*retry
 net-probe-srv/1.conf
 /net-probe-srv/test_config.conf
+/net-probe-srv/static/
+/net-probe-srv/conf-empty.conf
+/py-net-probe/*deb
+/net-probe-srv/conf-docker.conf
+/py-net-probe/docker/netprobe.deb
