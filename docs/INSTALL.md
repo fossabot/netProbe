@@ -6,6 +6,7 @@ on the server
 ```
 pip install Flask
 pip install elasticsearch
+pip install Flask-APScheduler
 ```
 
 add iperf3
