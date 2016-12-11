@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-10-22 12:18:18 alex>
+# Time-stamp: <2016-12-11 15:26:59 alex>
 #
 
 """
@@ -44,6 +44,7 @@ def ws_pushAction():
         "answer" : "OK"
     }
 
+    # -------------------------
     if action == "restart":
         if request.form.__contains__('module') == False:
             return make_response(jsonify({"answer":"KO", "reason":"missing module"}), 400)
@@ -67,6 +68,15 @@ def ws_pushAction():
 
             lDB.updateHost(host, {"action" : sAction })
 
+        return make_response(jsonify(r), 200)
+
+
+    # -------------------------
+    if action == "upgrade":
+        sAction = { "name" : "upgrade" }
+        sAction['args'] = { "when" : "now" }
+        
+        lDB.updateHost(host, {"action" : sAction })
         return make_response(jsonify(r), 200)
 
     # exception

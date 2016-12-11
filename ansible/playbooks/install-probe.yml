@@ -1,9 +1,9 @@
 #
-# Time-stamp: <2016-07-02 11:49:33 alex>
+# Time-stamp: <2016-12-11 15:09:38 alex>
 
-   - name: update apt
+   - name: update apt list
      become: true
-     apt: update_cache=yes
+     apt: update_cache=yes  cache_valid_time=3600
 
    - name: install apt https transport
      become: true
@@ -82,18 +82,27 @@
      become: true
      pip: name=psutil
 
-   - name: copy sources
-     git: repo=https://github.com/achauvinhameau/netProbe.git
-          dest=/tmp/netProbe
-
-   - name: install py-probe
-     command: mv /tmp/netProbe/py-net-probe {{ pythonpath.stdout }}
+   - name: install iperf3
      become: true
+     apt: name=iperf3 update_cache=yes cache_valid_time=3600
+
+# install software
+
+   - name: copy client package
+     copy: src=../files/netprobe.deb dest=/tmp/ owner=root group=root mode=0644
+
+   - name: install client package
+     command: dpkg -i /tmp/netprobe.deb
+
+#   - name: copy sources
+#     git: repo=https://github.com/achauvinhameau/netProbe.git
+#          dest=/tmp/netProbe
+#
+#   - name: install py-probe
+#     command: mv /tmp/netProbe/py-net-probe /home/pi/
+#     become: true
 
    - name: probe at boot
      become: true
      lineinfile: dest=/etc/rc.local line="/home/pi/py-net-probe/start.sh &" state=present insertbefore="^exit 0"
 
-   - name: install iperf3
-     become: true
-     apt: name=iperf3 update_cache=yes cache_valid_time=3600

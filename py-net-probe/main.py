@@ -1,14 +1,14 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-20 14:56:38 alex>
+# Time-stamp: <2016-12-11 15:40:17 alex>
 #
 
 """
  client module for the probe system
 """
 
-__version__ = "1.4.1"
-__date__ = "20/11/16-15:00:32"
+__version__ = "1.4.2b"
+__date__ = "11/12/16-15:42:14"
 __author__ = "Alex Chauvin"
 
 import time
@@ -43,7 +43,10 @@ except ImportError:
     log.error('parse error')
     exit()
 
+# limit log level for request module
 LOGGER = logging.getLogger('requests')
+LOGGER.setLevel(logging.ERROR)
+LOGGER = logging.getLogger('urllib3')
 LOGGER.setLevel(logging.ERROR)
 
 _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
@@ -231,11 +234,7 @@ def getConfig():
         bConnected = False
         return None
 
-    print(config)
-
     for c in config:
-        print(c)
-
         # update job or create
         if probeJobs.__contains__(c['id']):
             a = probeJobs[c['id']]
@@ -299,6 +298,7 @@ def action(a):
     global bConnected
     global probeProcess
     global aModules
+    global srv
 
     if a['name'] == "restart":
         args = a['args']
@@ -320,6 +320,10 @@ def action(a):
             else:
                 logging.error("job not found {}".format(job))
                 return
+
+    if a['name'] == "upgrade":
+        srv.upgrade()
+        return
 
     logging.info("action not handled {}".format(a))
 
