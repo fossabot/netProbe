@@ -4,6 +4,7 @@ server
 * schedule on job definition
 * configuration with fields by probe, not only globals
 * pushAction for upgrading specific probe
+* hostname
 
 probe
 =====
@@ -34,3 +35,5 @@ move to changelog once released
 * disable wifi
 * suppress urllib3 logs
 * add upgrade feature on probe
+* dhcp specific client id
+* docker configuration file for test
