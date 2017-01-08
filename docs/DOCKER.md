@@ -8,6 +8,13 @@ in the docker directory, Dockerfile based on the debian jessie version
 
 docker build -t netprobe .
 
-redis should be running on the host
+docker run --name redis -d redis
+docker run --name pi01 --link redis:redis -it netprobe bash
 
-docker run -d netprobe
+
+Docker server
+==================
+
+docker build -t piprobe-srv .
+
+docker run --name piprobe-srv -p 5000:5000 -p 5201:5201/udp -it piprobe-srv bash
