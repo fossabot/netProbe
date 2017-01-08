@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2016-12-11 15:09:38 alex>
+# Time-stamp: <2017-01-08 17:34:07 alex>
 
    - name: update apt list
      become: true
@@ -106,3 +106,10 @@
      become: true
      lineinfile: dest=/etc/rc.local line="/home/pi/py-net-probe/start.sh &" state=present insertbefore="^exit 0"
 
+   - name: change dhcp vendorid
+     become: true
+     lineinfile: dest=/etc/dhcpcd.conf line="vendorclassid PI_PROBE"
+
+   - name: hostname
+     become: true
+     lineinfile: dest=/etc/hostname regexp='^(raspberrypi)$' line='piprobe-new' backrefs=yes
