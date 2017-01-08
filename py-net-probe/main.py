@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-12-11 15:40:17 alex>
+# Time-stamp: <2017-01-08 13:47:29 alex>
 #
 
 """
@@ -83,6 +83,16 @@ db = database.database(args.redis)
 probeProcess = {}
 
 stats.setVar("probe version", __version__)
+
+# checks if we are in a standard docker container with redis linked
+# the PI_REDIS_SRV env var is set for the subprocess probes
+if (os.environ.__contains__("REDIS_PORT_6379_TCP_ADDR")):
+    os.environ["PI_REDIS_SRV"] = os.environ["REDIS_PORT_6379_TCP_ADDR"]
+    logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"])
+
+if (args.redis != None):
+    os.environ["PI_REDIS_SRV"] = args.redis
+    logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"])
 
 # -----------------------------------------
 def serverConnect():
