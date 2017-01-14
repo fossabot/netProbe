@@ -1,0 +1,9 @@
+#!/bin/sh
+
+ROOT_PART=$(mount | sed -n 's|^/dev/\(.*\) on / .*|\1|p')
+
+mount -o rw,remount /
+resize2fs /dev/${ROOT_PART}
+chmod -x /etc/rc-expandfs
+mount -o ro,remount /
+reboot

@@ -1,7 +1,7 @@
 #
 # install pi from scratch (raspbian lite)
 #
-# Time-stamp: <2016-07-02 11:48:53 alex>
+# Time-stamp: <2017-01-14 14:47:08 alex>
 #
 #
 # usage :
@@ -17,7 +17,9 @@
   remote_user: pi
 
   tasks:
-    - include : pi-init-init.yml
-    - include : pi-init-upgrade.yml
-    - include : install-probe.yml
+#    - include : pi-init-init.yml
+#    - include : pi-init-upgrade.yml
+#    - include : install-probe.yml
+#    - include : pi-expandfs.yml
+
     - include : pi-ro.yml

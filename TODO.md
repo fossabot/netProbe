@@ -17,6 +17,7 @@ raspberry
 =========
 * install watchdog
 
+
 History
 =======
 move to changelog once released
@@ -37,3 +38,5 @@ move to changelog once released
 * add upgrade feature on probe
 * dhcp specific client id
 * docker configuration file for test
+* add tool to shrink the flash card size for easy deployment
+

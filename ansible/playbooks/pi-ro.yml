@@ -1,7 +1,7 @@
 #
 # turn the pi in ro
 #
-# Time-stamp: <2016-07-02 11:49:45 alex>
+# Time-stamp: <2017-01-14 14:47:00 alex>
 #
 #
 
@@ -125,4 +125,4 @@
      lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin .*" line="PermitRootLogin no"
 
    - name: reboot
-     command: /sbin/shutdown -r
+     command: /sbin/shutdown -P now
