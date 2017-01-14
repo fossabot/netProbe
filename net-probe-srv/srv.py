@@ -1,13 +1,13 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-12 16:59:59 alex>
+# Time-stamp: <2016-11-20 12:37:52 alex>
 #
 
 """
  server module for the probe system
 """
 
-__version__ = "1.2"
+__version__ = "1.4"
 
 import logging
 import signal
@@ -49,8 +49,8 @@ if args.log == 'WARNING':
 if args.log == 'ERROR':
     logLevel=logging.ERROR
 
-logging.basicConfig(format=_logFormat,
-                    level=logLevel)
+logging.basicConfig(format=_logFormat, level=logLevel)
+# logging.basicConfig(level=logLevel)
 
 if type(args.debug) != bool:
     logging.error('debug arg is not taking argument')
@@ -80,7 +80,13 @@ def trap_HUP_signal(sig, heap):
 
 signal.signal(signal.SIGHUP, trap_HUP_signal)
 
+LOGGER = logging.getLogger('apscheduler.executors.default')
+LOGGER.setLevel(logging.ERROR)
+LOGGER = logging.getLogger('werkzeug')
+LOGGER.setLevel(logging.ERROR)
+
 if __name__ == '__main__':
     app.debug = args.debug
     app.secret_key = 'test'
     app.run(host='0.0.0.0')
+

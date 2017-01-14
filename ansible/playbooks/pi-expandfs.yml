@@ -1,0 +1,32 @@
+#
+# expand the FS at first boot
+#
+# Time-stamp: <2017-01-14 14:01:45 alex>
+#
+#
+
+   - name: install rc-expandfs
+     become: true
+     copy: src=../files/rc-expandfs dest=/etc owner=root group=root mode=0744
+
+   - name: install rc-expandpart
+     become: true
+     copy: src=../files/rc-expandpart dest=/etc owner=root group=root mode=0744
+
+   - name: exec rc in rc.local script
+     become: true
+     lineinfile: dest=/etc/rc.local line="/home/pi/py-net-probe/start.sh &" state=present insertbefore="^exit 0"
+
+   - name: exec rc in rc.local script
+     become: true
+     blockinfile:
+       dest: /etc/rc.local
+       marker: "# {mark} EXPAND FS after install -->"
+       insertafter: "# By default this script does nothing"
+       block: |
+          if [ -x /etc/rc-expandpart ]; then
+             /etc/rc-expandpart
+          fi
+          if [ -x /etc/rc-expandfs ]; then
+             /etc/rc-expandfs
+          fi

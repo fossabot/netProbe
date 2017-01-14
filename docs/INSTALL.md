@@ -6,6 +6,7 @@ on the server
 ```
 pip install Flask
 pip install elasticsearch
+pip install Flask-APScheduler
 ```
 
 add iperf3
@@ -34,19 +35,27 @@ requires a redis started on the probe host
 Install the probe with ansible
 ==============================
 
-* install a raspbian lite image on the probe memory card, connect on network and boot (requires DHCP and internet access)
+* install a raspbian lite image on the probe memory card
+* on the flash disk at root add an empty 'ssh' file
+* connect on network and boot (requires DHCP and internet access)
 * need an ssh key from the ansible user installed in ~/.ssh/id_rsa.pub
-* ssh to the pi with pi login in order to add its fingerprint in the known_hosts file (password should be raspberry)
-* find the raspberry ip address and install it in the files/hosts piprobes group, in the new section
-* exec the init playbook, this will install ssh key for future use and upgrade the pi version if required
+* ssh to the pi with pi login in order to add its fingerprint in the known_hosts file
+  (password should be raspberry)
+* find the raspberry ip address and install it in the files/hosts piprobes group, 
+  in the new section
+* exec the init playbook, this will install ssh key for future use and upgrade the pi
+  version if required
 
 
 All in one
 ----------
+in the ansible directory
 ```
 ansible-playbook --ask-pass -i files/hosts playbooks/pi-all.yml
-option: --limit %ip of the pi%
 ```
+option: --limit %ip of the pi%
+
+duration around : 16 minutes
 
 Step by Step
 ------------

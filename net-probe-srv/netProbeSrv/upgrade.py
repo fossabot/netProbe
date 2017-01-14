@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-13 20:32:21 alex>
+# Time-stamp: <2016-12-11 15:32:27 alex>
 #
 
 """
@@ -42,7 +42,7 @@ def ws_upgrade():
         root = os.path.join(os.getcwd(), "static")
 
         # last version
-        nextVersion = "1.3.1b"
+        nextVersion = "1.4.2a"
 
         # what is the next version acceptable ?
         if sVersion == "1.3.1":

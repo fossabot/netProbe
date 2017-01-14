@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-08-12 20:30:09 alex>
+# Time-stamp: <2017-01-08 13:46:52 alex>
 #
 
 """
@@ -39,6 +39,12 @@ class probemain(object):
         logging.info("starting probe")
 
         self.db = database.database()
+
+        # redis server
+        if (os.environ.__contains__("PI_REDIS_SRV")):
+            self.db = database.database(os.environ["PI_REDIS_SRV"])
+        else:
+            self.db = database.database()
 
         # create global scheduler
         self.scheduler = sched.sched()

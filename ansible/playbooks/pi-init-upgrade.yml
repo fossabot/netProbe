@@ -1,10 +1,10 @@
 #
 # initialize a raspberry pi from a raspbian lite image
 #
-# Time-stamp: <2016-07-02 11:46:46 alex>
+# Time-stamp: <2016-12-11 15:09:37 alex>
 #
 
-   - name: update
+   - name: update apt list
      apt: update_cache=yes cache_valid_time=3600
 
    - name: suppress bluetooth
@@ -12,3 +12,15 @@
 
    - name: upgrade
      apt: upgrade=yes cache_valid_time=3600
+
+   - name: install apt ca-certificates
+     become: true
+     apt: name=ca-certificates update_cache=yes cache_valid_time=3600
+
+   - name: install rpi-update
+     become: true
+     apt: name=rpi-update update_cache=yes cache_valid_time=3600
+
+   - name: rpi-update
+     command: rpi-update
+     become: true

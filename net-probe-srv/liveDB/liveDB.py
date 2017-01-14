@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-12 16:35:43 alex>
+# Time-stamp: <2016-11-20 14:15:04 alex>
 #
 
 """
@@ -142,6 +142,21 @@ class liveDB(object):
             del self.aProbeTable[sId]['action']
             return a
     
+
+    # ----------------------------------------------------------
+    def cleanOldProbes(self):
+        """ remove unseen probe for long time
+            started by cron
+        """
+        for hkey in self.aProbeTable:
+            h = self.aProbeTable[hkey]
+
+            if time.time() - h['last'] > 180:
+                logging.info("clean probe uid={}".format(h['uid']))
+                del(self.aProbeTable[hkey])
+                # suppress only one at a time
+                return
+
     # ----------------------------------------------------------
     def dump(self):
         """ show the configuration host table """

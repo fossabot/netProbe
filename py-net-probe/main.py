@@ -1,14 +1,14 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-19 11:16:58 alex>
+# Time-stamp: <2017-01-08 13:47:29 alex>
 #
 
 """
  client module for the probe system
 """
 
-__version__ = "1.3.1c"
-__date__ = "19/11/16-20:27:01"
+__version__ = "1.4.2b"
+__date__ = "11/12/16-15:42:14"
 __author__ = "Alex Chauvin"
 
 import time
@@ -22,6 +22,7 @@ import sched
 import hostId
 import database
 import json
+from config import conf
 
 from probe import restartProbe, stopAllProbes, checkProbe, checkProbes, statsProbes
 
@@ -42,6 +43,12 @@ except ImportError:
     log.error('parse error')
     exit()
 
+# limit log level for request module
+LOGGER = logging.getLogger('requests')
+LOGGER.setLevel(logging.ERROR)
+LOGGER = logging.getLogger('urllib3')
+LOGGER.setLevel(logging.ERROR)
+
 _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
 logLevel = logging.ERROR
 
@@ -55,6 +62,7 @@ if args.log == 'ERROR':
     logLevel=logging.ERROR
 
 logging.basicConfig(format=_logFormat, level=logLevel)
+# logging.basicConfig(level=logLevel)
 
 logging.info("starting probe")
 
@@ -75,6 +83,16 @@ db = database.database(args.redis)
 probeProcess = {}
 
 stats.setVar("probe version", __version__)
+
+# checks if we are in a standard docker container with redis linked
+# the PI_REDIS_SRV env var is set for the subprocess probes
+if (os.environ.__contains__("REDIS_PORT_6379_TCP_ADDR")):
+    os.environ["PI_REDIS_SRV"] = os.environ["REDIS_PORT_6379_TCP_ADDR"]
+    logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"])
+
+if (args.redis != None):
+    os.environ["PI_REDIS_SRV"] = args.redis
+    logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"])
 
 # -----------------------------------------
 def serverConnect():
@@ -144,6 +162,10 @@ def serverConnect():
             logging.error("service ping not working")
             continue
 
+        # init the variable for deconnexion check
+        stats.setVar("ping-server-retry", 0)
+
+
 #
 # -----------------------------------------
 def ping():
@@ -153,33 +175,32 @@ def ping():
     """
 
     global stats
+    global bConnected
 
     r = srv.ping()
 
     if r == None:
+        _iRetry = stats.getVar("ping-server-retry")
+        logging.warning("ping without answer, retry={}".format(_iRetry))
+        if _iRetry > 2:
+            bConnected = False
+        else:
+            stats.setVar("ping-server-retry", _iRetry+1)        
         return
 
-    logging.info("ping delta time = {:0.2f}ms".format(srv.getLastCmdDeltaTime()*1000))
-    stats.setVar("ping server (ms)", srv.getLastCmdDeltaTime()*1000)
+    fLastDelta = srv.getLastCmdDeltaTime()
 
-    # action handle
+    if fLastDelta < 0:
+        bConnected = False
+        logging.error("lost server connection, restart")
+        return
+
+    logging.info("ping delta time = {:0.2f}ms".format(fLastDelta*1000))
+    stats.setVar("ping-server-delay", fLastDelta*1000)
+
+    # action handle, if some action has been pushed by the server
     if r.__contains__('action') and type(r['action']) == dict:
         action(r['action'])
-
-# -----------------------------------------
-def showStatus():
-    """called by the scheduler in order to print if the server is
-    available
-
-    """
-    global bConnected
-
-    if srv.getStatus() == False:
-        logging.warning("server not available")
-        bConnected = False
-    else:
-        logging.info("server up and alive")
-
 
 # -----------------------------------------
 def pushJobsToDB(jobName):
@@ -223,11 +244,7 @@ def getConfig():
         bConnected = False
         return None
 
-    print(config)
-
     for c in config:
-        print(c)
-
         # update job or create
         if probeJobs.__contains__(c['id']):
             a = probeJobs[c['id']]
@@ -291,6 +308,7 @@ def action(a):
     global bConnected
     global probeProcess
     global aModules
+    global srv
 
     if a['name'] == "restart":
         args = a['args']
@@ -312,6 +330,10 @@ def action(a):
             else:
                 logging.error("job not found {}".format(job))
                 return
+
+    if a['name'] == "upgrade":
+        srv.upgrade()
+        return
 
     logging.info("action not handled {}".format(a))
 
@@ -355,21 +377,28 @@ while bRunning:
     scheduler.clean()
 
     serverConnect()
-
     getConfig()
-    scheduler.add("get configuration", 3600, getConfig, None, 2)
 
-    scheduler.add("push results", 8, popResults, db, 2)
-    scheduler.add("ping server", 60, ping, None, 2)
+    # job to refresh the configuration from the server every hour
+    scheduler.add("get configuration", conf.get("scheduler", "get_conf"), getConfig, None, 2)
 
-    # scheduler.add("show status", 300, showStatus, None, 2)
+    # push the results stored in the redis queue every 8 seconds
+    scheduler.add("push results", conf.get("scheduler", "push_results"), popResults, db, 2)
 
-    scheduler.add("check probe", 10, checkProbes, probeProcess)
+    # ping the server for connectivity check every minute
+    scheduler.add("ping server", conf.get("scheduler", "ping_server"), ping, None, 2)
 
-    scheduler.add("stats probes", 60, statsProbes, [probeProcess, stats], 2)
-    scheduler.add("stats", 60, stats.push, srv)
+    # check if probe process has exited every 30"
+    scheduler.add("check probes process", conf.get("scheduler", "check_probes"), checkProbes, probeProcess)
 
-    scheduler.add("upgrade", 3600, srv.upgrade, None)
+    # push the stats of the probes every minute for the server
+    scheduler.add("stats probes", conf.get("scheduler", "stats_probes"), statsProbes, [probeProcess, stats], 2)
+
+    # push the collected stats to the server every 5 minutes
+    scheduler.add("stats push", conf.get("scheduler", "stats_push"), stats.push, srv)
+
+    # ask for the upgrade every hour to the server
+    scheduler.add("upgrade", conf.get("scheduler", "upgrade"), srv.upgrade, None)
 
     mainLoop()
 

@@ -1,7 +1,7 @@
 #
 # initialize a raspberry pi from a raspbian lite image
 #
-# Time-stamp: <2016-07-02 11:46:02 alex>
+# Time-stamp: <2016-12-11 14:52:13 alex>
 #
 #
 # usage :
@@ -18,3 +18,27 @@
        user: pi
        key: "{{ lookup('file', ssh_key) }}"
        key_options: 'no-port-forwarding'
+
+   - name: interfaces suppress wi-fi 1/3
+     become: true
+     lineinfile: dest=/etc/network/interfaces regexp='^(allow-hotplug wlan.*)$' state=absent
+
+   - name: interfaces suppress wi-fi 2/3
+     become: true
+     lineinfile: dest=/etc/network/interfaces regexp='^(iface wlan. inet manual)$' state=absent
+
+   - name: interfaces suppress wi-fi 3/3
+     become: true
+     lineinfile: dest=/etc/network/interfaces regexp='^(.*wpa-conf .*)$' state=absent
+
+   - name: disable audio
+     become: true
+     lineinfile: dest=/boot/config.txt regexp='^dtparam=audio=on' line='dtparam=audio=off' backrefs=yes
+
+   - name: minimize gpu memory
+     become: true
+     lineinfile: dest=/boot/config.txt line="gpu_mem=16" state=present
+
+   - name: turn off display
+     become: true
+     lineinfile: dest=/etc/rc.local line="vcgencmd display_power 0" state=present insertbefore="^exit 0"

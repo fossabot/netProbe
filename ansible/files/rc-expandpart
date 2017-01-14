@@ -1,0 +1,7 @@
+#!/bin/sh
+
+mount -o rw,remount /
+raspi-config --expand-rootfs
+chmod -x /etc/rc-expandpart
+mount -o ro,remount /
+reboot
