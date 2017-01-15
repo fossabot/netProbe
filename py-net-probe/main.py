@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-08 13:47:29 alex>
+# Time-stamp: <2017-01-15 15:52:42 alex>
 #
 
 """
@@ -88,11 +88,11 @@ stats.setVar("probe version", __version__)
 # the PI_REDIS_SRV env var is set for the subprocess probes
 if (os.environ.__contains__("REDIS_PORT_6379_TCP_ADDR")):
     os.environ["PI_REDIS_SRV"] = os.environ["REDIS_PORT_6379_TCP_ADDR"]
-    logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"])
+    logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"]))
 
 if (args.redis != None):
     os.environ["PI_REDIS_SRV"] = args.redis
-    logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"])
+    logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"]))
 
 # -----------------------------------------
 def serverConnect():
