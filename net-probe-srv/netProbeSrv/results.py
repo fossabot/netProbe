@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-01 21:18:15 alex>
+# Time-stamp: <2017-01-15 16:26:19 alex>
 #
 
 """
@@ -52,7 +52,7 @@ def ws_results():
         data.append(json.loads(b64decode(request.form['data'])))
 
     for d in data:
-        d['timestamp'] = datetime.datetime.utcfromtimestamp(d['date'])
+        d['timestamp'] = datetime.datetime.utcfromtimestamp(d['date']).isoformat()
         d['probeuid'] = uid
         d['probename'] = probename
 
