@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-12 16:20:13 alex>
+# Time-stamp: <2017-01-15 17:40:01 alex>
 #
 
 """
@@ -9,11 +9,13 @@
 
 from flask import make_response, jsonify, request
 import time
+import datetime
 import logging
 
 from netProbeSrv import app
 from config import conf
 from liveDB import lDB
+from output import outputer
 
 
 @app.route('/discover', methods=['POST'])
@@ -58,6 +60,28 @@ def ws_discover():
                                           "uid" : _id}), 200)
         else:
             logging.warning("probe not found {} {}".format(_sIpv4, _sIpv6))
+
+            # push to outputer
+            data = {}
+
+            d = {}
+            d['timestamp'] = datetime.datetime.utcfromtimestamp(time.time()).isoformat()
+            d['probe_ipv4'] = str(_sIpv4)
+            d['probe_ipv6'] = str(_sIpv6)
+            d['probe_version'] = str(_sVersion)
+            d['probe_hostid'] = str(_sHostId)
+
+            data['date'] = time.time()
+            data['probename'] = str('unknown')
+            data['probeuid'] = int(0)
+            data['name'] = str('DISCOVER')
+
+            data['data'] = d
+
+            for o in outputer:
+                o.send(data)
+
+            # inform probe
             return make_response(jsonify({"answer" : "KO", "reason" : "not found"}), 400)
 
     return make_response(jsonify({"answer" : "KO", "reason" : "other"}), 400)
