@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-24 21:55:28 alex>
+# Time-stamp: <2017-01-15 19:20:18 alex>
 #
 
 """
@@ -91,7 +91,7 @@ class logstash(output):
     def sendTCP(self, data):
         """send to logstash using TCP socket"""
 
-        logging.info("send to logstash using TCP")
+        logging.info("send to logstash using TCP to {}:{}".format(self.server, self.iPort))
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
