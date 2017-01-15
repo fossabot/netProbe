@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-06-27 22:35:06 alex>
+# Time-stamp: <2017-01-15 16:32:13 alex>
 #
 
 """
@@ -23,4 +23,7 @@ class debug(output):
     # ----------------------------------------------------------
     def send(self, data):
         """send to console"""
+        if data.__contains__('timestamp'):
+            del data['timestamp']
+
         logging.info("{}".format(data))
