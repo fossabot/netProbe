@@ -1,6 +1,25 @@
 Changelog
 =========
 
+1.4 - 14/01/2017
+-----
+* fix : check probe connectivity with the server in the ping job
+* add probe configuration for timers in init.cfg
+* clean dead probes on the server
+* clean the probe DB after inactivity
+* templates for probe config (can include multiple at probe level)
+* add vcgencmd display_power 0 to disable display
+* disable audio on the PI
+* rpi-update at install time
+* adjust gpu memory on PI
+* disable wifi
+* suppress urllib3 logs
+* add upgrade feature on probe
+* dhcp specific client id
+* docker configuration file for test
+* add tool to shrink the flash card size for easy deployment
+
+
 1.3 - 20/11/2016
 ----------------
 * upgrade the software to the probe
