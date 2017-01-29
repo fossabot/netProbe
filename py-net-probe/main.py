@@ -1,14 +1,32 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-15 15:52:42 alex>
+# Time-stamp: <2017-01-29 13:54:41 alex>
 #
+#
+# --------------------------------------------------------------------
+# PiProbe
+# Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later 
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
 
 """
  client module for the probe system
 """
 
-__version__ = "1.4.2b"
-__date__ = "11/12/16-15:42:14"
+__version__ = "1.5.1"
+__date__ = "22/01/17-16:41:08"
 __author__ = "Alex Chauvin"
 
 import time
