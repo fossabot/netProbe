@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:53 alex>
+# Time-stamp: <2017-01-29 16:58:25 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -37,7 +37,7 @@ from netProbeSrv import app
 from netProbeSrv import main, ping, version, discover, results
 from netProbeSrv import job
 
-def test_ping_get():
+def oldtest_ping_get():
     """/ping GET
 
     """
@@ -67,25 +67,30 @@ def test_ping_put_ukn():
     """
     global app
     c = app.test_client()
-    rv = c.post("/ping", data=dict(uid="12"))
+    rv = c.post("/ping", data=dict(uid="12", hostId="test"))
 
     j = json.loads(rv.data)
-    if j['answer'] != "host not found":
-        assert False, "ping GET not working"
+    if j['answer'] != "bad probe matching id and hostid":
+        assert False, "ping POST ukn not working"
 
 def test_pingHost_ok():
     """/ping host ok
 
     """
+
+    global conf
+    conf.addHost( {"id" : "xx1",
+                   "probename": "test",
+                   "jobs" : []} )
     global lDB
 
     lDB.cleanDB()
 
-    lDB.updateHost("test", {'uid' : 1})
+    lDB.updateHost("xx1", {'uid' : 1})
 
     global app
     c = app.test_client()
-    rv = c.post("/ping", data=dict(uid="1"))
+    rv = c.post("/ping", data=dict(uid="1", hostId="xx1"))
 
     j = json.loads(rv.data)
     if j['answer'] != "OK":
@@ -98,16 +103,28 @@ def test_pingHost_ukn():
     global lDB
 
     lDB.cleanDB()
-
-    lDB.updateHost("test", {'uid' : 1})
+    lDB.updateHost("xx1", {'uid' : 1})
 
     global app
     c = app.test_client()
-    rv = c.post("/ping", data=dict(uid="2"))
+    rv = c.post("/ping", data=dict(uid="2", hostId="xx2"))
 
     j = json.loads(rv.data)
-    if j['answer'] != "host not found":
+    if j['answer'] != "bad probe matching id and hostid":
         assert False, "ping known ukn"
+
+def test_ping_bad_hostid():
+    """/ping with bad hostid
+
+    """
+    global app
+    c = app.test_client()
+    rv = c.post("/ping", data=dict(uid="1", hostId="xx2"))
+
+    j = json.loads(rv.data)
+    if j['answer'] != "bad probe matching id and hostid":
+        assert False, "ping with bad hostid"
+
 
 def test_pingUpdate():
     """/ping check update
@@ -118,16 +135,17 @@ def test_pingUpdate():
     global lDB
     a = lDB.dump()
 
-    if a['test']['last'] - time.time() < -0.1:
+    if a['xx1']['last'] - time.time() < -0.1:
         assert False, "not updated"
 
-if False:
+if __name__ == '__main__':
     _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
     logging.basicConfig(format=_logFormat,
                         level=logging.INFO)
-    test_ping_get()
+    # test_ping_get()
     test_ping_put_empty()
     test_ping_put_ukn()
     test_pingHost_ok()
     test_pingHost_ukn()
     test_pingUpdate()
+    test_ping_bad_hostid()

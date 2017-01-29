@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 13:57:41 alex>
+# Time-stamp: <2017-01-29 14:52:42 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -58,11 +58,13 @@ class database(object):
         """
 
         while True:
-            logging.info("connect to redis")
             if host == None:
+                host = "localhost"
                 self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2)
             else:
                 self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2, host=host)
+
+            logging.info("connect to redis {}".format(host))
 
             try:
                 self.db.ping()

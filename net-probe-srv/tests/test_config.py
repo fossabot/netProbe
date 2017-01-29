@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:43 alex>
+# Time-stamp: <2017-01-29 15:26:18 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -91,11 +91,17 @@ def test_duplicateProbeName():
     global conf
 
     conf.addHost( {"id" : "xx4",
-                   "probename": "test3",
+                   "probename": "test4.0",
                    "jobs" : []} )
 
-    if conf.checkHost("xx4"):
-        assert False, "not found"
+    conf.addHost( {"id" : "xx4",
+                   "probename": "test4.1",
+                   "jobs" : []} )
+
+    name = conf.getNameForHost("xx4")
+
+    if name != "test4.1":
+        assert False, "bad probename for duplicate"
 
 # ---------------------------------------------
 def test_getConf():
@@ -112,7 +118,7 @@ def test_getConf():
                               "version" : 1,
                               "data" : {}}]})
 
-    a = conf.getConfigForHost("xx5")
+    a = conf.getJobsForHost("xx5")
     if a[0]['job'] != "health":
         assert False, "bad job returned"
 
@@ -158,7 +164,7 @@ def test_active_flag():
     global conf
     conf.loadFile('test_config.conf')
 
-    if conf.getConfigForHost("xx6")[0]['version'] != 1:
+    if conf.getJobsForHost("xx6")[0]['version'] != 1:
         assert False, "bad version at load"
 
     c = app.test_client()
@@ -219,10 +225,10 @@ def test_active_flag():
     if j['answer'] != "OK":
         assert False, "reload not working"
 
-    if conf.getConfigForHost("xx6")[0]['version'] != 2:
+    if conf.getJobsForHost("xx6")[0]['version'] != 2:
         assert False, "bad version at load"
 
-    if conf.getConfigForHost("xx6")[0]['active'] != "False":
+    if conf.getJobsForHost("xx6")[0]['active'] != "False":
         assert False, "bad active status on reload"
 
 # ---------------------------------------------
@@ -461,12 +467,12 @@ def all(b=True):
         test_addHost()
         test_probename()
         test_checkHost()
-        test_duplicateProbeName()
         test_getConf()
         test_active_flag()
         test_template01()
+        test_template02()
 
-    test_template02()
+    test_duplicateProbeName()
 
 # ---------------------------------------------
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:40 alex>
+# Time-stamp: <2017-01-29 15:12:36 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -81,7 +81,7 @@ def test_admin_reload():
     global conf
     conf.loadFile('test_config.conf')
 
-    if conf.getConfigForHost("test-01")[0]['version'] != 1:
+    if conf.getJobsForHost("test-01")[0]['version'] != 1:
         assert False, "bad version at load"
 
     c = app.test_client()
@@ -123,7 +123,7 @@ def test_admin_reload():
 
     print conf.dump()
 
-    if conf.getConfigForHost("test-01")[0]['version'] != 2:
+    if conf.getJobsForHost("test-01")[0]['version'] != 2:
         assert False, "bad version at load"
 
 # ---------------------------------------------

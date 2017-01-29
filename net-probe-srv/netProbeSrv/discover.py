@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:04:28 alex>
+# Time-stamp: <2017-01-29 17:02:36 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -66,12 +66,35 @@ def ws_discover():
 
         if conf.checkHost(_sHostId):
             _id = lDB.getUniqueId(_sHostId)
+            _hostConf = conf.getConfigForHost(_sHostId)
+
             lDB.updateHost(_sHostId, {'uid' : _id,
                                       'discoverTime': time.time(),
                                       'last': time.time(),
                                       'ipv4' : _sIpv4,
                                       'ipv6' : _sIpv6,
-                                      'version' : _sVersion})
+                                      'version' : _sVersion,
+                                      'name': _hostConf['probename']})
+
+            # push to outputer
+            data = {}
+
+            d = {}
+            d['timestamp'] = datetime.datetime.utcfromtimestamp(time.time()).isoformat()
+            d['probe_ipv4'] = str(_sIpv4)
+            d['probe_ipv6'] = str(_sIpv6)
+            d['probe_version'] = str(_sVersion)
+            d['probe_hostid'] = str(_sHostId)
+
+            data['date'] = time.time()
+            data['probename'] = _hostConf['probename']
+            data['probeuid'] = int(0)_id
+            data['name'] = str('DISCOVER')
+
+            data['data'] = d
+
+            for o in outputer:
+                o.send(data)
 
             return make_response(jsonify({"answer" : "OK",
                                           "uid" : _id}), 200)

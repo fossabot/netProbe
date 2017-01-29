@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:04:48 alex>
+# Time-stamp: <2017-01-29 15:12:10 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -51,16 +51,12 @@ def ws_myjobs():
             return make_response(jsonify({"answer" : "KO",
                                           "reason" : "probe not known"}), 200)
 
-        config = lDB.getConfigForHost(host)
-
-        # lDB.updateHost(host, {"last" : time.time()})
-        # logging.info("conf : \n%s", pprint.pformat(conf.dump()))
-        # logging.info("DB : \n%s", pprint.pformat(lDB.dump()))
+        jobs = lDB.getJobsForHost(host)
 
         conf.reload()
 
         return make_response(jsonify({"answer" : "OK",
-                                      "jobs" : config}), 200)
+                                      "jobs" : jobs}), 200)
 
 
     return make_response(jsonify({"answer" : "KO",

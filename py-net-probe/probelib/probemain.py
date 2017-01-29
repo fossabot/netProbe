@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:01:53 alex>
+# Time-stamp: <2017-01-29 16:36:18 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -50,12 +50,25 @@ class probemain(object):
 
         self.name = name
         _logFormat = '%(asctime)-15s '+str(name)+' [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+
+        # log level
+        logLevel=logging.ERROR
+
+        if (os.environ.__contains__("PI_LOG_LEVEL")):
+            lvl = str(os.environ["PI_LOG_LEVEL"])
+            if lvl == 'INFO':
+                logLevel=logging.INFO
+            if lvl == 'DEBUG':
+                logLevel=logging.DEBUG
+            if lvl == 'WARNING':
+                logLevel=logging.WARNING
+            if lvl == 'ERROR':
+                logLevel=logging.ERROR
+
         logging.basicConfig(format=_logFormat,
-                            level=logging.INFO)
+                            level=logLevel)
 
         logging.info("starting probe")
-
-        self.db = database.database()
 
         # redis server
         if (os.environ.__contains__("PI_REDIS_SRV")):

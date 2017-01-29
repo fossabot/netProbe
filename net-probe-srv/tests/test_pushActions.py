@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:59 alex>
+# Time-stamp: <2017-01-29 17:00:03 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -128,7 +128,7 @@ def test_push_2():
         assert False, "action error {}".format(j)
 
     # ping the server and check the return
-    rv = c.post("/ping", data=dict(uid=uid))
+    rv = c.post("/ping", data=dict(uid=uid, hostId="p2"))
 
     j = json.loads(rv.data)
 
@@ -165,7 +165,7 @@ def test_push_3():
         assert False, "action error {}".format(j)
 
     # ping the server and check the return
-    rv = c.post("/ping", data=dict(uid=uid))
+    rv = c.post("/ping", data=dict(uid=uid, hostId="p3"))
 
     j = json.loads(rv.data)
 

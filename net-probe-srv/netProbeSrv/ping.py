@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:04:58 alex>
+# Time-stamp: <2017-01-29 16:54:35 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -50,10 +50,18 @@ def ws_ping():
     if request.method == 'POST':
         if not request.form.__contains__('uid'):
             return make_response(jsonify({"answer" : "missing uid"}), 400)
+
+        if not request.form.__contains__('hostId'):
+            return make_response(jsonify({"answer" : "missing hostId"}), 400)
             
         uid = int(request.form['uid'])
 
         host = lDB.getHostByUid(uid)
+        
+        if host != request.form['hostId']:
+            logging.error("bad probe {} {}".format(host, request.form['hostId']))
+            return make_response(jsonify({"answer" : "bad probe matching id and hostid"}), 400)
+
         if host == None:
             return make_response(jsonify({"answer" : "host not found"}), 400)
 
@@ -63,4 +71,10 @@ def ws_ping():
         if a != None:
             r['action'] = a
 
-    return make_response(jsonify(r), 200)
+        return make_response(jsonify(r), 200)
+
+    r = {
+        "answer" : "KO"
+    }
+    
+    return make_response(jsonify(r), 400)

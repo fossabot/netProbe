@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 13:54:41 alex>
+# Time-stamp: <2017-01-29 16:42:23 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -26,7 +26,7 @@
 """
 
 __version__ = "1.5.1"
-__date__ = "22/01/17-16:41:08"
+__date__ = "29/01/17-15:00:46"
 __author__ = "Alex Chauvin"
 
 import time
@@ -52,7 +52,9 @@ try:
     parser = argparse.ArgumentParser(description='raspberry net probe system')
 
     parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level', nargs='?', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
-
+ 
+    parser.add_argument('--probe', '-p', metavar='probe_loglevel', default='ERROR', type=str, help='log level for probes', nargs=1, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
+ 
     parser.add_argument('--redis', '-r', metavar='none', help='redis server', default=None, nargs='?')
 
     args = parser.parse_args()
@@ -82,6 +84,10 @@ if args.log == 'ERROR':
 logging.basicConfig(format=_logFormat, level=logLevel)
 # logging.basicConfig(level=logLevel)
 
+# log level for probes
+if args.probe[0] != 'ERROR':
+    os.environ["PI_LOG_LEVEL"] = args.probe[0]
+
 logging.info("starting probe")
 
 logging.info(" version {}".format(__version__))
@@ -97,7 +103,6 @@ stats = netProbe.stats()
 bConnected = False
 bRunning = True
 probeJobs = {}
-db = database.database(args.redis)
 probeProcess = {}
 
 stats.setVar("probe version", __version__)
@@ -105,12 +110,13 @@ stats.setVar("probe version", __version__)
 # checks if we are in a standard docker container with redis linked
 # the PI_REDIS_SRV env var is set for the subprocess probes
 if (os.environ.__contains__("REDIS_PORT_6379_TCP_ADDR")):
-    os.environ["PI_REDIS_SRV"] = os.environ["REDIS_PORT_6379_TCP_ADDR"]
-    logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"]))
+    args.redis = os.environ["REDIS_PORT_6379_TCP_ADDR"]
 
 if (args.redis != None):
     os.environ["PI_REDIS_SRV"] = args.redis
     logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"]))
+
+db = database.database(args.redis)
 
 # -----------------------------------------
 def serverConnect():
@@ -194,6 +200,9 @@ def ping():
 
     global stats
     global bConnected
+
+    if bConnected == False:
+        return
 
     r = srv.ping()
 
@@ -361,6 +370,10 @@ def popResults(_db):
 
     """
     global stats
+    global bConnected
+
+    if bConnected == False:
+        return
 
     a = []
 
@@ -383,6 +396,19 @@ def popResults(_db):
         srv.pushResults(a)
 
 # -----------------------------------------
+def pushStats(srv):
+    """call the stats.push
+
+    """
+    global stats
+    global bConnected
+
+    if bConnected == False:
+        return
+
+    stats.push(srv)
+
+# -----------------------------------------
 
 signal.signal(signal.SIGTERM, trap_signal)
 signal.signal(signal.SIGINT, trap_signal)
@@ -395,6 +421,7 @@ while bRunning:
     scheduler.clean()
 
     serverConnect()
+
     getConfig()
 
     # job to refresh the configuration from the server every hour
@@ -413,7 +440,7 @@ while bRunning:
     scheduler.add("stats probes", conf.get("scheduler", "stats_probes"), statsProbes, [probeProcess, stats], 2)
 
     # push the collected stats to the server every 5 minutes
-    scheduler.add("stats push", conf.get("scheduler", "stats_push"), stats.push, srv)
+    scheduler.add("stats push", conf.get("scheduler", "stats_push"), pushStats, srv)
 
     # ask for the upgrade every hour to the server
     scheduler.add("upgrade", conf.get("scheduler", "upgrade"), srv.upgrade, None)
