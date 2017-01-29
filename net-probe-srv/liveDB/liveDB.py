@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:04:12 alex>
+# Time-stamp: <2017-01-29 15:32:57 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -126,6 +126,12 @@ class liveDB(object):
         return conf.getConfigForHost(host)
 
     # ----------------------------------------------------------
+    def getJobsForHost(self, host):
+        """ return the probe job config """
+
+        return conf.getJobsForHost(host)
+
+    # ----------------------------------------------------------
     def getNameForHost(self, host):
         """ return the probe name """
 
@@ -138,10 +144,12 @@ class liveDB(object):
         r = []
         for p in self.aProbeTable:
             s = self.aProbeTable[p]
+
             r.append({"uid" : s['uid'],
                       "ipv4" : s['ipv4'],
                       "ipv6" : s['ipv6'],
                       "version" : s['version'],
+                      "name": s['name'],
                       "last" : int(time.time() - s['last'])})
 
         return r
