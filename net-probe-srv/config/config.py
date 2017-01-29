@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:31:45 alex>
+# Time-stamp: <2017-01-29 15:19:24 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -257,6 +257,20 @@ class config(object):
         self.loadFile(self.fileName)
 
     # ----------------------------------------------------------
+    def getJobsForHost(self, sId):
+        """return the jobs configuration for the host
+
+        """
+
+        logging.info("get jobs for {}".format(sId))
+
+        if self.aHostTable.__contains__(sId):
+            return self.aHostTable[sId]['jobs']
+        else:
+            logging.error("should not ask for unknown host in the configuration")
+            return None
+
+    # ----------------------------------------------------------
     def getConfigForHost(self, sId):
         """return the configuration for the host
 
@@ -264,7 +278,11 @@ class config(object):
 
         logging.info("get configuration for {}".format(sId))
 
-        return self.aHostTable[sId]['jobs']
+        if self.aHostTable.__contains__(sId):
+            return self.aHostTable[sId]
+        else:
+            logging.error("should not ask for unknown host in the configuration")
+            return None
 
     # ----------------------------------------------------------
     def getNameForHost(self, sId):
