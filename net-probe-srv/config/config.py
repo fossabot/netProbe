@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:03:09 alex>
+# Time-stamp: <2017-01-29 14:31:45 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -117,7 +117,7 @@ class config(object):
 
         """
 
-        sId = hostData['id']
+        sId = str(hostData['id'])
 
         if hostData.__contains__('template'):
             for t in hostData['template']:
@@ -139,6 +139,10 @@ class config(object):
                 h = self.aHostTable[hkey]
 
                 if h.__contains__('probename') and h['probename'] == probename:
+                    # if same name but different id, insert a new key
+                    if (hkey != sId):
+                        del(self.aHostTable[hkey])
+                        hkey = sId
                     self.aHostTable[hkey] = {"jobs" : jobs, "probename": probename}
                     logging.info("update probename {}".format(probename))
                     return
