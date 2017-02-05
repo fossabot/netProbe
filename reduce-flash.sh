@@ -1,11 +1,11 @@
 #!/bin/sh
 #
-# Time-stamp: <2017-01-29 13:54:13 alex>
+# Time-stamp: <2017-02-05 20:38:11 alex>
 # 
 # script to reduce an img file from the raw copy of the PI flash disk
 # in order to copy quiclky on a new SD card of the same size
 #
-# v1
+# v2
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -50,7 +50,6 @@ ext4_num=`parted -m $file unit B print | awk -F: '/ext4/ { print $1 }'`
 
 # get start of the ext4 partition, the first one is a FAT
 ext4_start=`parted -m $file unit B print | awk -F: '/ext4/ { print $2 }' | tr -d 'B'`
-echo $ext4_start
 
 if [ ${ext4_start} -lt 25000000 ]; then
     echo "ERROR : parted error : cannot find the ext4 partition"
@@ -79,6 +78,19 @@ if [ $? != 0 ]; then
     echo "ERROR: fsck reported error"
     cat /tmp/fsck.$$
     end
+fi
+
+# turn rc-expand scripts to execute
+# mount the loop first
+if [ ! -d /mnt-loop$$ ]; then
+  mkdir /mnt-loop$$
+  mount ${lo} /mnt-loop$$
+  chmod +x /mnt-loop$$/etc/rc-expand*
+  umount /mnt-loop$$
+  rmdir /mnt-loop$$
+else
+  echo "ERROR: cannot mkdir /mnt-loop$$"
+  end
 fi
 
 echo "* estimate best new size for partition"
