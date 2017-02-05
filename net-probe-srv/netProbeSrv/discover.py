@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 17:02:36 alex>
+# Time-stamp: <2017-02-05 17:03:40 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -88,7 +88,7 @@ def ws_discover():
 
             data['date'] = time.time()
             data['probename'] = _hostConf['probename']
-            data['probeuid'] = int(0)_id
+            data['probeuid'] = _id
             data['name'] = str('DISCOVER')
 
             data['data'] = d
