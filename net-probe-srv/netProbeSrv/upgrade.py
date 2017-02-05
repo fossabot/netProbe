@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:09 alex>
+# Time-stamp: <2017-02-05 18:55:40 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -59,7 +59,7 @@ def ws_upgrade():
         root = os.path.join(os.getcwd(), "static")
 
         # last version
-        nextVersion = "1.4.2a"
+        nextVersion = "1.5.2"
 
         # what is the next version acceptable ?
         if sVersion == "1.3.1":
