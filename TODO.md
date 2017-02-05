@@ -5,6 +5,7 @@ server
 * configuration with fields by probe, not only globals
 * pushAction for upgrading specific probe
 * hostname
+* upgrade path in configuration file
 
 probe
 =====
