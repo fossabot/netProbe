@@ -35,9 +35,8 @@
   remote_user: pi
 
   tasks:
-#    - include : pi-init-init.yml
-#    - include : pi-init-upgrade.yml
-#    - include : install-probe.yml
-#    - include : pi-expandfs.yml
-
+    - include : pi-init-init.yml
+    - include : pi-init-upgrade.yml
+    - include : install-probe.yml
+    - include : pi-expandfs.yml
     - include : pi-ro.yml
