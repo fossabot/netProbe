@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Time-stamp: <2017-02-05 20:38:11 alex>
+# Time-stamp: <2017-02-06 22:35:49 alex>
 # 
 # script to reduce an img file from the raw copy of the PI flash disk
 # in order to copy quiclky on a new SD card of the same size
@@ -72,7 +72,7 @@ echo "INFO: loop used is ${lo}"
 
 echo "* check FS"
 
-fsck.ext4 -p -v -f ${lo} > /tmp/fsck.$$ 2>&1
+fsck.ext4 -p -v -f -F ${lo} > /tmp/fsck.$$ 2>&1
 
 if [ $? != 0 ]; then
     echo "ERROR: fsck reported error"
@@ -80,17 +80,28 @@ if [ $? != 0 ]; then
     end
 fi
 
+echo "* add +x on rc-expand scripts"
 # turn rc-expand scripts to execute
 # mount the loop first
 if [ ! -d /mnt-loop$$ ]; then
   mkdir /mnt-loop$$
   mount ${lo} /mnt-loop$$
   chmod +x /mnt-loop$$/etc/rc-expand*
+  sync
   umount /mnt-loop$$
   rmdir /mnt-loop$$
 else
   echo "ERROR: cannot mkdir /mnt-loop$$"
   end
+fi
+
+# redo fsck for mtime / checktime
+fsck.ext4 -p -v -f -F ${lo} > /tmp/fsck.$$ 2>&1
+
+if [ $? != 0 ]; then
+    echo "ERROR: #2 fsck reported error"
+    cat /tmp/fsck.$$
+    end
 fi
 
 echo "* estimate best new size for partition"
@@ -114,6 +125,11 @@ echo "INFO: new size for ext4 estimated to ${opt_size} blocks"
 echo "* resize the FS"
 
 resize2fs -p ${lo} ${opt_size}
+# check error
+if [ $? != 0 ]; then
+    echo "ERROR: resize2fs"
+    end
+fi
 
 ext4_end=`expr ${ext4_start} + ${block_size} \* ${opt_size}`
 echo "INFO: end of new ext4 partition : ${ext4_end}"
