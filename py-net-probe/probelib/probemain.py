@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 16:36:18 alex>
+# Time-stamp: <2017-02-11 16:08:06 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -145,6 +145,13 @@ class probemain(object):
         self.scheduler.add(self.name, freq, f, data, 2)
 
     # -----------------------------------------
+    def addJobExtended(self, freq, schedData, f, data):
+        """add a job in the scheduler with extended scheduler constraints
+
+        """
+        self.scheduler.addExtended(self.name, freq, schedData, f, data, 2)
+
+    # -----------------------------------------
     def getConfig(self, name, f, testf):
         """get config in database and extract 'name' jobs
 
@@ -156,7 +163,10 @@ class probemain(object):
                 if c['job'] == name:
                     data = c['data']
                     if testf(data):
-                        self.addJob(int(c['freq']), f, data)
+                        if c.__contains__('schedule'):
+                            self.addJobExtended(int(c['freq']), c['schedule'], f, data)
+                        else:
+                            self.addJob(int(c['freq']), f, data)
                         yield c
                 else:
                     logging.error("should not happen!")
