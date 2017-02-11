@@ -1,7 +1,24 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-20 14:15:04 alex>
+# Time-stamp: <2017-01-29 15:32:57 alex>
 #
+# --------------------------------------------------------------------
+# PiProbe
+# Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later 
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
 
 """
  config liveDB
@@ -109,6 +126,12 @@ class liveDB(object):
         return conf.getConfigForHost(host)
 
     # ----------------------------------------------------------
+    def getJobsForHost(self, host):
+        """ return the probe job config """
+
+        return conf.getJobsForHost(host)
+
+    # ----------------------------------------------------------
     def getNameForHost(self, host):
         """ return the probe name """
 
@@ -121,10 +144,12 @@ class liveDB(object):
         r = []
         for p in self.aProbeTable:
             s = self.aProbeTable[p]
+
             r.append({"uid" : s['uid'],
                       "ipv4" : s['ipv4'],
                       "ipv6" : s['ipv6'],
                       "version" : s['version'],
+                      "name": s['name'],
                       "last" : int(time.time() - s['last'])})
 
         return r

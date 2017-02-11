@@ -1,7 +1,24 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-12 16:54:26 alex>
+# Time-stamp: <2017-01-29 17:00:03 alex>
 #
+# --------------------------------------------------------------------
+# PiProbe
+# Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later 
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
 
 import sys
 import os
@@ -111,7 +128,7 @@ def test_push_2():
         assert False, "action error {}".format(j)
 
     # ping the server and check the return
-    rv = c.post("/ping", data=dict(uid=uid))
+    rv = c.post("/ping", data=dict(uid=uid, hostId="p2"))
 
     j = json.loads(rv.data)
 
@@ -148,7 +165,7 @@ def test_push_3():
         assert False, "action error {}".format(j)
 
     # ping the server and check the return
-    rv = c.post("/ping", data=dict(uid=uid))
+    rv = c.post("/ping", data=dict(uid=uid, hostId="p3"))
 
     j = json.loads(rv.data)
 

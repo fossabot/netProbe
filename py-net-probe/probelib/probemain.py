@@ -1,7 +1,24 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-08 13:46:52 alex>
+# Time-stamp: <2017-01-29 16:36:18 alex>
 #
+# --------------------------------------------------------------------
+# PiProbe
+# Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later 
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
 
 """
 probemain is the minima probe library class to help creating probes
@@ -33,12 +50,25 @@ class probemain(object):
 
         self.name = name
         _logFormat = '%(asctime)-15s '+str(name)+' [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+
+        # log level
+        logLevel=logging.ERROR
+
+        if (os.environ.__contains__("PI_LOG_LEVEL")):
+            lvl = str(os.environ["PI_LOG_LEVEL"])
+            if lvl == 'INFO':
+                logLevel=logging.INFO
+            if lvl == 'DEBUG':
+                logLevel=logging.DEBUG
+            if lvl == 'WARNING':
+                logLevel=logging.WARNING
+            if lvl == 'ERROR':
+                logLevel=logging.ERROR
+
         logging.basicConfig(format=_logFormat,
-                            level=logging.INFO)
+                            level=logLevel)
 
         logging.info("starting probe")
-
-        self.db = database.database()
 
         # redis server
         if (os.environ.__contains__("PI_REDIS_SRV")):

@@ -1,7 +1,24 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-12-03 22:39:38 alex>
+# Time-stamp: <2017-01-29 15:19:24 alex>
 #
+# --------------------------------------------------------------------
+# PiProbe
+# Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later 
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
 
 """
  config class
@@ -100,7 +117,7 @@ class config(object):
 
         """
 
-        sId = hostData['id']
+        sId = str(hostData['id'])
 
         if hostData.__contains__('template'):
             for t in hostData['template']:
@@ -122,6 +139,10 @@ class config(object):
                 h = self.aHostTable[hkey]
 
                 if h.__contains__('probename') and h['probename'] == probename:
+                    # if same name but different id, insert a new key
+                    if (hkey != sId):
+                        del(self.aHostTable[hkey])
+                        hkey = sId
                     self.aHostTable[hkey] = {"jobs" : jobs, "probename": probename}
                     logging.info("update probename {}".format(probename))
                     return
@@ -236,6 +257,20 @@ class config(object):
         self.loadFile(self.fileName)
 
     # ----------------------------------------------------------
+    def getJobsForHost(self, sId):
+        """return the jobs configuration for the host
+
+        """
+
+        logging.info("get jobs for {}".format(sId))
+
+        if self.aHostTable.__contains__(sId):
+            return self.aHostTable[sId]['jobs']
+        else:
+            logging.error("should not ask for unknown host in the configuration")
+            return None
+
+    # ----------------------------------------------------------
     def getConfigForHost(self, sId):
         """return the configuration for the host
 
@@ -243,7 +278,11 @@ class config(object):
 
         logging.info("get configuration for {}".format(sId))
 
-        return self.aHostTable[sId]['jobs']
+        if self.aHostTable.__contains__(sId):
+            return self.aHostTable[sId]
+        else:
+            logging.error("should not ask for unknown host in the configuration")
+            return None
 
     # ----------------------------------------------------------
     def getNameForHost(self, sId):

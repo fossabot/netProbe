@@ -1,7 +1,24 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-07-24 21:55:28 alex>
+# Time-stamp: <2017-01-29 14:05:27 alex>
 #
+# --------------------------------------------------------------------
+# PiProbe
+# Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later 
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
 
 """
  logstash output module
@@ -91,7 +108,7 @@ class logstash(output):
     def sendTCP(self, data):
         """send to logstash using TCP socket"""
 
-        logging.info("send to logstash using TCP")
+        logging.info("send to logstash using TCP to {}:{}".format(self.server, self.iPort))
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 

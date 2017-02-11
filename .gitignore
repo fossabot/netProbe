@@ -13,3 +13,5 @@ net-probe-srv/1.conf
 /py-net-probe/*deb
 /net-probe-srv/conf-docker.conf
 /py-net-probe/docker/netprobe.deb
+**/*.deb
+**/#*#

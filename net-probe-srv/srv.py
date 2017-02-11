@@ -1,13 +1,30 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-20 12:37:52 alex>
+# Time-stamp: <2017-01-29 14:02:58 alex>
 #
+# --------------------------------------------------------------------
+# PiProbe
+# Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later 
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
 
 """
  server module for the probe system
 """
 
-__version__ = "1.4"
+__version__ = "1.5"
 
 import logging
 import signal
@@ -17,8 +34,6 @@ from config import conf
 
 from output import outputer
 import output
-
-# from werkzeug.serving import WSGIRequestHandler
 
 # ----------- parse args
 try:
@@ -56,8 +71,7 @@ if type(args.debug) != bool:
     logging.error('debug arg is not taking argument')
     exit()
 
-logging.info("starting server")
-logging.info(" version {}".format(__version__))
+logging.info("starting server, version {}".format(__version__))
 logging.debug("pid {}".format(os.getpid()))
 
 if conf.loadFile(args.config) == False:
@@ -87,6 +101,6 @@ LOGGER.setLevel(logging.ERROR)
 
 if __name__ == '__main__':
     app.debug = args.debug
-    app.secret_key = 'test'
+    app.secret_key = "piprobe-{}".format(__version__)
     app.run(host='0.0.0.0')
 

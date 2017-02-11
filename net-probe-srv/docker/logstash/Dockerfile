@@ -1,7 +1,9 @@
-# -*- Mode: Python; python-indent-offset: 4 -*-
+# Docker file for a logstash server to be bound to the server
+# 
+# Time-stamp: <2017-01-29 14:03:34 alex>
 #
-# Time-stamp: <2017-01-29 13:54:57 alex>
-#
+# docker build -t piprobe-logstash .
+# docker run -d -p 55514:55514/udp -p 55514:55514/tcp piprobe-logstash
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -21,15 +23,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-"""
- probe for the health
-"""
+FROM logstash
 
-from probelib.health import probe_health
+MAINTAINER Alex <achauvinhameau@gmail.com>
 
-p = probe_health(False)
+EXPOSE 55514/udp
+EXPOSE 55514/tcp
 
-#p = probe_health(True)
-#p.job_health({})
-#exit()
+COPY logstash.conf /logstash.conf
 
+CMD ["-f", "/logstash.conf"]

@@ -1,7 +1,7 @@
-# -*- Mode: Python; python-indent-offset: 4 -*-
-#
-# Time-stamp: <2017-01-29 13:54:57 alex>
-#
+# Docker file for testing the server
+# from the git master version
+# 
+# Time-stamp: <2017-01-29 14:03:54 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -21,15 +21,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-"""
- probe for the health
-"""
+FROM centos:7
 
-from probelib.health import probe_health
+MAINTAINER Alex
 
-p = probe_health(False)
+RUN yum -y update
+RUN yum -y install epel-release
+RUN yum -y update
 
-#p = probe_health(True)
-#p.job_health({})
-#exit()
+RUN yum -y install python-pip
+RUN pip install --upgrade pip
 
+RUN pip install Flask
+RUN pip install Flask-APScheduler
+RUN pip install elasticsearch
+
+RUN yum -y install iperf3
+
+RUN yum -y install git
+
+WORKDIR /opt
+RUN git clone https://github.com/achauvinhameau/netProbe
+
+
+# main communication port from probes
+EXPOSE 5000
+# communication port for the iperf3 udp
+EXPOSE 5201/udp

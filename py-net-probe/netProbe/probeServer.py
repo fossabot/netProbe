@@ -1,7 +1,24 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2016-11-13 20:31:20 alex>
+# Time-stamp: <2017-01-29 16:27:34 alex>
 #
+# --------------------------------------------------------------------
+# PiProbe
+# Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later 
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------
 
 """
 Manages communication with the central server
@@ -41,6 +58,7 @@ class probeServer(object):
         self.bServerAvail = False
         self.lastCmdRespTime = 0
         self.uid = 0
+        self.sHostId = ""
 
         if True:
             self.session = requests.Session()
@@ -92,6 +110,7 @@ class probeServer(object):
         """
         if self.bServerAvail == False:
             self.uid = 0
+            self.sHostId = "unknown"
 
         if self.sServerName == "":
             return None
@@ -100,6 +119,7 @@ class probeServer(object):
             self.sPingURL = self.sSrvBaseURL+'/ping'
             
         delta = -1
+        self.lastCmdRespTime = -1
 
         dReturn = { 'status' : 'OK' }
 
@@ -107,9 +127,13 @@ class probeServer(object):
             now = time.time()
             if self.uid > 0:
                 data = {
-                    'uid' : self.uid
+                    'uid' : self.uid,
+                    'hostId' : self.sHostId
                 }
                 r = self.session.post(self.sPingURL, data)
+
+                # logging.info("status code = {}".format(r.status_code))
+
                 if r.status_code == 200:
                     delta = time.time() - now
                     s = json.loads(r.text)
@@ -120,9 +144,15 @@ class probeServer(object):
                     # action in the return ?
                     if s.__contains__('action'):
                         dReturn['action'] = s['action']
+                else:
+                    self.bServerAvail = False
+                    return None
+                    
             else:
-                self.session.get(self.sPingURL)
-                delta = time.time() - now
+                # self.session.get(self.sPingURL)
+                # delta = time.time() - now
+                bConnected = False
+                return None
 
             self.lastCmdRespTime = delta
             self.bServerAvail = True
@@ -159,6 +189,8 @@ class probeServer(object):
         :param sVersion: current version of the probe software
         """
 
+        self.sHostId = sHostId
+
         data = {
             'hostId':sHostId,
             'ipv4':sIpV4,
@@ -180,7 +212,7 @@ class probeServer(object):
             if s.__contains__('uid') and s.__contains__('answer') and s['answer'] == "OK":
                 self.uid = s['uid']
                 self.bServerAvail = True
-                logging.info("my id is {}".format(self.uid))
+                logging.info("discover: my id is {}".format(self.uid))
                 return True
             else:
                 logging.error("bad response from server, missing uid")
