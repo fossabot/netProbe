@@ -25,5 +25,5 @@ History
 =======
 move to changelog once released
 
-1.5
+1.6
 -----

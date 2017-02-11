@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.5 - 11/02/2017
+-----
+* stabilize code
+* docker part for client and server
+* resize flash card for easy install
+* new probe discover to outputers
+* add licence to code (GPL)
+
 1.4 - 14/01/2017
 -----
 * fix : check probe connectivity with the server in the ping job
