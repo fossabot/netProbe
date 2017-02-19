@@ -1,5 +1,6 @@
+# -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 12:35:19 alex>
+# Time-stamp: <2017-02-19 12:32:38 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -19,25 +20,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-all:
-	@echo make lint
-	@echo make flakes
-	@echo make clean
-	@echo make test
+import sys
+import os
 
-lint: clean
-	pylint --rcfile=~/.pylint srv.py netProbeSrv/*py config/*py output/*py liveDB/*py
+sys.path.append(os.getcwd())
+import logging
 
-flakes: clean
-	@pyflakes *py */*py
+if __name__ == '__main__':
+    _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+    logging.basicConfig(format=_logFormat,
+                        level=logging.INFO)
 
-clean:
-	rm -f *pyc */*pyc
-	rm -f *~ */*~
-
-test: clean
-	@nosetests tests
-
-coverage: clean
-	PI_TEST_NO_OUTPUT=1 coverage run ./tests/test_all.py
-	coverage report -m
+    execfile("tests/test_version.py")
+    execfile("tests/test_config.py")

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:56 alex>
+# Time-stamp: <2017-02-19 12:26:05 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -45,7 +45,7 @@ def test_version():
     if j['answer'] != "OK":
         assert False, "version GET not working"
 
-if False:
+if __name__ == '__main__':
     _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
     logging.basicConfig(format=_logFormat,
                         level=logging.INFO)

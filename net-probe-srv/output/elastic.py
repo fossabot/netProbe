@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:22 alex>
+# Time-stamp: <2017-02-19 12:18:20 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -28,6 +28,7 @@ from .output import output
 
 from elasticsearch import Elasticsearch
 import logging
+import os
 
 class elastic(output):
     """ class to handle elastic output """
@@ -65,6 +66,11 @@ class elastic(output):
             iConfReplica = 1
 
         self.es_server = conf['server']
+
+        if (os.environ.__contains__("PI_TEST_NO_OUTPUT")):
+            logging.info("no elastic connect, test only")
+            return
+
         try:
             self.es = Elasticsearch(host=self.es_server)
         except:

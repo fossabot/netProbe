@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 15:19:24 alex>
+# Time-stamp: <2017-02-19 12:24:43 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -219,7 +219,7 @@ class config(object):
                 if outputConf['active'] == "True":
 
                     if not o.checkMethodName(outputConf['engine']):
-                        logging.error("unknown output method name, possible values are : {}. Exiting".format(o.getMethodName()))
+                        logging.error("unknown output method name '{}', possible values are : {}".format(outputConf['engine'], ", ".join(o.getMethodName())))
                         assert False, "bad output name"
                     else:
                         if outputConf['engine'] == "debug":

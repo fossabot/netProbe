@@ -3,7 +3,6 @@ server
 * push regular stats to back office on probe connected or discovered, last hello...
 * schedule on job definition
 * configuration with fields by probe, not only globals
-* pushAction for upgrading specific probe
 * hostname
 * upgrade path in configuration file
 
@@ -20,10 +19,10 @@ raspberry
 =========
 * install watchdog
 
-
 History
 =======
 move to changelog once released
 
 1.6
 -----
+* pushAction for upgrading specific probe
