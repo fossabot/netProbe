@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 09:38:46 alex>
+# Time-stamp: <2017-02-19 21:30:00 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,12 +41,12 @@ import zlib
 from base64 import b64encode
 import os
 import re
-import time
+
 from subprocess import call,check_output, CalledProcessError
 
 class probeServer(object):
     """class to talk to the probe server"""
-	
+
     def __init__(self):
         """
         constructor
@@ -157,7 +157,7 @@ class probeServer(object):
             else:
                 # self.session.get(self.sPingURL)
                 # delta = time.time() - now
-                bConnected = False
+                # bConnected = False
                 return None
 
             self.lastCmdRespTime = delta
@@ -208,7 +208,7 @@ class probeServer(object):
 
         try:
             r = self.session.post(req, data, timeout=2)
-        except:
+        except requests.exceptions.RequestException:
             logging.error("reaching srv : connection refused")
             self.bServerAvail = False
             return False
@@ -306,7 +306,7 @@ class probeServer(object):
         """
 
         logging.info("check for software upgrade")
-        s = check_output(["uname", "-m"])
+        s = check_output(["/usr/bin/uname", "-m"])
         if re.match("arm", s) == None:
             logging.info(" avoid on non ARM platform")
             return
@@ -326,7 +326,7 @@ class probeServer(object):
 
             logging.info("turning FS to RW")
 
-            call(["mount", "-o", "remount,rw", "/"])
+            call(["/usr/bin/mount", "-o", "remount,rw", "/"])
 
             with open("/home/pi/new.deb", 'wb') as fd:
                 for chunk in r.iter_content(1024):
@@ -350,12 +350,11 @@ class probeServer(object):
             logging.error("error in call for dpkg")
             print(e)
             exit()
-            None
 
         os.unlink("/home/pi/new.deb")
 
         logging.info("turning FS back to RO")
-        call(["sync"])
+        call(["/usr/bin/sync"])
 
         logging.info("exiting")
         exit()
