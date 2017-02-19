@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 16:27:34 alex>
+# Time-stamp: <2017-02-19 09:38:46 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -70,7 +70,7 @@ class probeServer(object):
             self.session = requests
 
     # -----------------------------------------------------------------
-    def findServer(self):
+    def findServer(self, serverName = None):
         """
         check which server host to contact
         based on server names
@@ -78,9 +78,15 @@ class probeServer(object):
            net-probe-srv
            probe-srv
         """
-        for server in ['net-probe-srv-prod',
-                       'net-probe-srv',
-                       'probe-srv']:
+
+        aServers = ['net-probe-srv-prod',
+                    'net-probe-srv',
+                    'probe-srv']
+
+        if serverName != None:
+            aServers = [ serverName ]
+
+        for server in aServers:
             try:
                 socket.getaddrinfo(server, 80)
                 self.sServerName = server

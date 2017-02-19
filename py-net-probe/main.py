@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 16:42:23 alex>
+# Time-stamp: <2017-02-19 09:37:39 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -56,6 +56,8 @@ try:
     parser.add_argument('--probe', '-p', metavar='probe_loglevel', default='ERROR', type=str, help='log level for probes', nargs=1, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
  
     parser.add_argument('--redis', '-r', metavar='none', help='redis server', default=None, nargs='?')
+
+    parser.add_argument('--server', '-s', metavar='none', help='PiProbe server', default=None, nargs='?')
 
     args = parser.parse_args()
 
@@ -171,7 +173,7 @@ def serverConnect():
         #
         srv = netProbe.probeServer()
 
-        if srv.findServer():
+        if srv.findServer(args.server):
             logging.info("srv IP found in tables")
         else:
             logging.error("server not found in DNS or host table")
