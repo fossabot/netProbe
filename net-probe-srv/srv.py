@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:02:58 alex>
+# Time-stamp: <2017-02-19 21:40:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,7 @@
  server module for the probe system
 """
 
-__version__ = "1.5"
+__version__ = "1.6"
 
 import logging
 import signal
@@ -32,8 +32,8 @@ import os
 
 from config import conf
 
-from output import outputer
-import output
+#from output import outputer
+#import output
 
 # ----------- parse args
 try:
@@ -67,7 +67,7 @@ if args.log == 'ERROR':
 logging.basicConfig(format=_logFormat, level=logLevel)
 # logging.basicConfig(level=logLevel)
 
-if type(args.debug) != bool:
+if not isinstance(args.debug, bool):
     logging.error('debug arg is not taking argument')
     exit()
 

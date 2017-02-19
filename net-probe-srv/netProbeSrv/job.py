@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 15:12:10 alex>
+# Time-stamp: <2017-02-19 22:10:31 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,13 +27,11 @@
 from flask import make_response, jsonify, request
 from netProbeSrv import app
 from liveDB import lDB
-# import time
 import logging
-# import pprint
 
 from config import conf
 
-@app.route('/myjobs', methods=['POST'])
+@app.route('/myjobs', methods=['POST', 'GET'])
 def ws_myjobs():
     """
     provide job list to probe asking for
@@ -49,7 +47,7 @@ def ws_myjobs():
         host = lDB.getHostByUid(uid)
         if host == None:
             return make_response(jsonify({"answer" : "KO",
-                                          "reason" : "probe not known"}), 200)
+                                          "reason" : "probe not known"}), 404)
 
         jobs = lDB.getJobsForHost(host)
 
@@ -60,4 +58,4 @@ def ws_myjobs():
 
 
     return make_response(jsonify({"answer" : "KO",
-                                  "reason" : "bad method used"}), 200)
+                                  "reason" : "bad method used"}), 400)

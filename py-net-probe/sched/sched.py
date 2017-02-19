@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-11 17:34:05 alex>
+# Time-stamp: <2017-02-19 21:46:32 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,13 +29,13 @@ import random
 import logging
 import re
 
-import pprint
+# import pprint
 
 class sched(object):
     """
     scheduler class
     """
-    
+
     # ------------------------------------
     def __init__(self):
         """
@@ -59,7 +59,7 @@ class sched(object):
         :param schedData: extended data for scheduling
         :param func: function to call each iteration
         :param args: argument to pass to the job
-        :param startIn: next execution of the job in 
+        :param startIn: next execution of the job in
            0: iFreq
            1: now+1
            2: random between 5s and iFreq
@@ -123,8 +123,6 @@ class sched(object):
 
         (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
 
-        # print "before",(tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst)
-
         r = re.match("(\d\d):(\d\d)", s)
         if r != None:
             hour = int(r.group(1))
@@ -150,8 +148,6 @@ class sched(object):
                     tm_hour = hour
                     tm_min = minute
                 
-        # print "after ",(tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst)
-
         return time.mktime((tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst))
 
     # ------------------------------------
@@ -162,7 +158,7 @@ class sched(object):
 
         if no job is in the queue, returns 30
         if next job in more than a second, returns next sched delta time
-        if next job is within the sec, wait for the delay and launch job, 
+        if next job is within the sec, wait for the delay and launch job,
            then returns 0
         """
         if len(self.aSchedJobs) == 0:
