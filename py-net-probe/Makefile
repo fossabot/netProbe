@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-02-20 21:41:29 alex>
+# Time-stamp: <2017-02-20 22:27:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -54,5 +54,3 @@ test: clean
 coverage: clean
 	PI_TEST_NO_OUTPUT=1 coverage run ./tests/test_all.py
 	coverage report -m
-	coverage xml
-	CODACY_PROJECT_TOKEN=1936f6ba7c3a41ee82aa5e1cbfc16ce6 python-codacy-coverage -r coverage.xml
