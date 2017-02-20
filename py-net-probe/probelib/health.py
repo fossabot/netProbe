@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 22:42:23 alex>
+# Time-stamp: <2017-02-20 22:01:49 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -48,9 +48,9 @@ class probe_health(probemain):
         if not bTest:
             self.getConfig("health", self.job_health)
             self.mainLoop()
-        
+
     # -----------------------------------------
-    def getConfig(self, name, f):
+    def getConfig(self, name, f, testf=None):
         """get the configuration from the database if f_testv4 passed
 
         """

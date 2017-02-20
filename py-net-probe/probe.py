@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 21:48:39 alex>
+# Time-stamp: <2017-02-20 22:12:19 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -27,7 +27,7 @@ import logging
 import subprocess
 import time
 import psutil
-import pprint
+#import pprint
 
 # -----------------------------------------
 def restartProbe(jobName, probeProcess):

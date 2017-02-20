@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:01:49 alex>
+# Time-stamp: <2017-02-20 22:00:53 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -56,7 +56,7 @@ class probe_iperf(probemain):
         self.mainLoop()
 
     # -----------------------------------------
-    def getConfig(self, name, f):
+    def getConfig(self, name, f, testf=None):
         """get the configuration from the database
 
         """
