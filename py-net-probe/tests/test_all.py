@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 21:52:54 alex>
+# Time-stamp: <2017-02-20 22:23:10 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -32,3 +32,4 @@ if __name__ == '__main__':
                         level=logging.INFO)
 
     execfile("tests/test_sched.py")
+    execfile("tests/test_hostid.py")
