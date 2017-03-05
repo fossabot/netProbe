@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 12:18:20 alex>
+# Time-stamp: <2017-03-05 18:18:31 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -26,7 +26,7 @@
 
 from .output import output
 
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, ElasticsearchException
 import logging
 import os
 
@@ -73,17 +73,17 @@ class elastic(output):
 
         try:
             self.es = Elasticsearch(host=self.es_server)
-        except:
-            assert False, "cannot find elastic server, exiting"
 
-        self.es.indices.create(index=sConfIndex,
-                               body={
-                                   'settings': {
-                                       'number_of_shards': iConfShard,
-                                       'number_of_replicas': iConfReplica
-                                   }
-                               },
-                               ignore=400)
+            self.es.indices.create(index=sConfIndex,
+                                   body={
+                                       'settings': {
+                                           'number_of_shards': iConfShard,
+                                           'number_of_replicas': iConfReplica
+                                       }
+                                   },
+                                   ignore=400)
+        except ElasticsearchException:
+            logging.error("cannot connect to elastic server")
 
     # ----------------------------------------------------------
     def send(self, data):
@@ -91,7 +91,10 @@ class elastic(output):
 
         logging.info("send to elasticsearch")
 
-        res = self.es.index(index="pyprobe", doc_type='result', body=data)
+        try:
+            res = self.es.index(index="pyprobe", doc_type='result', body=data)
+            if res['created'] != True:
+                logging.error("error on insert in ES {}".format(res))
+        except ElasticsearchException:
+            logging.error("error sending back to elastic server")
 
-        if res['created'] != True:
-            logging.error("error on insert in ES {}".format(res))
