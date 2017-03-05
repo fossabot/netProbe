@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:05:24 alex>
+# Time-stamp: <2017-03-05 18:17:08 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -31,6 +31,13 @@ import signal
 import os
 
 from config import conf
+
+LOGGER = logging.getLogger('apscheduler.executors.default')
+LOGGER.setLevel(logging.ERROR)
+LOGGER = logging.getLogger('werkzeug')
+LOGGER.setLevel(logging.ERROR)
+LOGGER = logging.getLogger('urllib3')
+LOGGER.setLevel(logging.ERROR)
 
 #from output import outputer
 #import output
@@ -65,7 +72,7 @@ if args.log == 'ERROR':
     logLevel=logging.ERROR
 
 logging.basicConfig(format=_logFormat, level=logLevel)
-# logging.basicConfig(level=logLevel)
+#logging.basicConfig(level=logLevel)
 
 if not isinstance(args.debug, bool):
     logging.error('debug arg is not taking argument')
@@ -93,11 +100,6 @@ def trap_HUP_signal(sig, heap):
     conf.reload()
 
 signal.signal(signal.SIGHUP, trap_HUP_signal)
-
-LOGGER = logging.getLogger('apscheduler.executors.default')
-LOGGER.setLevel(logging.ERROR)
-LOGGER = logging.getLogger('werkzeug')
-LOGGER.setLevel(logging.ERROR)
 
 if __name__ == '__main__':
     app.debug = args.debug
