@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 12:24:43 alex>
+# Time-stamp: <2017-03-13 15:32:07 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -96,7 +96,7 @@ class config(object):
                 if hjs != None:
                     for hj in hjs:
                         if hj.__contains__('template'):
-                            if hj['template'] == tName:
+                            if hj['template'] == tName and hj['data'] == newJob['data']:
                                 newJob['id'] = hj['id']
 
                 if newJob['id'] == 0:
