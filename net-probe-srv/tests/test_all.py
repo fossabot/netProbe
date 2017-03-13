@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 21:53:17 alex>
+# Time-stamp: <2017-03-13 16:07:06 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -35,3 +35,8 @@ if __name__ == '__main__':
     execfile("tests/test_config.py")
     execfile("tests/test_jobs.py")
     execfile("tests/test_database.py")
+    execfile("tests/test_discover.py")
+    execfile("tests/test_admin.py")
+    execfile("tests/test_ping.py")
+    execfile("tests/test_pushActions.py")
+    execfile("tests/test_main.py")

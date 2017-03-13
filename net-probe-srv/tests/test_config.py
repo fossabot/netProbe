@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 21:55:17 alex>
+# Time-stamp: <2017-03-13 15:53:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -155,7 +155,7 @@ def test_active_flag():
     dConf = {
         "output" :  [ { "engine": "debug",
                         "parameters" : [],
-                        "active" : "False"    }  ],
+                        "active" : "True"    }  ],
         "probe" : [
             { "id" : "xx6",
               "probename" : "xx6",

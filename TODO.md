@@ -31,4 +31,4 @@ move to changelog once released
 -----
 * pushAction for upgrading specific probe
 * stats on discovered probes to outputer
-
+* fix : template id for configuration no properly set when multiple data used

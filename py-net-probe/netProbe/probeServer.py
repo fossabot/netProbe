@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 21:30:00 alex>
+# Time-stamp: <2017-03-13 15:09:34 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -213,17 +213,21 @@ class probeServer(object):
             self.bServerAvail = False
             return False
 
+        s = json.loads(r.text)
+
         if r.status_code == 200:
-            s = json.loads(r.text)
             if s.__contains__('uid') and s.__contains__('answer') and s['answer'] == "OK":
                 self.uid = s['uid']
                 self.bServerAvail = True
+                self.session.close()
                 logging.info("discover: my id is {}".format(self.uid))
                 return True
             else:
                 logging.error("bad response from server, missing uid")
 
+        logging.error("error from server in discover {}:{}".format(r.status_code, s['reason']))
         self.bServerAvail = False
+        self.session.close()
         return False
 
     # -----------------------------------------------------------------

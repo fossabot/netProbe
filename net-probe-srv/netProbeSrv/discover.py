@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-05 22:06:26 alex>
+# Time-stamp: <2017-03-13 15:59:35 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -124,4 +124,4 @@ def ws_discover():
             # inform probe
             return make_response(jsonify({"answer" : "KO", "reason" : "not found"}), 404)
 
-    return make_response(jsonify({"answer" : "KO", "reason" : "other"}), 400)
+    # return make_response(jsonify({"answer" : "KO", "reason" : "other"}), 400)

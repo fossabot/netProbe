@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 16:54:35 alex>
+# Time-stamp: <2017-03-13 16:23:00 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -58,12 +58,12 @@ def ws_ping():
 
         host = lDB.getHostByUid(uid)
         
+        if host == None:
+            return make_response(jsonify({"answer" : "host not found"}), 404)
+
         if host != request.form['hostId']:
             logging.error("bad probe {} {}".format(host, request.form['hostId']))
             return make_response(jsonify({"answer" : "bad probe matching id and hostid"}), 400)
-
-        if host == None:
-            return make_response(jsonify({"answer" : "host not found"}), 400)
 
         lDB.updateHost(host, {"last" : time.time()})
 
@@ -77,4 +77,4 @@ def ws_ping():
         "answer" : "KO"
     }
     
-    return make_response(jsonify(r), 400)
+    return make_response(jsonify(r), 500)
