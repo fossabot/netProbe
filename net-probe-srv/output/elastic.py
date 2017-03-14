@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-05 18:18:31 alex>
+# Time-stamp: <2017-03-14 17:44:40 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -37,7 +37,7 @@ class elastic(output):
     def __init__(self, conf):
         """constructor"""
 
-        output.__init__(self)
+        output.__init__(self, "elastic")
 
         if not conf.__contains__('server'):
             assert False, "elastic configuration missing server"

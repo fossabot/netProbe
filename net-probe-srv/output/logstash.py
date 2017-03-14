@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:27 alex>
+# Time-stamp: <2017-03-14 17:44:51 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -45,7 +45,7 @@ class logstash(output):
     def __init__(self, conf):
         """constructor"""
 
-        output.__init__(self)
+        output.__init__(self, "logstash")
 
         if not conf.__contains__('server'):
             assert False, "logstash configuration missing server"
