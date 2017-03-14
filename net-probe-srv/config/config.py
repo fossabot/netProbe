@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-13 15:32:07 alex>
+# Time-stamp: <2017-03-14 18:09:13 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -41,7 +41,7 @@ class config(object):
         """
         self.aHostTable = {}
         self.aTemplates = {}
-        self.outputMethodName = "none"
+        # self.outputMethodName = "none"
         self.fileName = "none"
         self.iTemplateJobsId = 1000
 
@@ -190,7 +190,11 @@ class config(object):
         c = f.read()
         f.close()
 
-        conf = json.loads(c)
+        conf = ''
+        try:
+            conf = json.loads(c)
+        except Exception as ex:
+            assert False, "configuration file load exception : {}".format(", ".join(ex.args))
 
         # template
         if conf.__contains__('template'):
@@ -296,6 +300,29 @@ class config(object):
             return self.aHostTable[sId]['probename']
         else:
             return "unknown"
+
+    # ----------------------------------------------------------
+    def getListTemplate(self):
+        """return the templates name
+
+        """
+        for t in self.aTemplates.keys():
+            yield t
+
+    # ----------------------------------------------------------
+    def getListProbes(self):
+        """return the probes name
+
+        """
+        for p in self.aHostTable.keys():
+            templates = ""
+            for j in self.aHostTable[p]['jobs']:
+                if j.__contains__('template'):
+                    templates += j['template']+", "
+            yield [ self.aHostTable[p]['probename'],
+                    p[-8:],
+                    len(self.aHostTable[p]['jobs']),
+                    templates[:-2]]
 
     # ----------------------------------------------------------
     def dump(self):

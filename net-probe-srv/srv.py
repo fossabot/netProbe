@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-05 18:17:08 alex>
+# Time-stamp: <2017-03-14 18:28:23 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -29,6 +29,7 @@ __version__ = "1.6"
 import logging
 import signal
 import os
+from output import outputer
 
 from config import conf
 
@@ -49,12 +50,15 @@ try:
 
     parser.add_argument('--config', '-c', metavar='file', default='1.conf', type=str, help='configuration file', nargs='?')
 
-    parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level', nargs='?', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
+    parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level DEBUG, INFO, WARNING, ERROR', nargs=1, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
 
-    parser.add_argument('--debug', '-d', metavar='none', help='debug mode for engine', const=True, default=False, nargs='?')
+    parser.add_argument('--debug', '-d', help='debug mode for engine',
+                        action='store_true')
+
+    parser.add_argument('--check', action='store_true',
+                        help='check the configuration file and exit')
 
     args = parser.parse_args()
-    # print args
 
 except ImportError:
     log.error('parse error')
@@ -62,14 +66,16 @@ except ImportError:
 
 # ----- set the log level and format
 _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
-logLevel = logging.INFO
+logLevel = logging.ERROR
 
-if args.log == 'DEBUG':
+if args.log[0] == 'DEBUG':
     logLevel=logging.DEBUG
-if args.log == 'WARNING':
+if args.log[0] == 'WARNING':
     logLevel=logging.WARNING
-if args.log == 'ERROR':
+if args.log[0] == 'ERROR':
     logLevel=logging.ERROR
+if args.log[0] == 'INFO':
+    logLevel=logging.INFO
 
 logging.basicConfig(format=_logFormat, level=logLevel)
 #logging.basicConfig(level=logLevel)
@@ -81,8 +87,33 @@ if not isinstance(args.debug, bool):
 logging.info("starting server, version {}".format(__version__))
 logging.debug("pid {}".format(os.getpid()))
 
-if conf.loadFile(args.config) == False:
-    logging.error('exiting')
+try:
+    if conf.loadFile(args.config) == False:
+        logging.error('exiting')
+        exit()
+except Exception as ex:
+    logging.error("{}".format(" ".join(ex.args)))
+    exit()
+
+if args.check == True:
+    logging.info("check configuration : syntax seems ok")
+
+    outs = []
+    for o in outputer:
+        outs.append(o.getType())
+
+    print("outputs: {}".format(", ".join(outs)))
+
+    print("templates: {}".format(", ".join(conf.getListTemplate())))
+
+    for p in conf.getListProbes():
+        print("probe : {}".format(p[0]))
+        print("  id: *{}".format(p[1]))
+        print("  jobs: {}".format(p[2]))
+        print("  templates: {}\n".format(p[3]))
+
+    print("configuration {} check OK".format(args.config))
+    print("exiting...")
     exit()
 
 from netProbeSrv import app

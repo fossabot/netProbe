@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-13 15:53:14 alex>
+# Time-stamp: <2017-03-14 18:26:48 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -304,6 +304,8 @@ def test_template01():
     global conf
     conf.loadFile('test_config.conf')
 
+    print("templates: {}".format(", ".join(conf.getListTemplate())))    
+
     c = app.test_client()
 
     # register the probe
@@ -481,6 +483,9 @@ def test_template02():
         assert False, "job #1 for temp03 id != 1002"
     if j['jobs'][1]['id'] != 1003:
         assert False, "job #2 for temp03 id != 1003"
+
+    # for coverage
+    list(conf.getListProbes()) 
 
 # ---------------------------------------------
 def test_template_missing():
@@ -1048,6 +1053,65 @@ def test_outputers_empty():
         return
 
 # ---------------------------------------------
+def test_template_syntaxerror():
+    """ check template syntax error trap
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+        "template" : 
+        [
+            { 
+                "name": "T01",
+                "jobs" : [
+                    { 
+                        "active": "True",
+                        "job" : "health",
+                        "freq" : 15,
+                        "version" : 1,
+                        "data" : {}
+                    }
+                ]
+            }
+        ],
+
+        "output" :  [ { "engine": "debug",
+                        "parameters" : [],
+                        "active" : "False"    }  ],
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01",
+              "template" : [
+                  "T01"
+              ]
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+    sConf = string.replace(sConf, "],", ']')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+
+    try:
+        conf.loadFile('test_config.conf')
+    except Exception as ex:
+        return
+
+    assert False, "configuration syntax error not trapped"
+
+# ---------------------------------------------
 def all_config(b=True):
     if b:
         test_noFile()
@@ -1070,7 +1134,8 @@ def all_config(b=True):
         test_template_2loads()
         test_engine_ukn()
         test_outputers()
-    test_outputers_empty()
+        test_outputers_empty()
+    test_template_syntaxerror()
 
 
 # ---------------------------------------------
@@ -1080,7 +1145,7 @@ if __name__ == '__main__':
                         level=logging.INFO)
 
     all_config(True)
-    # all(False)
+    #all_config(False)
 
 
 """ coverage result
