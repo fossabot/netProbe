@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-14 18:09:13 alex>
+# Time-stamp: <2017-03-15 14:13:47 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -33,7 +33,7 @@ import output
 
 class config(object):
     """ class to manipulate the configuration """
-    
+
     # ----------------------------------------------------------
     def __init__(self):
         """constructor
