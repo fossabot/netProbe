@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-03-15 14:20:38 alex>
+# Time-stamp: <2017-03-15 14:54:48 alex>
 #
 # PiProbe
 # Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
@@ -18,10 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-all:
+all: version clean test
 	@echo make git-status
-	@echo make clean
-	@echo make test
 
 clean:
 	@cd net-probe-srv && make -s clean
@@ -37,7 +35,7 @@ test: clean
 git-status: clean
 	git status
 
-coverage: clean
+coverage: clean version
 	@cd net-probe-srv && make -s coverage
 	@cd py-net-probe && make -s coverage
 	@coverage combine py-net-probe/.coverage net-probe-srv/.coverage

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-05 18:22:35 alex>
+# Time-stamp: <2017-03-15 15:03:55 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -47,7 +47,7 @@ class probe_temp(probemain):
         if not bTest:
             self.getConfig("temp", self.job_temp)
             self.mainLoop()
-        
+
     # -----------------------------------------
     def getConfig(self, name, f, testf=None):
         """get the configuration from the database if f_testv4 passed

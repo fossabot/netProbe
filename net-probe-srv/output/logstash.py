@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:49:03 alex>
+# Time-stamp: <2017-03-15 15:00:10 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -79,7 +79,7 @@ class logstash(output):
         """
 
         data = _data['data']
-        
+
         data['@timestamp'] = datetime.datetime.fromtimestamp(_data['date']).isoformat()
         data['probe-name'] = _data['probename']
         data['probe-app'] = _data['name']

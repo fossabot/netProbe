@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:49:57 alex>
+# Time-stamp: <2017-03-15 15:08:16 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -32,10 +32,6 @@ True
 >>> ip.getIfIPv6()
 'fe90::a00:...'
 """
-
-__version__ = "1.0"
-__date__ = "08/04/2016"
-__author__ = "Alex Chauvin"
 
 import netifaces
 import re
@@ -73,7 +69,7 @@ class ipConf(object):
             super(ipConf, self).__init__()
 		
     def hasDefaultRoute(self):
-        """ 
+        """
         does the ip stack has a default route
         return boolean
         """

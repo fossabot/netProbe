@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-13 15:09:34 alex>
+# Time-stamp: <2017-03-15 15:08:33 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -123,7 +123,7 @@ class probeServer(object):
 
         if self.sPingURL == "":
             self.sPingURL = self.sSrvBaseURL+'/ping'
-            
+
         delta = -1
         self.lastCmdRespTime = -1
 

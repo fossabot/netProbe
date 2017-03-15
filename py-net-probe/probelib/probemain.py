@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:24:18 alex>
+# Time-stamp: <2017-03-15 15:03:38 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -134,7 +134,7 @@ class probemain(object):
 
         """
         logging.info("exiting after signal received")
-        
+
         self.bRunning = False
 
     # -----------------------------------------

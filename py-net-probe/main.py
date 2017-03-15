@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:32:04 alex>
+# Time-stamp: <2017-03-15 15:07:14 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -10,7 +10,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,7 @@
 """
 
 __version__ = "1.6.2"
-__date__ = "15/03/17-14:52:33"
+__date__ = "15/03/17-14:55:01"
 __author__ = "Alex Chauvin"
 
 import time
@@ -54,7 +54,7 @@ try:
     parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level', nargs='?', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
 
     parser.add_argument('--probe', '-p', metavar='probe_loglevel', default='ERROR', type=str, help='log level for probes', nargs=1, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
- 
+
     parser.add_argument('--redis', '-r', metavar='none', help='redis server', default=None, nargs='?')
 
     parser.add_argument('--server', '-s', metavar='none', help='PiProbe server', default=None, nargs='?')
@@ -214,7 +214,7 @@ def ping():
         if _iRetry > 2:
             bConnected = False
         else:
-            stats.setVar("ping-server-retry", _iRetry+1)        
+            stats.setVar("ping-server-retry", _iRetry+1)
         return
 
     fLastDelta = srv.getLastCmdDeltaTime()

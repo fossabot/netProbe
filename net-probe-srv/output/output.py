@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-14 17:48:32 alex>
+# Time-stamp: <2017-03-15 15:06:11 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -36,12 +36,12 @@ class output(object):
     #TYPE_DEBUG = 2
 
     # ----------------------------------------------------------
-    def __init__(self, type="unknown"):
+    def __init__(self, _type="unknown"):
         """constructor
 
         """
 
-        self.type = type
+        self.type = _type
         self.lKnownMethod = ("debug", "elastic", "logstash")
 
     # ----------------------------------------------------------

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:35:42 alex>
+# Time-stamp: <2017-03-15 15:04:38 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -80,7 +80,7 @@ class config(object):
             # already some jobs on the probe ? maybe an update only
             if hostData.__contains__('probename'):
                 probename = hostData['probename']
-                
+
                 for hkey in self.aHostTable:
                     h = self.aHostTable[hkey]
                     
@@ -112,9 +112,8 @@ class config(object):
 
     # ----------------------------------------------------------
     def addHost(self, hostData):
-        """add a host to the database, if template specified, apply 
+        """add a host to the database, if template specified, apply
            first the template
-
         """
 
         sId = str(hostData['id'])

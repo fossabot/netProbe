@@ -1,7 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:12:19 alex>
-#
+# Time-stamp: <2017-03-15 15:03:22 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -38,7 +37,6 @@ def restartProbe(jobName, probeProcess):
     logging.info("restart probe {}".format(jobName))
 
     # stops the process
-    
     if probeProcess.__contains__(jobName):
         p = probeProcess[jobName]['handler']
         

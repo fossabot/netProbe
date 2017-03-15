@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:48:49 alex>
+# Time-stamp: <2017-03-15 15:05:17 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -79,14 +79,13 @@ def ws_pushAction():
         if module == "job":
             if request.form.__contains__('job') == False:
                 return make_response(jsonify({"answer":"KO", "reason":"missing job"}), 400)
-            
+
             job = str(request.form['job'])
             sAction['args'] = { "module" : module, "job" : job }
 
             lDB.updateHost(host, {"action" : sAction })
 
         return make_response(jsonify(r), 200)
-
 
     # -------------------------
     if action == "upgrade":

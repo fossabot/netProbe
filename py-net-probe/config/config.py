@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:49:30 alex>
+# Time-stamp: <2017-03-15 15:06:27 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -50,7 +50,7 @@ class config(object):
             'stats_push': 300,
             'upgrade': 3600*6
         }
-        
+
         for k in self.scheduler.keys():
             try:
                 self.scheduler[k] = self.conf.getint("scheduler", k)

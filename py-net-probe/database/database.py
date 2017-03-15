@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:52:42 alex>
+# Time-stamp: <2017-03-15 15:02:20 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -10,7 +10,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,10 +24,6 @@
 """
  probe database for configuration and data
 """
-
-__version__ = "1.1"
-__date__ = "01/05/2016"
-__author__ = "Alex Chauvin"
 
 import redis
 import logging

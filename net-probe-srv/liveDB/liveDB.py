@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:47:07 alex>
+# Time-stamp: <2017-03-15 15:04:52 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -170,7 +170,6 @@ class liveDB(object):
             a = self.aProbeTable[sId]['action']
             del self.aProbeTable[sId]['action']
             return a
-    
 
     # ----------------------------------------------------------
     def cleanOldProbes(self):
