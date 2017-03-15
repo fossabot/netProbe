@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:13:35 alex>
+# Time-stamp: <2017-03-15 14:24:18 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -92,7 +92,7 @@ class probemain(object):
 
         logging.info("check if default route is present")
         self.ip = ipConf()
-        
+
         if self.ip.hasDefaultRoute() == False:
             logging.warning("no default route")
 

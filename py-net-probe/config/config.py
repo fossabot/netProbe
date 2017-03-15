@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 22:22:34 alex>
+# Time-stamp: <2017-03-15 14:49:30 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -32,7 +32,7 @@ import ConfigParser
 
 class config(object):
     """ class to manipulate the configuration """
-    
+
     # ----------------------------------------------------------
     def __init__(self):
         """constructor
@@ -54,7 +54,7 @@ class config(object):
         for k in self.scheduler.keys():
             try:
                 self.scheduler[k] = self.conf.getint("scheduler", k)
-            except:
+            except Exception as ex:
                 assert False, "key not found in the config file {}".format(k)
             
         return

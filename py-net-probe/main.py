@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 09:37:39 alex>
+# Time-stamp: <2017-03-15 14:32:04 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -52,7 +52,7 @@ try:
     parser = argparse.ArgumentParser(description='raspberry net probe system')
 
     parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level', nargs='?', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
- 
+
     parser.add_argument('--probe', '-p', metavar='probe_loglevel', default='ERROR', type=str, help='log level for probes', nargs=1, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
  
     parser.add_argument('--redis', '-r', metavar='none', help='redis server', default=None, nargs='?')
@@ -228,7 +228,7 @@ def ping():
     stats.setVar("ping-server-delay", fLastDelta*1000)
 
     # action handle, if some action has been pushed by the server
-    if r.__contains__('action') and type(r['action']) == dict:
+    if r.__contains__('action') and isinstance(r['action'], dict):
         action(r['action'])
 
 # -----------------------------------------

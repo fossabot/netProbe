@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-cd `dirname $0`
+cd $(dirname $0)
 
 while [ true ]
 do

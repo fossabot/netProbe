@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:14:34 alex>
+# Time-stamp: <2017-03-15 14:34:21 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -115,8 +115,8 @@ class probe_http(probemain):
 
         except urllib2.URLError, e:
             sError = str(e.reason)
-        except:
-            sError = "unknown"
+        except Exception as ex:
+            sError = str(", ".join(ex.args))
 
         if fTime == 0:
             fTime = fTimeout

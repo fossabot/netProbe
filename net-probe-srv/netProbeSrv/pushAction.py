@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 22:20:01 alex>
+# Time-stamp: <2017-03-15 14:48:49 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -100,17 +100,3 @@ def ws_pushAction():
     r['answer'] = "KO"
     r['reason'] = "action not found"
     return make_response(jsonify(r), 400)
-
-
-# -----------------------
-""" postman :
-http://192.168.56.103:5000/pushAction
-
-uid:1
-action:restart
-module:job
-job:health
-
-uid:1
-action:restart
-module:all """

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-13 15:59:35 alex>
+# Time-stamp: <2017-03-15 14:47:31 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,8 +48,8 @@ def ws_discover():
     global lDB
 
     if request.method == 'POST':
-        if not (request.form.__contains__('hostId') and 
-                request.form.__contains__('ipv4') and 
+        if not (request.form.__contains__('hostId') and
+                request.form.__contains__('ipv4') and
                 request.form.__contains__('ipv6') and
                 request.form.__contains__('version') ):
             logging.error("probe passing bad args")

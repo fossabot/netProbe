@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:22:54 alex>
+# Time-stamp: <2017-03-15 14:31:27 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -53,7 +53,7 @@ class hostId(object):
             raise Exception('ERROR accessing cpuinfo')
 
         sCPU = sUniqueId
-        
+
         aLines = f.readlines()
         f.close()
 

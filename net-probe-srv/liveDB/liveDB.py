@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 21:36:01 alex>
+# Time-stamp: <2017-03-15 14:47:07 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -34,7 +34,7 @@ from config import conf
 
 class liveDB(object):
     """ class to manipulate the liveDB """
-    
+
     # ----------------------------------------------------------
     def __init__(self):
         """constructor

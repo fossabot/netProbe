@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:05:08 alex>
+# Time-stamp: <2017-03-15 14:30:10 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -43,6 +43,7 @@ def ws_adminReload():
     logging.info("/admin/reload")
 
     global conf
+
     conf.reload()
 
     r = {

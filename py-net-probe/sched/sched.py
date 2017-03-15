@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-19 22:37:18 alex>
+# Time-stamp: <2017-03-15 14:34:37 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -81,7 +81,7 @@ class sched(object):
                 else:
                     if startIn == 3:
                         iNextExec += 3
-            
+
         logging.info("add job {} : freq = {}, next = {:0.2f}".format(name, iFreq, iNextExec-time.time()))
 
         self.aSchedJobs.append({'freq' : iFreq,

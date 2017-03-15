@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Time-stamp: <2017-02-06 22:35:49 alex>
+# Time-stamp: <2017-03-15 14:28:33 alex>
 # 
 # script to reduce an img file from the raw copy of the PI flash disk
 # in order to copy quiclky on a new SD card of the same size
@@ -46,10 +46,10 @@ function end {
 }
 
 # get start of the ext4 partition, the first one is a FAT
-ext4_num=`parted -m $file unit B print | awk -F: '/ext4/ { print $1 }'`
+ext4_num=$(parted -m $file unit B print | awk -F: '/ext4/ { print $1 }')
 
 # get start of the ext4 partition, the first one is a FAT
-ext4_start=`parted -m $file unit B print | awk -F: '/ext4/ { print $2 }' | tr -d 'B'`
+ext4_start=$(parted -m $file unit B print | awk -F: '/ext4/ { print $2 }' | tr -d 'B')
 
 if [ ${ext4_start} -lt 25000000 ]; then
     echo "ERROR : parted error : cannot find the ext4 partition"
@@ -60,7 +60,7 @@ fi
 echo "INFO: found start of the ext4 partition at $ext4_start"
 
 # mount the ext4 partition
-lo=`losetup -f --show -o ${ext4_start} ${file}`
+lo=$(losetup -f --show -o ${ext4_start} ${file})
 
 losetup -l | fgrep ${lo} > /dev/null
 if [ $? != 0 ]; then
@@ -107,7 +107,7 @@ fi
 echo "* estimate best new size for partition"
 
 # get block size
-block_size=`tune2fs -l ${lo} | awk -F: '/Block size/ {gsub(/[[:space:]]*/,"",$2); print $2 }'`
+block_size=$(tune2fs -l ${lo} | awk -F: '/Block size/ {gsub(/[[:space:]]*/,"",$2); print $2 }')
 if [ ${block_size} -lt 512 ]; then
     echo "ERROR: bad block size"
     end
@@ -115,11 +115,10 @@ fi
 
 echo "INFO: block size = ${block_size}"
 
-best_size=`resize2fs -P ${lo} 2>&1 | awk -F: '{if ($0 !~ /resize2fs/) {gsub(/[[:space:]]*/,"",$2); print $2}}'`
+best_size=$(resize2fs -P ${lo} 2>&1 | awk -F: '{if ($0 !~ /resize2fs/) {gsub(/[[:space:]]*/,"",$2); print $2}}')
 echo "INFO: best size reported for FS : ${best_size} blocks"
 
-# opt_size=`expr 2 \* ${best_size}`
-opt_size=`expr 1024 \* 32 + ${best_size}`
+opt_size=$(expr 1024 \* 32 + ${best_size})
 echo "INFO: new size for ext4 estimated to ${opt_size} blocks"
 
 echo "* resize the FS"
@@ -131,7 +130,7 @@ if [ $? != 0 ]; then
     end
 fi
 
-ext4_end=`expr ${ext4_start} + ${block_size} \* ${opt_size}`
+ext4_end=$(expr ${ext4_start} + ${block_size} \* ${opt_size})
 echo "INFO: end of new ext4 partition : ${ext4_end}"
 
 echo "* disconnect partition"
@@ -146,12 +145,12 @@ parted ${file} rm ${ext4_num}
 echo "  - recreate partition"
 parted -s ${file} unit B mkpart primary ext4 ${ext4_start} ${ext4_end}
 
-shrink_size=`expr ${ext4_end} + 1024 \* ${block_size}`
+shrink_size=$(expr ${ext4_end} + 1024 \* ${block_size})
 echo "  - shrink file at ${shrink_size}"
 
 truncate -s ${shrink_size} ${file}
 
-lo=`losetup -f --show -o ${ext4_start} ${file}`
+lo=$(losetup -f --show -o ${ext4_start} ${file})
 fsck.ext4 -n -f ${lo}
 losetup -d ${lo}
 lo=""
