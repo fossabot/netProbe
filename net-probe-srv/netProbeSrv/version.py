@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:12 alex>
+# Time-stamp: <2017-03-15 14:14:29 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,8 +29,8 @@ from netProbeSrv import app
 
 aVersion = {
     "answer" : "OK",
-    "version" : "1.3",
-    "date" : "12/11/2016",
+    "version" : "1.6.2"
+    "date" : "15/03/17-14:20:54"
     "author" : "Alex Chauvin"
 }
 

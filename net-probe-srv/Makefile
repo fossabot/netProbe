@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-02-20 22:27:31 alex>
+# Time-stamp: <2017-03-15 14:19:33 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -41,3 +41,8 @@ test: clean
 coverage: clean
 	PI_TEST_NO_OUTPUT=1 coverage run ./tests/test_all.py
 	coverage report -m
+
+version:
+	awk '/^    "version" :/ { $$0="    \"version\" : \"'`cat ../VERSION`'\"" }; /^    "date"/ { $$0="    \"date\" : \"'`date +%0d/%0m/%y-%H:%M:%S`'\"" } ; { print }' < netProbeSrv/version.py > /tmp/version.py
+	@cp /tmp/version.py netProbeSrv/version.py
+	@rm -f /tmp/version.py

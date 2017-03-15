@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-02-20 22:27:14 alex>
+# Time-stamp: <2017-03-15 14:20:20 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -31,10 +31,8 @@ lint: clean
 flakes: clean
 	@pyflakes *py */*py
 
-deb: clean
+deb: clean version
 	@echo make deb package for PI
-	@awk '/^__version/ { $$0="__version__ = \"'`cat ../VERSION`'\"" }; /^__date__/ { $$0="__date__ = \"'`date +%0d/%0m/%y-%H:%M:%S`'\"" } ; { print }' < main.py > /tmp/main.py
-	@cp /tmp/main.py main.py
 	@mkdir -p deb/home/pi/py-net-probe
 	@cp -r init.cfg start.sh *py netProbe probelib sched database hostId config deb/home/pi/py-net-probe
 	@rm -f netprobe_`cat ../VERSION`_all.deb
@@ -54,3 +52,8 @@ test: clean
 coverage: clean
 	PI_TEST_NO_OUTPUT=1 coverage run ./tests/test_all.py
 	coverage report -m
+
+version:
+	@awk '/^__version/ { $$0="__version__ = \"'`cat ../VERSION`'\"" }; /^__date__/ { $$0="__date__ = \"'`date +%0d/%0m/%y-%H:%M:%S`'\"" } ; { print }' < main.py > /tmp/main.py
+	@cp /tmp/main.py main.py
+	@rm -f /tmp/main.py

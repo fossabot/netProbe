@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-02-20 22:27:26 alex>
+# Time-stamp: <2017-03-15 14:20:38 alex>
 #
 # PiProbe
 # Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
@@ -43,3 +43,7 @@ coverage: clean
 	@coverage combine py-net-probe/.coverage net-probe-srv/.coverage
 	@coverage xml
 	CODACY_PROJECT_TOKEN=1936f6ba7c3a41ee82aa5e1cbfc16ce6 python-codacy-coverage -r coverage.xml
+
+version:
+	@cd net-probe-srv && make -s version
+	@cd py-net-probe && make -s version
