@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:04:07 alex>
+# Time-stamp: <2017-03-15 15:31:50 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -67,6 +67,9 @@ class sched(object):
         """
 
         iNextExec = time.time()
+
+        _r = random.SystemRandom()
+
         if startIn == 0:
             iNextExec += iFreq
         else:
@@ -77,7 +80,7 @@ class sched(object):
                     if iFreq < 5:
                         iNextExec += 5
                     else:
-                        iNextExec += int(random.random() * (iFreq-5)) + 5
+                        iNextExec += int(_r.random() * (iFreq-5)) + 5
                 else:
                     if startIn == 3:
                         iNextExec += 3

@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-03-15 14:54:48 alex>
+# Time-stamp: <2017-03-15 16:25:03 alex>
 #
 # PiProbe
 # Copyright (C) 2016-2017  Alexandre Chauvin Hameau <ach@meta-x.org>
@@ -29,8 +29,8 @@ clean:
 	@rm -f docs/*~
 
 test: clean
-	@cd net-probe-srv && make -s test
 	@cd py-net-probe && make -s test
+	@cd net-probe-srv && make -s test
 
 git-status: clean
 	git status

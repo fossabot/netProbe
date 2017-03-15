@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:05:04 alex>
+# Time-stamp: <2017-03-15 16:24:07 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -31,6 +31,7 @@ from liveDB import lDB
 import time
 import logging
 #import pprint
+from ws_global import wsCheckParams, wsCheckHostUID
 
 @app.route('/ping', methods=['GET', 'POST'])
 def ws_ping():
@@ -48,18 +49,15 @@ def ws_ping():
     }
 
     if request.method == 'POST':
-        if not request.form.__contains__('uid'):
-            return make_response(jsonify({"answer" : "missing uid"}), 400)
+        _r = wsCheckParams(["uid", "hostId"])
+        if _r != None:
+            return _r
 
-        if not request.form.__contains__('hostId'):
-            return make_response(jsonify({"answer" : "missing hostId"}), 400)
-            
         uid = int(request.form['uid'])
 
-        host = lDB.getHostByUid(uid)
-        
-        if host == None:
-            return make_response(jsonify({"answer" : "host not found"}), 404)
+        host = wsCheckHostUID(uid)
+        if not isinstance(host, unicode) and not isinstance(host, str):
+            return host
 
         if host != request.form['hostId']:
             logging.error("bad probe {} {}".format(host, request.form['hostId']))

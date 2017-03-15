@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:07:14 alex>
+# Time-stamp: <2017-03-15 15:15:58 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -150,7 +150,7 @@ def serverConnect():
     stats.setIPv6(ip.getIfIPv6())
 
     bConnected = False
-    
+
     iSleepConnectDelay = 0
 
     while bConnected == False:
@@ -321,11 +321,8 @@ def trap_signal(sig, heap):
 
     global bRunning
     global bConnected
-    global probeProcess
 
     logging.info("exit signal received, wait for next step")
-
-    # stopAllProbes(probeProcess)
 
     bRunning = False
     bConnected = False
@@ -387,7 +384,7 @@ def popResults(_db):
     else:
         nb = int(l/2)
 
-    for i in range(nb):
+    for _ in range(nb):
         r = _db.popResult()
         if r != None:
             j = json.loads(r)

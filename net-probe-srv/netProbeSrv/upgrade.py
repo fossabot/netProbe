@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:01:09 alex>
+# Time-stamp: <2017-03-15 16:11:40 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -30,6 +30,7 @@ from flask import make_response, jsonify, request, send_from_directory
 import logging
 from netProbeSrv import app
 from liveDB import lDB
+from ws_global import wsCheckParams, wsCheckHostUID
 
 @app.route('/upgrade', methods=['POST'])
 def ws_upgrade():
@@ -42,19 +43,20 @@ def ws_upgrade():
     global lDB
 
     if request.method == 'POST':
+        _r = wsCheckParams(["uid"])
+        if _r != None: return _r
+
         uid = int(request.form['uid'])
 
-        host = lDB.getHostByUid(uid)
-
-        if host == None:
-            return make_response(jsonify({"answer" : "KO",
-                                          "reason" : "probe not known"}), 401)
+        host = wsCheckHostUID(uid)
+        if not isinstance(host, unicode):
+            return host
 
         sVersion = lDB.getHostVersionByUid(uid)
 
         if sVersion == None:
             logging.warning("probe with no version")
-            return make_response(jsonify({"answer" : "KO", "reason" : "no version provided"}), 402)
+            return make_response(jsonify({"answer" : "KO", "reason" : "no version provided"}), 400)
 
         root = os.path.join(os.getcwd(), "static")
 
@@ -67,7 +69,7 @@ def ws_upgrade():
 
         fileName = "netprobe_{}_all.deb".format(nextVersion)
 
-        logging.info("current version {}, next version {}, file static/{}".format(sVersion, nextVersion, fileName))
+        logging.info("current version {} for {}, next version {}, file static/{}".format(sVersion, host, nextVersion, fileName))
 
         # return send_from_directory(root, fileName)
 

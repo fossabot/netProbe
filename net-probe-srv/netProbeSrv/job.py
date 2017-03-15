@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-13 15:20:38 alex>
+# Time-stamp: <2017-03-15 16:13:05 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -30,6 +30,7 @@ from liveDB import lDB
 import logging
 
 from config import conf
+from ws_global import wsCheckParams, wsCheckHostUID
 
 @app.route('/myjobs', methods=['POST', 'GET'])
 def ws_myjobs():
@@ -42,12 +43,14 @@ def ws_myjobs():
     global lDB
 
     if request.method == 'POST':
+        _r = wsCheckParams(["uid"])
+        if _r != None: return _r
+
         uid = int(request.form['uid'])
 
-        host = lDB.getHostByUid(uid)
-        if host == None:
-            return make_response(jsonify({"answer" : "KO",
-                                          "reason" : "probe not known"}), 404)
+        host = wsCheckHostUID(uid)
+        if not isinstance(host, unicode):
+            return host
 
         jobs = lDB.getJobsForHost(host)
 

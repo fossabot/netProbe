@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-13 16:23:30 alex>
+# Time-stamp: <2017-03-15 16:24:21 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -59,7 +59,7 @@ def test_ping_put_empty():
     rv = c.post("/ping", data=dict())
 
     j = json.loads(rv.data)
-    if j['answer'] != "missing uid":
+    if j['answer'] != "KO" and j['reason'] != "missing uid":
         assert False, "missing uid not working"
 
 # ---------------------------------------------

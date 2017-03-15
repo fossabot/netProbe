@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:05:17 alex>
+# Time-stamp: <2017-03-15 16:04:12 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -31,7 +31,9 @@ from netProbeSrv import app
 from liveDB import lDB
 # import time
 import logging
+from ws_global import wsCheckParams
 
+# -------------------------------------------------------------
 @app.route('/pushAction', methods=['POST'])
 def ws_pushAction():
     """ add an action for the uid
@@ -42,18 +44,15 @@ def ws_pushAction():
     logging.info("/pushAction")
     global lDB
 
-    if request.form.__contains__('uid') == False:
-        return make_response(jsonify({"answer":"KO", "reason":"missing uid"}), 400)
-
-    if request.form.__contains__('action') == False:
-        return make_response(jsonify({"answer":"KO", "reason":"missing action"}), 400)
+    _r = wsCheckParams(["uid", "action"])
+    if _r != None: return _r
 
     uid = int(request.form['uid'])
     action = str(request.form['action'])
 
     host = lDB.getHostByUid(uid)
     if host == None:
-        return make_response(jsonify({"answer":"KO", "reason":"host not found"}), 400)
+        return make_response(jsonify({"answer":"KO", "reason":"host not found"}), 404)
 
     # global conf
 

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:00:10 alex>
+# Time-stamp: <2017-03-15 15:21:40 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -99,10 +99,12 @@ class logstash(output):
         logging.info("send to logstash using UDP")
 
         # open UDP socket
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-        sock.sendto(str.encode(json.dumps(data)), (self.server, self.iPort))
-        sock.close()
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.sendto(str.encode(json.dumps(data)), (self.server, self.iPort))
+            sock.close()
+        except Exception as ex:
+            logging.error("output to logstash error")
 
     # ----------------------------------------------------------
     def sendTCP(self, data):
