@@ -27,9 +27,5 @@ History
 =======
 move to changelog once released
 
-1.6
+1.7
 -----
-* pushAction for upgrading specific probe
-* information on discovered probes to outputer
-* fix : template id for configuration no properly set when multiple data used
-* configuration check tool

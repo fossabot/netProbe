@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.6 - 25/03/2017
+-----
+* pushAction for upgrading specific probe
+* information on discovered probes to outputer
+* fix : template id for configuration no properly set when multiple data used
+* configuration check tool
+* integration of codacy and syntax fix
+* change md5 to sha for probe id
+
 1.5 - 11/02/2017
 -----
 * stabilize code

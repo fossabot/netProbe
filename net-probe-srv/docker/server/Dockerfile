@@ -1,7 +1,7 @@
 # Docker file for testing the server
 # from the git master version
 # 
-# Time-stamp: <2017-01-29 14:03:54 alex>
+# Time-stamp: <2017-03-20 15:57:53 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe

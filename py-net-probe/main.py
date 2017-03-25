@@ -26,7 +26,7 @@
 """
 
 __version__ = "1.6.2"
-__date__ = "15/03/17-14:55:01"
+__date__ = "15/03/17-16:26:36"
 __author__ = "Alex Chauvin"
 
 import time
