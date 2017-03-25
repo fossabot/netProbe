@@ -17,3 +17,6 @@ net-probe-srv/1.conf
 **/#*#
 /net-probe-srv/.coverage
 /net-probe-srv/coverage.xml
+/py-net-probe/coverage.xml
+/coverage.xml
+/.coverage
