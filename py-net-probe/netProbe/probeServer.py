@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:08:33 alex>
+# Time-stamp: <2017-03-25 15:48:51 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -310,6 +310,7 @@ class probeServer(object):
         """
 
         logging.info("check for software upgrade")
+
         s = check_output(["/usr/bin/uname", "-m"])
         if re.match("arm", s) == None:
             logging.info(" avoid on non ARM platform")

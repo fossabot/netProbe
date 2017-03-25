@@ -25,8 +25,8 @@
  client module for the probe system
 """
 
-__version__ = "1.6.2"
-__date__ = "15/03/17-16:26:36"
+__version__ = "1.7.0"
+__date__ = "25/03/17-13:58:58"
 __author__ = "Alex Chauvin"
 
 import time

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:04:38 alex>
+# Time-stamp: <2017-03-25 16:03:23 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -44,6 +44,7 @@ class config(object):
         # self.outputMethodName = "none"
         self.fileName = "none"
         self.iTemplateJobsId = 1000
+        self.fwVersion = {}
 
         return
 
@@ -131,6 +132,11 @@ class config(object):
         else:
             jobs = {}
 
+        if hostData.__contains__('firmware'):
+            firmware = hostData['firmware']
+        else:
+            firmware = "current"
+
         if hostData.__contains__('probename'):
             probename = hostData['probename']
 
@@ -142,7 +148,7 @@ class config(object):
                     if (hkey != sId):
                         del(self.aHostTable[hkey])
                         hkey = sId
-                    self.aHostTable[hkey] = {"jobs" : jobs, "probename": probename}
+                    self.aHostTable[hkey] = {"jobs" : jobs, "probename": probename, "firmware": firmware}
                     logging.info("update probename {}".format(probename))
                     return
 
@@ -151,7 +157,7 @@ class config(object):
 
         if sId != "" and sId != None and sId != False:
             logging.info("add host {} to the DB".format(probename))
-            self.aHostTable[sId] = {"jobs" : jobs, "probename": probename}
+            self.aHostTable[sId] = {"jobs" : jobs, "probename": probename, "firmware": firmware}
 
     # ----------------------------------------------------------
     def addTemplate(self, templateData):
@@ -171,7 +177,23 @@ class config(object):
             jobs = {}
 
         self.aTemplates[sName] = {"jobs" : jobs}
-        
+
+    # ----------------------------------------------------------
+    def readGlobal(self, conf):
+        """handle the global part of the configuration file
+
+        """
+        confGlobal = conf['global']
+        if confGlobal.__contains__('firmware'):
+            confFW = confGlobal['firmware']
+            self.fwVersion = {}
+            for v in confFW.keys():
+                self.fwVersion[v] = confFW[v]
+
+            if not self.fwVersion.__contains__('current'):
+                logging.error("configuration firmware does not contains 'current'")
+                self.fwVersion['current'] = 'unknown'
+
     # ----------------------------------------------------------
     def loadFile(self, sFile):
         """load host file and update configuraion
@@ -194,6 +216,10 @@ class config(object):
             conf = json.loads(c)
         except Exception as ex:
             assert False, "configuration file load exception : {}".format(", ".join(ex.args))
+
+        # global
+        if conf.__contains__('global'):
+            self.readGlobal(conf)
 
         # template
         if conf.__contains__('template'):
@@ -288,6 +314,20 @@ class config(object):
             return None
 
     # ----------------------------------------------------------
+    def getFWVersionForHost(self, sId):
+        """return the configuration for the host
+
+        """
+
+        logging.info("get configuration for {}".format(sId))
+
+        if self.aHostTable.__contains__(sId):
+            return self.aHostTable[sId]['firmware']
+        else:
+            logging.error("should not ask for unknown host in the configuration")
+            return None
+
+    # ----------------------------------------------------------
     def getNameForHost(self, sId):
         """return the probe name for the host
 
@@ -322,6 +362,25 @@ class config(object):
                     p[-8:],
                     len(self.aHostTable[p]['jobs']),
                     templates[:-2]]
+
+    # ----------------------------------------------------------
+    def getCurrentFWVersion(self):
+        """returns the current firmware version
+
+        """
+
+        return self.getFWVersion('current')
+
+    # ----------------------------------------------------------
+    def getFWVersion(self, version):
+        """returns the firmware version
+
+        """
+
+        if self.fwVersion.__contains__(version):
+            return self.fwVersion[version]
+        else:
+            return None
 
     # ----------------------------------------------------------
     def dump(self):

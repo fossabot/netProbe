@@ -4,7 +4,6 @@ server
 * schedule on job definition
 * configuration with fields by probe, not only globals
 * hostname
-* upgrade path in configuration file
 
 probe
 =====
@@ -29,3 +28,4 @@ move to changelog once released
 
 1.7
 -----
+* upgrade path in configuration file

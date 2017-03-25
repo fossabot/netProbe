@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:58:37 alex>
+# Time-stamp: <2017-03-25 17:10:55 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -35,6 +35,7 @@ def wsCheckParams(params):
         if p == "uid":
             if request.form.__contains__('uid') == False:
                 return make_response(jsonify({"answer":"KO", "reason":"missing uid"}), 412)
+
         if p == "action":
             if request.form.__contains__('action') == False:
                 return make_response(jsonify({"answer":"KO", "reason":"missing action"}), 412)

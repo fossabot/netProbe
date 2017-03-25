@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-14 18:28:23 alex>
+# Time-stamp: <2017-03-25 12:08:30 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,7 +24,8 @@
  server module for the probe system
 """
 
-__version__ = "1.6"
+__version__ = "1.7.0"
+__date__ = "25/03/17-12:07:49"
 
 import logging
 import signal
@@ -84,7 +85,7 @@ if not isinstance(args.debug, bool):
     logging.error('debug arg is not taking argument')
     exit()
 
-logging.info("starting server, version {}".format(__version__))
+logging.info("starting server, version {}, {}".format(__version__, __date__))
 logging.debug("pid {}".format(os.getpid()))
 
 try:
