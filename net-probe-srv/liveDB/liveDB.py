@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 15:32:57 alex>
+# Time-stamp: <2017-03-15 15:04:52 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +34,7 @@ from config import conf
 
 class liveDB(object):
     """ class to manipulate the liveDB """
-    
+
     # ----------------------------------------------------------
     def __init__(self):
         """constructor
@@ -106,7 +106,6 @@ class liveDB(object):
 
         return None
 
-
     # ----------------------------------------------------------
     def getHostVersionByUid(self, uid):
         """return Host version by uid
@@ -115,6 +114,10 @@ class liveDB(object):
 
         a = self.getHostContentByUid(uid)
         if a == None:
+            return None
+
+        if not a.__contains__('version'):
+            logging.error("host should have a version")
             return None
 
         return a['version']
@@ -145,12 +148,13 @@ class liveDB(object):
         for p in self.aProbeTable:
             s = self.aProbeTable[p]
 
-            r.append({"uid" : s['uid'],
-                      "ipv4" : s['ipv4'],
-                      "ipv6" : s['ipv6'],
-                      "version" : s['version'],
-                      "name": s['name'],
-                      "last" : int(time.time() - s['last'])})
+            if s.__contains__('uid') and s.__contains__('ipv4') and s.__contains__('ipv6') and s.__contains__('version') and s.__contains__('name') and s.__contains__('last'):
+                r.append({"uid" : s['uid'],
+                          "ipv4" : s['ipv4'],
+                          "ipv6" : s['ipv6'],
+                          "version" : s['version'],
+                          "name": s['name'],
+                          "last" : int(time.time() - s['last'])})
 
         return r
 
@@ -166,7 +170,6 @@ class liveDB(object):
             a = self.aProbeTable[sId]['action']
             del self.aProbeTable[sId]['action']
             return a
-    
 
     # ----------------------------------------------------------
     def cleanOldProbes(self):
@@ -194,5 +197,3 @@ class liveDB(object):
         """
         self.aProbeTable = {}
         self.uid = 0
-
-    

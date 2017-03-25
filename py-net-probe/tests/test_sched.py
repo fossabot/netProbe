@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:02:33 alex>
+# Time-stamp: <2017-02-20 21:50:33 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,7 @@ import sys
 import os
 # import nose
 import time
+import logging
 
 sys.path.insert(0, os.getcwd())
 import sched
@@ -38,6 +39,14 @@ iTurn1 = 0
 iTurn2 = 0
 arg = 0
 
+def clean():
+    global iTurn2, iTurn1, arg, fLastFoo2, fLastFoo1
+    fLastFoo1 = time.time()
+    fLastFoo2 = time.time()
+    iTurn1 = 0
+    iTurn2 = 0
+    arg = 0
+    
 def foo1():
     global r
     global fLastFoo1
@@ -58,9 +67,14 @@ def foo3(config):
     global arg
     arg = config['test']
 
+def foo4():
+    print("**** job exec : just print")
+
 def test_one_iteration():
     """ one iteration on one job """
     global fLastFoo1
+
+    clean()
 
     scheduler = sched.sched()
     scheduler.add("test_one_iteration", 0.1, foo1)
@@ -72,12 +86,15 @@ def test_one_iteration():
     if fLastFoo1 == 0:
         assert False, "not any loop"
 
+
 def test_two_jobs():
     """ 2 jobs """
     global fLastFoo1
     global fLastFoo2
     global r, r2
     global iTurn1, iTurn2
+
+    clean()
 
     scheduler = sched.sched()
     scheduler.add("two_jobs 1",0.1, foo1)
@@ -90,14 +107,15 @@ def test_two_jobs():
         f = scheduler.step()
         time.sleep(f)
 
-    print "{} =? {}".format(iTurn1, iTurn2)
+    # print "{} =? {}".format(iTurn1, iTurn2)
 
-    if iTurn1 != 8 or iTurn2 != 3:
+    if iTurn1 != 7 or iTurn2 != 3:
         assert False, "loop issue"
 
 def test_deviation():
     """ 25 iteration and check deviation """
     global r
+    clean()
 
     delay = 0.05
     iter = 25
@@ -112,21 +130,21 @@ def test_deviation():
     for i in range(1,iter):
         f = scheduler.step()
         sum += r
-        print "{} {} {}".format(i, r, sum/i)
+        # print "{} {} {}".format(i, r, sum/i)
         time.sleep(f)
 
-    print "compare {:.5f} to {:.5f}".format(abs(sum/iter - delay), delay/10)
     if abs(sum/iter - delay) > delay/10:
-        assert False, "deviation"
+        assert False, "deviation compare {:.5f} to {:.5f}".format(abs(sum/iter - delay), delay/10)
 
 def test_clean():
     """ suppress jobs """
+    clean()
 
     scheduler = sched.sched()
     scheduler.add("clean", 1.01, foo1)
 
     f = scheduler.step()
-    print f
+    # print f
 
     if f < 1:
         assert False, "clean add job"
@@ -136,7 +154,7 @@ def test_clean():
     time.sleep(f)
 
     f = scheduler.step()
-    print f
+    # print f
 
     if f != 30:
         assert False, "sched not clean"
@@ -144,6 +162,7 @@ def test_clean():
 def test_arg():
     """ job called with argument """
     global arg
+    clean()
 
     arg = 1
 
@@ -159,7 +178,7 @@ def test_next0():
     """job will start in iFreq
 
     """
-
+    clean()
     scheduler = sched.sched()
     waitTime = 0.5
     scheduler.add("next0", waitTime, foo1, None, 0)
@@ -175,7 +194,7 @@ def test_next1():
     """job will start in 1 sec
 
     """
-
+    clean()
     scheduler = sched.sched()
     waitTime = 5
     scheduler.add("next1", waitTime, foo1, None, 1)
@@ -185,13 +204,13 @@ def test_next1():
     n = time.time()-b
 
     if n-1 > 0.01:
-        assert False, "bat start time, should be less than 0.01, is {:.4f}".format(n-1)
+        assert False, "bad start time, should be less than 0.01, is {:.4f}".format(n-1)
 
 def test_next2():
     """job will start in rand sec
 
     """
-
+    clean()
     scheduler = sched.sched()
     scheduler.add("next2", 30, foo1, None, 2)
 
@@ -204,7 +223,7 @@ def test_at0():
     """start time prior to now
 
     """
-
+    clean()
     scheduler = sched.sched()
 
     ok = 0
@@ -221,6 +240,7 @@ def test_at1():
     """start time after now
 
     """
+    clean()
 
     scheduler = sched.sched()
     scheduler.addAt("at1", 30, foo1, None, time.time()+10)
@@ -229,6 +249,7 @@ def test_at2():
     """start time in exactly 600
 
     """
+    clean()
 
     scheduler = sched.sched()
     scheduler.addAt("at2", 30, foo1, None, time.time()+600)
@@ -240,6 +261,7 @@ def test_at2():
 
 def test_str2at_1():
     """ str2atTime HH:MM in +2 minute"""
+    clean()
 
     (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
 
@@ -254,6 +276,7 @@ def test_str2at_1():
 
 def test_str2at_2():
     """ str2atTime HH:MM tomorow -1 minute"""
+    clean()
 
     (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
 
@@ -268,6 +291,7 @@ def test_str2at_2():
 
 def test_str2at_3():
     """ str2atTime HH:MM tomorow -1 hour"""
+    clean()
 
     (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
 
@@ -282,6 +306,7 @@ def test_str2at_3():
 
 def test_str2at_4():
     """ str2atTime HH:MM in +1 hour"""
+    clean()
 
     (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
 
@@ -296,6 +321,7 @@ def test_str2at_4():
 
 def test_str2at_5():
     """ str2atTime HH:MM in +13 hour"""
+    clean()
 
     (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
 
@@ -308,20 +334,152 @@ def test_str2at_5():
     if e > 1:
         assert False, "error, should be < 1 and is {}".format(e)
 
-# test_create()
-# test_deviation()    
-# test_one_iteration()
-# test_two_jobs()
-# test_clean()
-# test_arg()
-# test_next0()
-# test_next1()
-# test_next2()
-# test_at0()
-# test_at1()
-# test_at2()
-# test_str2at_1()
-# test_str2at_2()
-# test_str2at_3()
-# test_str2at_4()
-# test_str2at_5()
+def test_ext_between():
+    """ check execution in a defined range """
+    clean()
+
+    scheduler = sched.sched()
+
+    # what time is it
+    (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
+
+    # enable just before
+    sEnable = time.strftime("%H:%M:%S", 
+                            time.localtime(time.mktime((tm_year, tm_mon, tm_day, tm_hour-1, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst))))
+
+    sDisable = time.strftime("%H:%M:%S", 
+                             time.localtime(time.mktime((tm_year, tm_mon, tm_day, tm_hour+1, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst))))
+
+    data = [
+             {
+                 "type" : "inside",
+                 "enable": sEnable,
+                 "disable": sDisable
+             }
+    ]
+
+    scheduler.addExtended("ext between in", 60, data, foo4, None, 3)
+
+    t = scheduler.step()
+    if not (t > 2.8 and t < 3.1):
+        assert False, "first step should be around 3"
+
+    print("sleep for {}".format(t))
+    time.sleep(t)
+
+    t = scheduler.step()
+    if t != 0:
+        assert False, "second step should be 0"
+
+    t = scheduler.step()
+    if not (t > 59.8 and t < 60.1):
+        assert False, "third step should be around 60"
+
+
+# --------------------------------------------------------
+def test_ext_between_andnext():
+    """ check execution in a defined range and next execution to tomorrow """
+    clean()
+
+    scheduler = sched.sched()
+
+    # what time is it
+    (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
+
+    # enable just before
+    sEnable = time.strftime("%H:%M:%S", 
+                            time.localtime(time.mktime((tm_year, tm_mon, tm_day, tm_hour-1, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst))))
+
+    sDisable = time.strftime("%H:%M:%S", 
+                             time.localtime(time.mktime((tm_year, tm_mon, tm_day, tm_hour+1, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst))))
+
+    data = [
+             {
+                 "type" : "inside",
+                 "enable": sEnable,
+                 "disable": sDisable
+             }
+    ]
+
+    scheduler.addExtended("ext between in", 86000, data, foo4, None, 3)
+
+    t = scheduler.step()
+    if not (t > 2.8 and t < 3.1):
+        assert False, "first step should be around 3"
+
+    print("sleep for {}".format(t))
+    time.sleep(t)
+
+    t = scheduler.step()
+    if t != 0:
+        assert False, "second step should be 0"
+
+    t = scheduler.step()
+    if not (t > 85998 and t < 86002):
+        assert False, "third step should be around 86000 and is {:.2f}".format(t)
+
+# --------------------------------------------------------
+def test_ext_not_between():
+    """ check no execution if not in a defined range """
+    clean()
+
+    scheduler = sched.sched()
+
+    # what time is it
+    (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
+
+    # enable just before
+    sEnable = time.strftime("%H:%M:%S", 
+                            time.localtime(time.mktime((tm_year, tm_mon, tm_day, tm_hour-2, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst))))
+
+    sDisable = time.strftime("%H:%M:%S", 
+                             time.localtime(time.mktime((tm_year, tm_mon, tm_day, tm_hour-1, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst))))
+
+    data = [
+             {
+                 "type" : "inside",
+                 "enable": sEnable,
+                 "disable": sDisable
+             }
+    ]
+
+    scheduler.addExtended("ext not between in", 60, data, foo4, None, 1)
+
+    t = scheduler.step()
+    if t != 0:
+        assert False, "first step should be 0"
+    
+    t = scheduler.step()
+    if not (t > 79100 and t < 79250):
+        assert False, "third step should be around 79200"
+
+# ---------------------------------------------
+def all_sched(b=True):
+    if b:
+        test_create()
+        test_deviation()    
+        test_one_iteration()
+        test_two_jobs()
+        test_clean()
+        test_arg()
+        test_next0()
+        test_next1()
+        test_next2()
+        test_at0()
+        test_at1()
+        test_at2()
+        test_str2at_1()
+        test_str2at_2()
+        test_str2at_3()
+        test_str2at_4()
+        test_str2at_5()
+        test_ext_between()
+        test_ext_not_between()
+        test_ext_between_andnext()
+
+if __name__ == '__main__':
+    _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+    logging.basicConfig(format=_logFormat,
+                        level=logging.INFO)
+
+    all_sched(True)

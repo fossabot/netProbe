@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 15:26:18 alex>
+# Time-stamp: <2017-03-14 18:26:48 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,6 +66,9 @@ def test_probename():
     if name != "test2":
         assert False, "bad probename"
 
+    if conf.getNameForHost("xx2_ukn") != "unknown":
+        assert False, "bad probename ukn"
+
 # ---------------------------------------------
 def test_checkHost():
     """ check insertion in the db
@@ -104,6 +107,21 @@ def test_duplicateProbeName():
         assert False, "bad probename for duplicate"
 
 # ---------------------------------------------
+def test_duplicateProbeId():
+    """ check duplicate id in config
+
+    """
+    global conf
+
+    conf.addHost( {"id" : "xx5",
+                   "probename": "test5.0",
+                   "jobs" : []} )
+
+    conf.addHost( {"id" : "xx5.1",
+                   "probename": "test5.0",
+                   "jobs" : []} )
+
+# ---------------------------------------------
 def test_getConf():
     """get config for a host
 
@@ -122,6 +140,9 @@ def test_getConf():
     if a[0]['job'] != "health":
         assert False, "bad job returned"
 
+    if conf.getJobsForHost("xx5_ukn") != None:
+        assert False, "should not return jobs"
+
 # ---------------------------------------------
 def test_active_flag():
     """ active flag on configuration
@@ -134,7 +155,7 @@ def test_active_flag():
     dConf = {
         "output" :  [ { "engine": "debug",
                         "parameters" : [],
-                        "active" : "False"    }  ],
+                        "active" : "True"    }  ],
         "probe" : [
             { "id" : "xx6",
               "probename" : "xx6",
@@ -282,6 +303,8 @@ def test_template01():
 
     global conf
     conf.loadFile('test_config.conf')
+
+    print("templates: {}".format(", ".join(conf.getListTemplate())))    
 
     c = app.test_client()
 
@@ -461,9 +484,637 @@ def test_template02():
     if j['jobs'][1]['id'] != 1003:
         assert False, "job #2 for temp03 id != 1003"
 
+    # for coverage
+    list(conf.getListProbes()) 
+
 # ---------------------------------------------
-def all(b=True):
+def test_template_missing():
+    """ try to apply a missing template to a host for job
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+        "template" : 
+        [
+            { 
+                "name": "T01",
+                "jobs" : [
+                    { 
+                        "active": "True",
+                        "job" : "health",
+                        "freq" : 15,
+                        "version" : 1,
+                        "data" : {}
+                    }
+                ]
+            }
+        ],
+
+        "output" :  [ { "engine": "debug",
+                        "parameters" : [],
+                        "active" : "False"    }  ],
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01",
+              "template" : [
+                  "T_missing"
+              ]
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+    conf.loadFile('test_config.conf')
+
+    c = app.test_client()
+
+    # register the probe
+    rv = c.post("/discover", data=dict(hostId="temp01",ipv4="127.1.0.5",ipv6="::1",version="0.0"))
+    j = json.loads(rv.data)
+    if j['answer'] != "OK":
+        assert False, "should have found this host"
+
+    # get the configuration
+    rv = c.post("/myjobs", data=dict(uid=str(j['uid'])))
+    j = json.loads(rv.data)
+    if j['answer'] != "OK":
+        assert False, "should have found this host"
+
+    if j['jobs'] != {}:
+        assert False, "should not have template set {}".format(j['jobs'])
+
+# ---------------------------------------------
+def test_template_noname():
+    """ template without name
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+        "template" : 
+        [
+            { 
+                "jobs" : [
+                    { 
+                        "active": "True",
+                        "job" : "health",
+                        "freq" : 15,
+                        "version" : 1,
+                        "data" : {}
+                    }
+                ]
+            }
+
+        ],
+
+        "output" :  [ { "engine": "debug",
+                        "parameters" : [],
+                        "active" : "False"    }  ],
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01",
+              "template" : [
+                  "T01"
+              ]
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+    try:
+        conf.loadFile('test_config.conf')
+    except:
+        return
+
+    assert False, "should have a name in a template section"
+
+# ---------------------------------------------
+def test_template_empty():
+    """ try to create an empty template configuration
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+        "template" : [],
+
+        "output" :  [ { "engine": "debug",
+                        "parameters" : [],
+                        "active" : "False"    }  ],
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01",
+              "template" : [
+                  "T01"
+              ]
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+    conf.loadFile('test_config.conf')
+
+# ---------------------------------------------
+def test_noprobe():
+    """ no probe in the configuration
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+
+    try:
+        conf.loadFile('test_config.conf')
+    except:
+        return
+
+    assert False, "test for no probe"
+
+# ---------------------------------------------
+def test_probeNoName():
+    """ coverage test for probe without name section
+
+    """
+    global conf
+
+    conf.addHost( {"id" : "xx7",
+                   "jobs" : []} )
+
+# ---------------------------------------------
+def test_noConfig():
+    """ coverage test for host not in config
+
+    """
+    global conf
+
+    conf.addHost( {"id" : "xx8",
+                   "probename": "test8",
+                   "jobs" : []} )
+
+    if conf.getConfigForHost("xx9_unknonw") != None:
+        assert False, "should not have found host"
+
+# ---------------------------------------------
+def test_noFile():
+    """ try to load a non missing file
+
+    """
+    global conf
+
+    try:
+        conf.reload()
+    except:
+        None
+
+    if conf.loadFile('test_config_no.conf') != False:
+        assert False, "should not have loaded config file"
+
+# ---------------------------------------------
+def test_template_2loads():
+    """ load twice the conf
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+        "template" : 
+        [
+            { 
+                "name": "T01",
+                "jobs" : [
+                    { 
+                        "active": "True",
+                        "job" : "health",
+                        "freq" : 15,
+                        "version" : 1,
+                        "data" : {}
+                    }
+                ]
+            }
+        ],
+
+        "output" :  [ { "engine": "debug",
+                        "parameters" : [],
+                        "active" : "True"    }  ],
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01",
+              "template" : [
+                  "T01"
+              ]
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+    conf.loadFile('test_config.conf')
+    conf.loadFile('test_config.conf')
+
+# ---------------------------------------------
+def test_engine_ukn():
+    """ unknown engine in conf
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+        "output" :  [ { "engine": "ukn",
+                        "parameters" : [],
+                        "active" : "True"    }  ],
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01"
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+    try:
+        conf.loadFile('test_config.conf')
+    except:
+        return
+
+    assert False, "unknown output"
+
+# ---------------------------------------------
+def test_template_nojobs():
+    """ template without job def
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+        "template" : 
+        [
+            { 
+                "name": "T01"
+            }
+        ],
+
+        "output" :  [ { "engine": "debug",
+                        "parameters" : [],
+                        "active" : "False"    }  ],
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01",
+              "template" : [
+                  "T01"
+              ]
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+    conf.loadFile('test_config.conf')
+
+# ---------------------------------------------
+def test_outputers():
+    """ coverage for outputers
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+        "output" :  [
+            { "engine": "debug",
+              "parameters" : [],
+              "active" : "True" },
+
+            { "engine" : "logstash",
+              "parameters" : [
+                  {
+                      "server" : "127.0.0.1",
+                      "port" : 55514,
+                      "transport" : "udp",
+                      "fields" : [
+                          {
+                              "ES_environnement" : "PROD"
+                          }
+                      ]
+                  }
+              ],
+              "active" : "True"
+          }
+
+        ],
+
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01"
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+    try:
+        conf.loadFile('test_config.conf')
+    except:
+        None
+
+    dConf = {
+        "output" :  [
+            { "engine": "elastic",
+              "parameters" : [
+                {
+                    "server" : "127.0.0.1",
+                    "index" : "pyprobe",
+                    "shard" : 5,
+                    "replica" : 0
+                } 
+              ],
+              "active" : "True"
+            }
+
+        ],
+
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01"
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    try:
+        conf.loadFile('test_config.conf')
+    except:
+        return
+
+# ---------------------------------------------
+def test_outputers_empty():
+    """ coverage for outputers without parameters
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+        "output" :  [
+            { "engine": "debug",
+              "parameters" : [],
+              "active" : "True" },
+
+            { "engine": "elastic",
+              "active" : "True"
+            },
+
+            { "engine" : "logstash",
+              "active" : "True"
+          }
+
+        ],
+
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01"
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    try:
+        conf.loadFile('test_config.conf')
+    except:
+        None
+
+    dConf = {
+        "output" :  [
+            { "engine" : "logstash",
+              "active" : "True"
+          }
+
+        ],
+
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01"
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    try:
+        conf.loadFile('test_config.conf')
+    except:
+        None
+
+    dConf = {
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01"
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    try:
+        conf.loadFile('test_config.conf')
+    except:
+        return
+
+# ---------------------------------------------
+def test_template_syntaxerror():
+    """ check template syntax error trap
+    """
+    global app
+    global lDB
+    lDB.cleanDB()
+
+    dConf = {
+        "template" : 
+        [
+            { 
+                "name": "T01",
+                "jobs" : [
+                    { 
+                        "active": "True",
+                        "job" : "health",
+                        "freq" : 15,
+                        "version" : 1,
+                        "data" : {}
+                    }
+                ]
+            }
+        ],
+
+        "output" :  [ { "engine": "debug",
+                        "parameters" : [],
+                        "active" : "False"    }  ],
+        "probe" : [
+            { "id" : "temp01",
+              "probename" : "temp01",
+              "template" : [
+                  "T01"
+              ]
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+    sConf = string.replace(sConf, "],", ']')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+
+    try:
+        conf.loadFile('test_config.conf')
+    except Exception as ex:
+        return
+
+    assert False, "configuration syntax error not trapped"
+
+# ---------------------------------------------
+def all_config(b=True):
     if b:
+        test_noFile()
         test_addHost()
         test_probename()
         test_checkHost()
@@ -471,8 +1122,21 @@ def all(b=True):
         test_active_flag()
         test_template01()
         test_template02()
+        test_duplicateProbeName()
+        test_template_missing()
+        test_template_noname()
+        test_template_empty()
+        test_noprobe()
+        test_duplicateProbeId()
+        test_probeNoName()
+        test_noConfig()
+        test_template_nojobs()
+        test_template_2loads()
+        test_engine_ukn()
+        test_outputers()
+        test_outputers_empty()
+    test_template_syntaxerror()
 
-    test_duplicateProbeName()
 
 # ---------------------------------------------
 if __name__ == '__main__':
@@ -480,4 +1144,12 @@ if __name__ == '__main__':
     logging.basicConfig(format=_logFormat,
                         level=logging.INFO)
 
-    all(False)
+    all_config(True)
+    #all_config(False)
+
+
+""" coverage result
+
+config/config.py            150     13    91%   229-233, 236-243, 255, 270-271, 298
+
+"""

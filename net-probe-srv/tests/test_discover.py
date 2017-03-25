@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:49 alex>
+# Time-stamp: <2017-03-13 15:58:52 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -26,6 +26,8 @@ import nose
 import json
 import pprint
 import time
+import string
+
 
 sys.path.append(os.getcwd())
 import logging
@@ -40,6 +42,52 @@ from netProbeSrv import pushAction
 from netProbeSrv import admin
 
 # ---------------------------------------------
+def installConfig():
+    dConf = {
+        "template" : 
+        [
+            { 
+                "name": "T01",
+                "jobs" : [
+                    { 
+                        "active": "True",
+                        "job" : "health",
+                        "freq" : 15,
+                        "version" : 1,
+                        "data" : {}
+                    }
+                ]
+            }
+        ],
+
+        "output" :  [ { "engine": "debug",
+                        "parameters" : [],
+                        "active" : "True"    }  ],
+        "probe" : [
+            { "id" : "__temp01",
+              "probename" : "__temp01",
+              "template" : [
+                  "T01"
+              ]
+          }
+        ]
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+    conf.loadFile('test_config.conf')
+
+# ---------------------------------------------
 def test_discover_get():
     """/discover GET
 
@@ -50,6 +98,8 @@ def test_discover_get():
 
     c = app.test_client()
     rv = c.get("/discover")
+
+    print rv.status
 
     if rv.status != "405 METHOD NOT ALLOWED":
         assert False, "discover GET should not be allowed"
@@ -79,6 +129,8 @@ def test_discover_1():
     global lDB
     lDB.cleanDB()
 
+    installConfig()
+
     c = app.test_client()
     rv = c.post("/discover", data=dict(hostId="x1",ipv4="127.1.0.1",ipv6="::1",version="0.0"))
 
@@ -96,6 +148,8 @@ def test_discover_2():
     global conf
     global lDB
     lDB.cleanDB()
+
+    installConfig()
 
     conf.addHost( {"id" : "x2",
                    "probename": "test_db2",
@@ -207,6 +261,7 @@ def all(b=True):
         test_discover_2()
         test_getProbes()
         test_discover_3()
+        test_getProbes()
     test_discover_4()
 
 # ---------------------------------------------
@@ -215,6 +270,6 @@ if __name__ == '__main__':
     logging.basicConfig(format=_logFormat,
                         level=logging.INFO)
 
-    all(False)
+    all(True)
 
     logging.info("***** ok ******")

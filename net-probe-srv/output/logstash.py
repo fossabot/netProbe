@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:27 alex>
+# Time-stamp: <2017-03-15 15:21:40 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,12 +40,12 @@ class logstash(output):
     T_UDP = 0
     T_TCP = 1
     aProto = ["UDP", "TCP"]
-    
+
     # ----------------------------------------------------------
     def __init__(self, conf):
         """constructor"""
 
-        output.__init__(self)
+        output.__init__(self, "logstash")
 
         if not conf.__contains__('server'):
             assert False, "logstash configuration missing server"
@@ -79,7 +79,7 @@ class logstash(output):
         """
 
         data = _data['data']
-        
+
         data['@timestamp'] = datetime.datetime.fromtimestamp(_data['date']).isoformat()
         data['probe-name'] = _data['probename']
         data['probe-app'] = _data['name']
@@ -99,10 +99,12 @@ class logstash(output):
         logging.info("send to logstash using UDP")
 
         # open UDP socket
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-        sock.sendto(str.encode(json.dumps(data)), (self.server, self.iPort))
-        sock.close()
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.sendto(str.encode(json.dumps(data)), (self.server, self.iPort))
+            sock.close()
+        except Exception as ex:
+            logging.error("output to logstash error")
 
     # ----------------------------------------------------------
     def sendTCP(self, data):

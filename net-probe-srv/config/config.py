@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 15:19:24 alex>
+# Time-stamp: <2017-03-15 15:04:38 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,7 +33,7 @@ import output
 
 class config(object):
     """ class to manipulate the configuration """
-    
+
     # ----------------------------------------------------------
     def __init__(self):
         """constructor
@@ -41,7 +41,7 @@ class config(object):
         """
         self.aHostTable = {}
         self.aTemplates = {}
-        self.outputMethodName = "none"
+        # self.outputMethodName = "none"
         self.fileName = "none"
         self.iTemplateJobsId = 1000
 
@@ -80,7 +80,7 @@ class config(object):
             # already some jobs on the probe ? maybe an update only
             if hostData.__contains__('probename'):
                 probename = hostData['probename']
-                
+
                 for hkey in self.aHostTable:
                     h = self.aHostTable[hkey]
                     
@@ -96,7 +96,7 @@ class config(object):
                 if hjs != None:
                     for hj in hjs:
                         if hj.__contains__('template'):
-                            if hj['template'] == tName:
+                            if hj['template'] == tName and hj['data'] == newJob['data']:
                                 newJob['id'] = hj['id']
 
                 if newJob['id'] == 0:
@@ -112,9 +112,8 @@ class config(object):
 
     # ----------------------------------------------------------
     def addHost(self, hostData):
-        """add a host to the database, if template specified, apply 
+        """add a host to the database, if template specified, apply
            first the template
-
         """
 
         sId = str(hostData['id'])
@@ -190,7 +189,11 @@ class config(object):
         c = f.read()
         f.close()
 
-        conf = json.loads(c)
+        conf = ''
+        try:
+            conf = json.loads(c)
+        except Exception as ex:
+            assert False, "configuration file load exception : {}".format(", ".join(ex.args))
 
         # template
         if conf.__contains__('template'):
@@ -219,7 +222,7 @@ class config(object):
                 if outputConf['active'] == "True":
 
                     if not o.checkMethodName(outputConf['engine']):
-                        logging.error("unknown output method name, possible values are : {}. Exiting".format(o.getMethodName()))
+                        logging.error("unknown output method name '{}', possible values are : {}".format(outputConf['engine'], ", ".join(o.getMethodName())))
                         assert False, "bad output name"
                     else:
                         if outputConf['engine'] == "debug":
@@ -296,6 +299,29 @@ class config(object):
             return self.aHostTable[sId]['probename']
         else:
             return "unknown"
+
+    # ----------------------------------------------------------
+    def getListTemplate(self):
+        """return the templates name
+
+        """
+        for t in self.aTemplates.keys():
+            yield t
+
+    # ----------------------------------------------------------
+    def getListProbes(self):
+        """return the probes name
+
+        """
+        for p in self.aHostTable.keys():
+            templates = ""
+            for j in self.aHostTable[p]['jobs']:
+                if j.__contains__('template'):
+                    templates += j['template']+", "
+            yield [ self.aHostTable[p]['probename'],
+                    p[-8:],
+                    len(self.aHostTable[p]['jobs']),
+                    templates[:-2]]
 
     # ----------------------------------------------------------
     def dump(self):

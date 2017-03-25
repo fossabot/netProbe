@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:31 alex>
+# Time-stamp: <2017-03-15 15:06:11 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -31,16 +31,17 @@ class output(object):
 
     """
 
-    TYPE_UNKNOWN = 0
-    TYPE_ELASTICSEARCH = 1
-    TYPE_DEBUG = 2
+    #TYPE_UNKNOWN = 0
+    #TYPE_ELASTICSEARCH = 1
+    #TYPE_DEBUG = 2
 
     # ----------------------------------------------------------
-    def __init__(self):
+    def __init__(self, _type="unknown"):
         """constructor
 
         """
 
+        self.type = _type
         self.lKnownMethod = ("debug", "elastic", "logstash")
 
     # ----------------------------------------------------------
@@ -64,5 +65,10 @@ class output(object):
     # ----------------------------------------------------------
     def send(self, data):
         """send"""
-        logging.info("send {}".format(data))
+        logging.info("send to {} {}".format(self.type, data))
         return
+
+    # ----------------------------------------------------------
+    def getType(self):
+        """return the type of the outputer"""
+        return self.type

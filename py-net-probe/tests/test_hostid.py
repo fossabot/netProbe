@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:02:30 alex>
+# Time-stamp: <2017-02-20 22:18:47 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,6 +24,7 @@ import sys
 import os
 import nose
 import time
+import logging
 
 sys.path.append(os.getcwd())
 
@@ -53,3 +54,14 @@ def test_1():
     if h1 == h3:
         assert False,"2 different calls should return different id"
 
+# ---------------------------------------------
+def all_hostid(b=True):
+    if b:
+        test_1()
+
+if __name__ == '__main__':
+    _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
+    logging.basicConfig(format=_logFormat,
+                        level=logging.INFO)
+
+    all_hostid(True)

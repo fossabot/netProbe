@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 16:36:18 alex>
+# Time-stamp: <2017-03-15 15:03:38 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +29,7 @@ import sys
 import logging
 import signal
 import time
-import random
+# import random
 
 sys.path.insert(0, os.getcwd())
 from netProbe import ipConf
@@ -92,7 +92,7 @@ class probemain(object):
 
         logging.info("check if default route is present")
         self.ip = ipConf()
-        
+
         if self.ip.hasDefaultRoute() == False:
             logging.warning("no default route")
 
@@ -134,7 +134,7 @@ class probemain(object):
 
         """
         logging.info("exiting after signal received")
-        
+
         self.bRunning = False
 
     # -----------------------------------------
@@ -143,6 +143,13 @@ class probemain(object):
 
         """
         self.scheduler.add(self.name, freq, f, data, 2)
+
+    # -----------------------------------------
+    def addJobExtended(self, freq, schedData, f, data):
+        """add a job in the scheduler with extended scheduler constraints
+
+        """
+        self.scheduler.addExtended(self.name, freq, schedData, f, data, 2)
 
     # -----------------------------------------
     def getConfig(self, name, f, testf):
@@ -156,7 +163,10 @@ class probemain(object):
                 if c['job'] == name:
                     data = c['data']
                     if testf(data):
-                        self.addJob(int(c['freq']), f, data)
+                        if c.__contains__('schedule'):
+                            self.addJobExtended(int(c['freq']), c['schedule'], f, data)
+                        else:
+                            self.addJob(int(c['freq']), f, data)
                         yield c
                 else:
                     logging.error("should not happen!")

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 16:27:34 alex>
+# Time-stamp: <2017-03-15 15:08:33 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,12 +41,12 @@ import zlib
 from base64 import b64encode
 import os
 import re
-import time
+
 from subprocess import call,check_output, CalledProcessError
 
 class probeServer(object):
     """class to talk to the probe server"""
-	
+
     def __init__(self):
         """
         constructor
@@ -70,7 +70,7 @@ class probeServer(object):
             self.session = requests
 
     # -----------------------------------------------------------------
-    def findServer(self):
+    def findServer(self, serverName = None):
         """
         check which server host to contact
         based on server names
@@ -78,9 +78,15 @@ class probeServer(object):
            net-probe-srv
            probe-srv
         """
-        for server in ['net-probe-srv-prod',
-                       'net-probe-srv',
-                       'probe-srv']:
+
+        aServers = ['net-probe-srv-prod',
+                    'net-probe-srv',
+                    'probe-srv']
+
+        if serverName != None:
+            aServers = [ serverName ]
+
+        for server in aServers:
             try:
                 socket.getaddrinfo(server, 80)
                 self.sServerName = server
@@ -117,7 +123,7 @@ class probeServer(object):
 
         if self.sPingURL == "":
             self.sPingURL = self.sSrvBaseURL+'/ping'
-            
+
         delta = -1
         self.lastCmdRespTime = -1
 
@@ -151,7 +157,7 @@ class probeServer(object):
             else:
                 # self.session.get(self.sPingURL)
                 # delta = time.time() - now
-                bConnected = False
+                # bConnected = False
                 return None
 
             self.lastCmdRespTime = delta
@@ -202,22 +208,26 @@ class probeServer(object):
 
         try:
             r = self.session.post(req, data, timeout=2)
-        except:
+        except requests.exceptions.RequestException:
             logging.error("reaching srv : connection refused")
             self.bServerAvail = False
             return False
 
+        s = json.loads(r.text)
+
         if r.status_code == 200:
-            s = json.loads(r.text)
             if s.__contains__('uid') and s.__contains__('answer') and s['answer'] == "OK":
                 self.uid = s['uid']
                 self.bServerAvail = True
+                self.session.close()
                 logging.info("discover: my id is {}".format(self.uid))
                 return True
             else:
                 logging.error("bad response from server, missing uid")
 
+        logging.error("error from server in discover {}:{}".format(r.status_code, s['reason']))
         self.bServerAvail = False
+        self.session.close()
         return False
 
     # -----------------------------------------------------------------
@@ -300,7 +310,7 @@ class probeServer(object):
         """
 
         logging.info("check for software upgrade")
-        s = check_output(["uname", "-m"])
+        s = check_output(["/usr/bin/uname", "-m"])
         if re.match("arm", s) == None:
             logging.info(" avoid on non ARM platform")
             return
@@ -320,7 +330,7 @@ class probeServer(object):
 
             logging.info("turning FS to RW")
 
-            call(["mount", "-o", "remount,rw", "/"])
+            call(["/usr/bin/mount", "-o", "remount,rw", "/"])
 
             with open("/home/pi/new.deb", 'wb') as fd:
                 for chunk in r.iter_content(1024):
@@ -344,12 +354,11 @@ class probeServer(object):
             logging.error("error in call for dpkg")
             print(e)
             exit()
-            None
 
         os.unlink("/home/pi/new.deb")
 
         logging.info("turning FS back to RO")
-        call(["sync"])
+        call(["/usr/bin/sync"])
 
         logging.info("exiting")
         exit()

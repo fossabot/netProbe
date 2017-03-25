@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:02 alex>
+# Time-stamp: <2017-03-15 16:04:12 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,7 +31,9 @@ from netProbeSrv import app
 from liveDB import lDB
 # import time
 import logging
+from ws_global import wsCheckParams
 
+# -------------------------------------------------------------
 @app.route('/pushAction', methods=['POST'])
 def ws_pushAction():
     """ add an action for the uid
@@ -42,18 +44,15 @@ def ws_pushAction():
     logging.info("/pushAction")
     global lDB
 
-    if request.form.__contains__('uid') == False:
-        return make_response(jsonify({"answer":"KO", "reason":"missing uid"}), 400)
-
-    if request.form.__contains__('action') == False:
-        return make_response(jsonify({"answer":"KO", "reason":"missing action"}), 400)
+    _r = wsCheckParams(["uid", "action"])
+    if _r != None: return _r
 
     uid = int(request.form['uid'])
     action = str(request.form['action'])
 
     host = lDB.getHostByUid(uid)
     if host == None:
-        return make_response(jsonify({"answer":"KO", "reason":"host not found"}), 400)
+        return make_response(jsonify({"answer":"KO", "reason":"host not found"}), 404)
 
     # global conf
 
@@ -79,14 +78,13 @@ def ws_pushAction():
         if module == "job":
             if request.form.__contains__('job') == False:
                 return make_response(jsonify({"answer":"KO", "reason":"missing job"}), 400)
-            
+
             job = str(request.form['job'])
             sAction['args'] = { "module" : module, "job" : job }
 
             lDB.updateHost(host, {"action" : sAction })
 
         return make_response(jsonify(r), 200)
-
 
     # -------------------------
     if action == "upgrade":
@@ -100,20 +98,3 @@ def ws_pushAction():
     r['answer'] = "KO"
     r['reason'] = "action not found"
     return make_response(jsonify(r), 400)
-
-
-# -----------------------
-"""
-
-postman :
-http://192.168.56.103:5000/pushAction
-
-uid:1
-action:restart
-module:job
-job:health
-
-uid:1
-action:restart
-module:all
-"""

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:04:24 alex>
+# Time-stamp: <2017-03-15 14:30:10 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,8 @@
  used to pilot the server
 """
 
-from flask import make_response, jsonify, request
+# from flask import make_response, jsonify, request
+from flask import make_response, jsonify
 from netProbeSrv import app
 from liveDB import lDB
 # import time
@@ -42,6 +43,7 @@ def ws_adminReload():
     logging.info("/admin/reload")
 
     global conf
+
     conf.reload()
 
     r = {

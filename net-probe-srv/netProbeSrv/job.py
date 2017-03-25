@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 15:12:10 alex>
+# Time-stamp: <2017-03-15 16:13:05 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,13 +27,12 @@
 from flask import make_response, jsonify, request
 from netProbeSrv import app
 from liveDB import lDB
-# import time
 import logging
-# import pprint
 
 from config import conf
+from ws_global import wsCheckParams, wsCheckHostUID
 
-@app.route('/myjobs', methods=['POST'])
+@app.route('/myjobs', methods=['POST', 'GET'])
 def ws_myjobs():
     """
     provide job list to probe asking for
@@ -44,12 +43,14 @@ def ws_myjobs():
     global lDB
 
     if request.method == 'POST':
+        _r = wsCheckParams(["uid"])
+        if _r != None: return _r
+
         uid = int(request.form['uid'])
 
-        host = lDB.getHostByUid(uid)
-        if host == None:
-            return make_response(jsonify({"answer" : "KO",
-                                          "reason" : "probe not known"}), 200)
+        host = wsCheckHostUID(uid)
+        if not isinstance(host, unicode):
+            return host
 
         jobs = lDB.getJobsForHost(host)
 
@@ -60,4 +61,4 @@ def ws_myjobs():
 
 
     return make_response(jsonify({"answer" : "KO",
-                                  "reason" : "bad method used"}), 200)
+                                  "reason" : "bad method used"}), 400)

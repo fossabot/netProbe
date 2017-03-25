@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 16:58:25 alex>
+# Time-stamp: <2017-03-15 16:24:21 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,7 +37,8 @@ from netProbeSrv import app
 from netProbeSrv import main, ping, version, discover, results
 from netProbeSrv import job
 
-def oldtest_ping_get():
+# ---------------------------------------------
+def test_ping_get():
     """/ping GET
 
     """
@@ -45,10 +46,10 @@ def oldtest_ping_get():
     c = app.test_client()
     rv = c.get("/ping")
 
-    j = json.loads(rv.data)
-    if j['answer'] != "OK":
-        assert False, "ping GET not working"
+    if rv.status_code != 500:
+        assert False, "ping GET working"
 
+# ---------------------------------------------
 def test_ping_put_empty():
     """/ping POST empty
 
@@ -58,9 +59,10 @@ def test_ping_put_empty():
     rv = c.post("/ping", data=dict())
 
     j = json.loads(rv.data)
-    if j['answer'] != "missing uid":
+    if j['answer'] != "KO" and j['reason'] != "missing uid":
         assert False, "missing uid not working"
 
+# ---------------------------------------------
 def test_ping_put_ukn():
     """/ping POST unknown
 
@@ -70,9 +72,25 @@ def test_ping_put_ukn():
     rv = c.post("/ping", data=dict(uid="12", hostId="test"))
 
     j = json.loads(rv.data)
-    if j['answer'] != "bad probe matching id and hostid":
+    if rv.status_code != 404 and j['answer'] != "host not found":
         assert False, "ping POST ukn not working"
 
+
+# ---------------------------------------------
+def test_ping_no_host():
+    """/ping without host parameter
+
+    """
+    global app
+    c = app.test_client()
+    rv = c.post("/ping", data=dict(uid="12"))
+
+    j = json.loads(rv.data)
+    # print j, rv.status_code
+    if rv.status_code != 400 and j['answer'] != "missing hostId":
+        assert False, "ping missing host id not working"
+
+# ---------------------------------------------
 def test_pingHost_ok():
     """/ping host ok
 
@@ -96,6 +114,7 @@ def test_pingHost_ok():
     if j['answer'] != "OK":
         assert False, "ping known host"
 
+# ---------------------------------------------
 def test_pingHost_ukn():
     """/ping host ukn
 
@@ -107,12 +126,13 @@ def test_pingHost_ukn():
 
     global app
     c = app.test_client()
-    rv = c.post("/ping", data=dict(uid="2", hostId="xx2"))
+    rv = c.post("/ping", data=dict(uid="1", hostId="xx2"))
 
     j = json.loads(rv.data)
     if j['answer'] != "bad probe matching id and hostid":
-        assert False, "ping known ukn"
+        assert False, "ping known ukn id"
 
+# ---------------------------------------------
 def test_ping_bad_hostid():
     """/ping with bad hostid
 
@@ -125,7 +145,7 @@ def test_ping_bad_hostid():
     if j['answer'] != "bad probe matching id and hostid":
         assert False, "ping with bad hostid"
 
-
+# ---------------------------------------------
 def test_pingUpdate():
     """/ping check update
 
@@ -138,10 +158,12 @@ def test_pingUpdate():
     if a['xx1']['last'] - time.time() < -0.1:
         assert False, "not updated"
 
+# ---------------------------------------------
 if __name__ == '__main__':
     _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
     logging.basicConfig(format=_logFormat,
                         level=logging.INFO)
+
     # test_ping_get()
     test_ping_put_empty()
     test_ping_put_ukn()
@@ -149,3 +171,5 @@ if __name__ == '__main__':
     test_pingHost_ukn()
     test_pingUpdate()
     test_ping_bad_hostid()
+    test_ping_no_host()
+    test_ping_get()

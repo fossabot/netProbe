@@ -15,3 +15,8 @@ net-probe-srv/1.conf
 /py-net-probe/docker/netprobe.deb
 **/*.deb
 **/#*#
+/net-probe-srv/.coverage
+/net-probe-srv/coverage.xml
+/py-net-probe/coverage.xml
+/coverage.xml
+/.coverage

@@ -1,0 +1,6 @@
+[run]
+branch = False
+
+omit =
+     /usr/lib/python2.7/*
+     tests/*

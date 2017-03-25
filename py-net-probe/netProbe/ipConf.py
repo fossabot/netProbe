@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:01:21 alex>
+# Time-stamp: <2017-03-15 15:08:16 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,16 +33,12 @@ True
 'fe90::a00:...'
 """
 
-__version__ = "1.0"
-__date__ = "08/04/2016"
-__author__ = "Alex Chauvin"
-
 import netifaces
 import re
 
 class ipConf(object):
     """class to gather and store ip configuration of host"""
-	
+
     def __init__(self):
         """ constructor """
         self.iGotDefault = False
@@ -73,7 +69,7 @@ class ipConf(object):
             super(ipConf, self).__init__()
 		
     def hasDefaultRoute(self):
-        """ 
+        """
         does the ip stack has a default route
         return boolean
         """

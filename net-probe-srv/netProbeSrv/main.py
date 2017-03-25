@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# pylint --rcfile=~/.pylint main.py
+# Time-stamp: <2017-03-15 14:48:06 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,17 +32,7 @@ def hello_world():
     """
     / ws : do nothing
     """
-    return 'Hello World!'
-
-
-@app.route('/post/<int:post_id>', methods=['GET'])
-def show_post(post_id):
-    """
-    show the post with the given id, the id is an integer
-    """
-    if post_id == 0:
-        abort(404)
-    return 'Post %d' % post_id
+    return make_response(jsonify({'status': 'OK'}), 200)
 
 @app.errorhandler(404)
 def not_found(error):

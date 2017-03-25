@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:05:22 alex>
+# Time-stamp: <2017-03-15 15:05:45 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,17 +26,18 @@
 
 from .output import output
 
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, ElasticsearchException
 import logging
+import os
 
 class elastic(output):
     """ class to handle elastic output """
-    
+
     # ----------------------------------------------------------
     def __init__(self, conf):
         """constructor"""
 
-        output.__init__(self)
+        output.__init__(self, "elastic")
 
         if not conf.__contains__('server'):
             assert False, "elastic configuration missing server"
@@ -65,19 +66,24 @@ class elastic(output):
             iConfReplica = 1
 
         self.es_server = conf['server']
+
+        if (os.environ.__contains__("PI_TEST_NO_OUTPUT")):
+            logging.info("no elastic connect, test only")
+            return
+
         try:
             self.es = Elasticsearch(host=self.es_server)
-        except:
-            assert False, "cannot find elastic server, exiting"
 
-        self.es.indices.create(index=sConfIndex,
-                               body={
-                                   'settings': {
-                                       'number_of_shards': iConfShard,
-                                       'number_of_replicas': iConfReplica
-                                   }
-                               },
-                               ignore=400)
+            self.es.indices.create(index=sConfIndex,
+                                   body={
+                                       'settings': {
+                                           'number_of_shards': iConfShard,
+                                           'number_of_replicas': iConfReplica
+                                       }
+                                   },
+                                   ignore=400)
+        except ElasticsearchException:
+            logging.error("cannot connect to elastic server")
 
     # ----------------------------------------------------------
     def send(self, data):
@@ -85,7 +91,10 @@ class elastic(output):
 
         logging.info("send to elasticsearch")
 
-        res = self.es.index(index="pyprobe", doc_type='result', body=data)
+        try:
+            res = self.es.index(index="pyprobe", doc_type='result', body=data)
+            if res['created'] != True:
+                logging.error("error on insert in ES {}".format(res))
+        except ElasticsearchException:
+            logging.error("error sending back to elastic server")
 
-        if res['created'] != True:
-            logging.error("error on insert in ES {}".format(res))

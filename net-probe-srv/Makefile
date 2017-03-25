@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-01-29 14:02:53 alex>
+# Time-stamp: <2017-03-15 14:52:29 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -8,7 +8,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,3 +37,12 @@ clean:
 
 test: clean
 	@nosetests tests
+
+coverage: clean
+	PI_TEST_NO_OUTPUT=1 coverage run ./tests/test_all.py
+	coverage report -m
+
+version:
+	awk '/^    "version" :/ { $$0="    \"version\" : \"'`cat ../VERSION`'\"," }; /^    "date"/ { $$0="    \"date\" : \"'`date +%0d/%0m/%y-%H:%M:%S`'\"," } ; { print }' < netProbeSrv/version.py > /tmp/version.py
+	@cp /tmp/version.py netProbeSrv/version.py
+	@rm -f /tmp/version.py

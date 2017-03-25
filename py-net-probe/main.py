@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 16:42:23 alex>
+# Time-stamp: <2017-03-15 15:15:58 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -10,7 +10,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,8 @@
  client module for the probe system
 """
 
-__version__ = "1.5.2"
-__date__ = "05/02/17-18:54:58"
+__version__ = "1.6.2"
+__date__ = "15/03/17-16:26:36"
 __author__ = "Alex Chauvin"
 
 import time
@@ -52,10 +52,12 @@ try:
     parser = argparse.ArgumentParser(description='raspberry net probe system')
 
     parser.add_argument('--log', '-l', metavar='level', default='INFO', type=str, help='log level', nargs='?', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
- 
+
     parser.add_argument('--probe', '-p', metavar='probe_loglevel', default='ERROR', type=str, help='log level for probes', nargs=1, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
- 
+
     parser.add_argument('--redis', '-r', metavar='none', help='redis server', default=None, nargs='?')
+
+    parser.add_argument('--server', '-s', metavar='none', help='PiProbe server', default=None, nargs='?')
 
     args = parser.parse_args()
 
@@ -148,7 +150,7 @@ def serverConnect():
     stats.setIPv6(ip.getIfIPv6())
 
     bConnected = False
-    
+
     iSleepConnectDelay = 0
 
     while bConnected == False:
@@ -171,7 +173,7 @@ def serverConnect():
         #
         srv = netProbe.probeServer()
 
-        if srv.findServer():
+        if srv.findServer(args.server):
             logging.info("srv IP found in tables")
         else:
             logging.error("server not found in DNS or host table")
@@ -212,7 +214,7 @@ def ping():
         if _iRetry > 2:
             bConnected = False
         else:
-            stats.setVar("ping-server-retry", _iRetry+1)        
+            stats.setVar("ping-server-retry", _iRetry+1)
         return
 
     fLastDelta = srv.getLastCmdDeltaTime()
@@ -226,7 +228,7 @@ def ping():
     stats.setVar("ping-server-delay", fLastDelta*1000)
 
     # action handle, if some action has been pushed by the server
-    if r.__contains__('action') and type(r['action']) == dict:
+    if r.__contains__('action') and isinstance(r['action'], dict):
         action(r['action'])
 
 # -----------------------------------------
@@ -319,11 +321,8 @@ def trap_signal(sig, heap):
 
     global bRunning
     global bConnected
-    global probeProcess
 
     logging.info("exit signal received, wait for next step")
-
-    # stopAllProbes(probeProcess)
 
     bRunning = False
     bConnected = False
@@ -385,7 +384,7 @@ def popResults(_db):
     else:
         nb = int(l/2)
 
-    for i in range(nb):
+    for _ in range(nb):
         r = _db.popResult()
         if r != None:
             j = json.loads(r)

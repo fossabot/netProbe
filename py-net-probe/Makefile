@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-01-29 14:02:08 alex>
+# Time-stamp: <2017-03-15 14:20:20 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -8,7 +8,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,10 +31,8 @@ lint: clean
 flakes: clean
 	@pyflakes *py */*py
 
-deb: clean
+deb: clean version
 	@echo make deb package for PI
-	@awk '/^__version/ { $$0="__version__ = \"'`cat ../VERSION`'\"" }; /^__date__/ { $$0="__date__ = \"'`date +%0d/%0m/%y-%H:%M:%S`'\"" } ; { print }' < main.py > /tmp/main.py
-	@cp /tmp/main.py main.py
 	@mkdir -p deb/home/pi/py-net-probe
 	@cp -r init.cfg start.sh *py netProbe probelib sched database hostId config deb/home/pi/py-net-probe
 	@rm -f netprobe_`cat ../VERSION`_all.deb
@@ -51,3 +49,11 @@ clean:
 test: clean
 	@nosetests tests
 
+coverage: clean
+	PI_TEST_NO_OUTPUT=1 coverage run ./tests/test_all.py
+	coverage report -m
+
+version:
+	@awk '/^__version/ { $$0="__version__ = \"'`cat ../VERSION`'\"" }; /^__date__/ { $$0="__date__ = \"'`date +%0d/%0m/%y-%H:%M:%S`'\"" } ; { print }' < main.py > /tmp/main.py
+	@cp /tmp/main.py main.py
+	@rm -f /tmp/main.py

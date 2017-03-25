@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 13:55:35 alex>
+# Time-stamp: <2017-03-15 15:06:27 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -10,7 +10,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,14 +25,14 @@
  config class
 """
 
-import logging
+# import logging
 import ConfigParser
 
-import pprint
+# import pprint
 
 class config(object):
     """ class to manipulate the configuration """
-    
+
     # ----------------------------------------------------------
     def __init__(self):
         """constructor
@@ -50,13 +50,12 @@ class config(object):
             'stats_push': 300,
             'upgrade': 3600*6
         }
-        
+
         for k in self.scheduler.keys():
             try:
                 self.scheduler[k] = self.conf.getint("scheduler", k)
-                
-            except:
-                None
+            except Exception as ex:
+                assert False, "key not found in the config file {}".format(k)
             
         return
 

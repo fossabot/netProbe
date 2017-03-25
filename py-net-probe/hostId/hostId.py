@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:00:54 alex>
+# Time-stamp: <2017-03-15 14:31:27 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +9,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -53,7 +53,7 @@ class hostId(object):
             raise Exception('ERROR accessing cpuinfo')
 
         sCPU = sUniqueId
-        
+
         aLines = f.readlines()
         f.close()
 
@@ -62,7 +62,7 @@ class hostId(object):
             if r != None:
                 sCPU = sCPU+'@'+r.group(1)
 
-            r = re.match("bogomips[^:]+: (.*)", l)
+            r = re.match("cpu MHz[^:]+: (.*)", l)
             if r != None:
                 sCPU = sCPU+'@'+r.group(1)
 
@@ -70,7 +70,7 @@ class hostId(object):
             if r != None:
                 sCPU = str(sCPU)+'@'+str(r.group(1))
 
-        self.id = hashlib.md5(sCPU).hexdigest()
+        self.id = hashlib.sha256(sCPU).hexdigest()
 
     def get(self):
         """
