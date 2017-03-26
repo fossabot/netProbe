@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-25 15:48:51 alex>
+# Time-stamp: <2017-03-26 18:47:08 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -239,11 +239,31 @@ class probeServer(object):
         if self.bServerAvail == False or self.uid == 0:
             return None
 
-        try:
-            data = {
-                'uid' : self.uid
-            }
+        data = {
+            'uid' : self.uid
+        }
 
+        answer = {}
+
+        # get main configuration
+        try:
+            r = self.session.post(self.sSrvBaseURL+'/myConfig', data)
+
+            if r.status_code == 200:
+                s = json.loads(r.text)
+                if s.__contains__('answer') and s['answer'] != "OK":
+                    if s.__contains__('reason'):
+                        logging.error("bad answer on myConfig from job ws : {}".format(s['reason']))
+                    self.bServerAvail = False
+                    return None
+
+                answer['config'] = s['config']
+
+        except requests.ConnectionError:
+            logging.error("get configuration : connection error")
+            return None
+
+        try:
             r = self.session.post(self.sSrvBaseURL+'/myjobs', data)
             
             if r.status_code == 200:
@@ -255,13 +275,13 @@ class probeServer(object):
                     return None
 
                 if s.__contains__('jobs'):
-                    return s['jobs']
+                    answer['jobs'] = s['jobs']
 
         except requests.ConnectionError:
             logging.error("get jobs : connection error")
             return None
 
-        return None
+        return answer
 
     # -----------------------------------------------------------------
     def pushResults(self, aResult):
@@ -311,9 +331,13 @@ class probeServer(object):
 
         logging.info("check for software upgrade")
 
-        s = check_output(["/usr/bin/uname", "-m"])
-        if re.match("arm", s) == None:
-            logging.info(" avoid on non ARM platform")
+        if os.path.isfile("/bin/uname"): 
+            s = check_output(["/bin/uname", "-m"])
+            if re.match("arm", s) == None:
+                logging.info(" avoid on non ARM platform")
+                return
+        else:
+            logging.info(" no /bin/uname")
             return
 
         try:
@@ -331,7 +355,7 @@ class probeServer(object):
 
             logging.info("turning FS to RW")
 
-            call(["/usr/bin/mount", "-o", "remount,rw", "/"])
+            call(["/bin/mount", "-o", "remount,rw", "/"])
 
             with open("/home/pi/new.deb", 'wb') as fd:
                 for chunk in r.iter_content(1024):
@@ -359,7 +383,8 @@ class probeServer(object):
         os.unlink("/home/pi/new.deb")
 
         logging.info("turning FS back to RO")
-        call(["/usr/bin/sync"])
+        call(["/bin/sync"])
+        call(["/bin/mount", "-o", "remount,ro", "/"])
 
         logging.info("exiting")
         exit()

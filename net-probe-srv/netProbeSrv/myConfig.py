@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-26 17:15:21 alex>
+# Time-stamp: <2017-03-26 17:23:11 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -21,7 +21,7 @@
 # --------------------------------------------------------------------
 
 """
- jobs WS used to manipulate jobs on the probes
+ jobs WS used for a probe to get its main configuration
 """
 
 from flask import make_response, jsonify, request
@@ -32,33 +32,33 @@ import logging
 from config import conf
 from ws_global import wsCheckParams, wsCheckHostUID
 
-@app.route('/myjobs', methods=['POST', 'GET'])
-def ws_myjobs():
+@app.route('/myConfig', methods=['POST'])
+def ws_myconfig():
     """
-    provide job list to probe asking for
+    provide main configuration for the probe
     """
 
-    logging.info("/myjobs")
+    logging.info("/myConfig")
 
     global lDB
 
-    if request.method == 'POST':
-        _r = wsCheckParams(["uid"])
-        if _r != None: return _r
+    _r = wsCheckParams(["uid"])
+    if _r != None: return _r
 
-        uid = int(request.form['uid'])
+    uid = int(request.form['uid'])
 
-        host = wsCheckHostUID(uid)
-        if not isinstance(host, unicode):
-            return host
+    host = wsCheckHostUID(uid)
+    if not isinstance(host, unicode):
+        return host
 
-        conf.reload()
+    config = lDB.getConfigForHost(host)
+    print(config)
 
-        jobs = lDB.getJobsForHost(host)
+    r = {
+        'probename' : config['probename'],
+        'hostname' : config['hostname'],
+        'firmware' : config['firmware']
+    }
 
-        return make_response(jsonify({"answer" : "OK",
-                                      "jobs" : jobs}), 200)
-
-
-    return make_response(jsonify({"answer" : "KO",
-                                  "reason" : "bad method used"}), 400)
+    return make_response(jsonify({"answer" : "OK",
+                                  "config" : r}), 200)

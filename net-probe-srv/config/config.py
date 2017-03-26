@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-25 16:03:23 alex>
+# Time-stamp: <2017-03-26 16:55:16 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -123,41 +123,44 @@ class config(object):
             for t in hostData['template']:
                 self.applyTemplateToHost(hostData, t)
 
+        _probeData = {
+            "jobs" : {},
+            "probename": "unknown",
+            "firmware": "current",
+            "hostname": "unknown_probe"
+        }
+
         if hostData.__contains__('jobs'):
-            jobs = hostData['jobs']
+            _probeData['jobs'] = hostData['jobs']
             # check if active present, or put it to True
-            for j in jobs:
+            for j in hostData['jobs']:
                 if not j.__contains__('active'):
                     j['active'] = "True"
-        else:
-            jobs = {}
 
         if hostData.__contains__('firmware'):
-            firmware = hostData['firmware']
-        else:
-            firmware = "current"
+            _probeData['firmware'] = hostData['firmware']
+
+        if hostData.__contains__('hostname'):
+            _probeData['hostname'] = hostData['hostname']
 
         if hostData.__contains__('probename'):
-            probename = hostData['probename']
+            _probeData['probename'] = hostData['probename']
 
             for hkey in self.aHostTable:
                 h = self.aHostTable[hkey]
 
-                if h.__contains__('probename') and h['probename'] == probename:
+                if h.__contains__('probename') and h['probename'] == _probeData['probename']:
                     # if same name but different id, insert a new key
                     if (hkey != sId):
                         del(self.aHostTable[hkey])
                         hkey = sId
-                    self.aHostTable[hkey] = {"jobs" : jobs, "probename": probename, "firmware": firmware}
-                    logging.info("update probename {}".format(probename))
+                    self.aHostTable[hkey] = _probeData
+                    logging.info("update probename {}".format(_probeData['probename']))
                     return
 
-        else:
-            probename = "unknown"
-
         if sId != "" and sId != None and sId != False:
-            logging.info("add host {} to the DB".format(probename))
-            self.aHostTable[sId] = {"jobs" : jobs, "probename": probename, "firmware": firmware}
+            logging.info("add host {} to the DB".format(_probeData['probename']))
+            self.aHostTable[sId] = _probeData
 
     # ----------------------------------------------------------
     def addTemplate(self, templateData):

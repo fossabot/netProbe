@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-25 17:08:50 alex>
+# Time-stamp: <2017-03-26 17:01:11 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -53,6 +53,50 @@ def insertConf():
         "global": {
             "firmware": {
                 "current": "0.6.2",
+                "prod": "0.6.2",
+                "preprod" : "0.6.3",
+                "test" : "0.7.0",
+                "not_found" : "0.1.0"
+            }
+        },
+
+        "probe" : 
+        [
+            {
+                "id" : "7374edd8c5d8bc023f29abb8e3fffb95c5a87adb712a5ea6270292850761b33b",
+                "probename" : "test01",
+                "firmware" : "test"
+            }
+        ]
+
+    }
+
+    sConf = string.replace(str(dConf), "'", '"')
+
+    try:
+        f = file("test_config.conf", 'w')
+    except IOError:
+        logging.error("accessing config file {}".format(sFile))
+        return False
+        
+    f.write(sConf)
+    f.close()
+
+    global conf
+    conf.loadFile('test_config.conf')
+
+# ---------------------------------------------
+def insertConf_woCurrent():
+    global app
+    global lDB
+
+    dConf = {
+        "output" :  [ { "engine": "debug",
+                        "parameters" : [],
+                        "active" : "True"    }  ],
+
+        "global": {
+            "firmware": {
                 "prod": "0.6.2",
                 "preprod" : "0.6.3",
                 "test" : "0.7.0",
@@ -300,6 +344,23 @@ def test_upgrade_6():
         assert False, "probe not found"
 
 # ---------------------------------------------
+def test_upgrade_7():
+    """configuration without current firmware
+
+    """
+    global app
+    global conf
+    global lDB
+
+    lDB.cleanDB()
+
+    insertConf_woCurrent()
+
+    conf.getCurrentFWVersion()
+    conf.getFWVersion('prod')
+    conf.getFWVersion('unknown')
+
+# ---------------------------------------------
 def all(b=True):
     if b:
         test_upgrade_1()
@@ -307,7 +368,8 @@ def all(b=True):
         test_upgrade_3()
         test_upgrade_4()
         test_upgrade_5()
-    test_upgrade_6()
+        test_upgrade_6()
+    test_upgrade_7()
 
 # ---------------------------------------------
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-25 12:08:30 alex>
+# Time-stamp: <2017-03-26 17:20:31 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  server module for the probe system
 """
 
-__version__ = "1.7.0"
-__date__ = "25/03/17-12:07:49"
+__version__ = "1.7.3"
+__date__ = "26/03/17-19:32:45"
 
 import logging
 import signal
@@ -119,7 +119,7 @@ if args.check == True:
 
 from netProbeSrv import app
 from netProbeSrv import main, ping, version, discover, results
-from netProbeSrv import job
+from netProbeSrv import job, myConfig
 from netProbeSrv import pushAction, admin
 from netProbeSrv import upgrade
 

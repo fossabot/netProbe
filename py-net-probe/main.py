@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:15:58 alex>
+# Time-stamp: <2017-03-26 18:44:27 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -25,8 +25,8 @@
  client module for the probe system
 """
 
-__version__ = "1.7.0"
-__date__ = "25/03/17-13:58:58"
+__version__ = "1.7.3"
+__date__ = "26/03/17-19:32:45"
 __author__ = "Alex Chauvin"
 
 import time
@@ -40,6 +40,10 @@ import sched
 import hostId
 import database
 import json
+import platform
+from subprocess import call, check_output, CalledProcessError
+import re
+
 from config import conf
 
 from probe import restartProbe, stopAllProbes, checkProbe, checkProbes, statsProbes
@@ -273,7 +277,47 @@ def getConfig():
         bConnected = False
         return None
 
-    for c in config:
+    if not config.__contains__('jobs'):
+        logging.error("can't get my jobs")
+        bConnected = False
+        return None
+
+    if not config.__contains__('config'):
+        logging.error("can't get my config")
+        bConnected = False
+        return None
+
+    # handle configuration
+    # do we have to change the hostname ?
+    currentHostname = platform.node()
+    newHostname = config['config']['hostname']
+    if currentHostname != newHostname:
+        logging.info("changing hostname to {}".format(newHostname))
+
+        if os.path.isfile("/bin/uname"): 
+            _s = check_output(["/bin/uname", "-m"])
+            if re.match("arm", _s) == None:
+                logging.info(" avoid on non ARM platform")
+            else:
+                try:
+                    logging.info("turning FS to RW")
+                    call(["/bin/mount", "-o", "remount,rw", "/"])
+
+                    f = file("/etc/hostname", 'w')
+                    f.write(newHostname)
+                    f.close()
+
+                    logging.info("turning FS to RO")
+                    call(["/bin/mount", "-o", "remount,ro", "/"])
+
+                    os.system("/bin/hostname {}".format(newHostname))
+                except IOError:
+                    logging.error("accessing hostname file /etc/hostname")
+        else:
+            logging.info(" no /bin/uname")
+        
+    # handle jobs
+    for c in config['jobs']:
         # update job or create
         if probeJobs.__contains__(c['id']):
             a = probeJobs[c['id']]
