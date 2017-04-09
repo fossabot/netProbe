@@ -1,0 +1,16 @@
+[
+    { 
+	"job" : "iperf",
+	"active" : "True",
+	"freq" : 30,
+	"version" : 1,
+	"data" : {
+	    "server" : "127.0.0.1",
+	    "duration" : 5,
+	    "way" : "both",
+	    "port" : 5201,
+	    "tos" : 96
+	}
+    }
+]
+
