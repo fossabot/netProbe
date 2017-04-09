@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-26 16:55:16 alex>
+# Time-stamp: <2017-04-09 14:03:19 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -336,7 +336,7 @@ class config(object):
 
         """
 
-        logging.info("get name for {}".format(sId))
+        logging.debug("get name for {}".format(sId))
 
         if self.aHostTable.__contains__(sId):
             return self.aHostTable[sId]['probename']

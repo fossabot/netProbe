@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:47:31 alex>
+# Time-stamp: <2017-04-09 14:04:28 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -42,7 +42,7 @@ def ws_discover():
     checks host in the configuration and returns its unique id
     """
 
-    logging.info("/discover")
+    logging.debug("/discover")
 
     global conf
     global lDB

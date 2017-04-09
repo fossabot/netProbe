@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-25 17:07:21 alex>
+# Time-stamp: <2017-04-09 14:04:19 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -40,7 +40,7 @@ def ws_upgrade():
     upgrade web service, sends back to PI the appropriate version
     """
 
-    logging.info("/upgrade")
+    logging.debug("/upgrade")
 
     global lDB
 

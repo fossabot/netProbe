@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:30:43 alex>
+# Time-stamp: <2017-04-09 14:04:47 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -44,7 +44,7 @@ def ws_results():
     answers ok if everything is good
     """
 
-    logging.info("/results")
+    logging.debug("/results")
 
     if request.method != 'POST':
         return make_response(jsonify({"answer" : "KO"}), 300)

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-26 17:15:21 alex>
+# Time-stamp: <2017-04-09 14:04:37 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -38,7 +38,7 @@ def ws_myjobs():
     provide job list to probe asking for
     """
 
-    logging.info("/myjobs")
+    logging.debug("/myjobs")
 
     global lDB
 
