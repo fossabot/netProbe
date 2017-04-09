@@ -10,7 +10,6 @@ probe
 * http probe can use a target IP address different than URL server name
 * DNS probe
 * CIFS probe
-* NTP stats probe
 * stop probe when not anymore in configuration
 * disable the upgrade + config in the init.cfg
 * send default router IP address to help locating new probes on internal network
@@ -33,3 +32,4 @@ move to changelog once released
 * add hostname in conf and on PI
 * fix: correct schedule handling on probes
 * probe test mode without redis
+* NTP probe

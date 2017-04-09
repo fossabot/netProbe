@@ -37,3 +37,45 @@ CS6	192
 CS7	224
 EF	184
 ```
+
+configuration template example:
+```
+{ 
+    "name": "T_IPERF",
+    "jobs" : [
+      { "job" : "iperf",
+        "freq" : 600,
+	"version" : 1,
+	"data" : {
+	   "server" : "iperf.server",
+	   "duration" : 5,
+	   "way" : "both",
+	   "port" : 5201,
+	   "tos" : 96
+	}
+      }
+    ]
+}
+```
+
+probe ntp
+---------
+
+check the ntp local PI client to gather statistics and clock stability of the main peer.
+
+configuration template example:
+```
+{ 
+    "name": "T_NTP",
+    "jobs" : [
+	{ 
+          "active": "True",
+          "job" : "ntp",
+          "freq" : 600,
+	  "version" : 1,
+	  "data" : {}
+	}
+    ]
+}
+```
+
