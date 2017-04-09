@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-26 17:23:11 alex>
+# Time-stamp: <2017-04-09 15:35:40 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -29,7 +29,7 @@ from netProbeSrv import app
 from liveDB import lDB
 import logging
 
-from config import conf
+# from config import conf
 from ws_global import wsCheckParams, wsCheckHostUID
 
 @app.route('/myConfig', methods=['POST'])
