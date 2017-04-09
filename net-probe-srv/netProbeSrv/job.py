@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 14:04:37 alex>
+# Time-stamp: <2017-04-09 15:59:06 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -40,7 +40,7 @@ def ws_myjobs():
 
     logging.debug("/myjobs")
 
-    global lDB
+    # global lDB
 
     if request.method == 'POST':
         _r = wsCheckParams(["uid"])

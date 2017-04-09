@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:30:10 alex>
+# Time-stamp: <2017-04-09 16:15:48 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -42,7 +42,7 @@ def ws_adminReload():
 
     logging.info("/admin/reload")
 
-    global conf
+    # global conf
 
     conf.reload()
 
@@ -60,7 +60,7 @@ def ws_dbGetProbes():
 
     logging.info("/admin/getProbes")
 
-    global lDB
+    # global lDB
 
     p = lDB.getListProbes()
 

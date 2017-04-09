@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-25 17:10:55 alex>
+# Time-stamp: <2017-04-09 16:13:46 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -46,7 +46,7 @@ def wsCheckParams(params):
 # -------------------------------------------------------------
 def wsCheckHostUID(uid):
     """check if we have the host in database"""
-    global lDB
+    # global lDB
 
     host = lDB.getHostByUid(uid)
 

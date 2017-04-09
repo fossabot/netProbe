@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 13:58:07 alex>
+# Time-stamp: <2017-04-09 16:15:29 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -46,7 +46,7 @@ import re
 
 from config import conf
 
-from probe import restartProbe, stopAllProbes, checkProbe, checkProbes, statsProbes
+from probe import restartProbe, stopAllProbes, checkProbes, statsProbes
 
 aModules = ['icmp', 'health', 'http', 'iperf', 'temp']
 
@@ -131,9 +131,9 @@ def serverConnect():
     """
 
     global srv
-    global stats
+    # global stats
     global bConnected
-    global bRunning
+    # global bRunning
 
     # check IP configuration of probe
     # if no default route !
@@ -240,9 +240,9 @@ def pushJobsToDB(jobName):
     """ change the job definition for the probe job in the db called only
     if the job config has been updated
     """
-    global db
-    global probeJobs
-    global stats
+    # global db
+    # global probeJobs
+    # global stats
 
     # suppress the old definition in db
     db.cleanJob(jobName)
@@ -261,7 +261,7 @@ def getConfig():
     """
     global probeJobs
     global bConnected
-    global aModules
+    # global aModules
 
     if bConnected == False:
         return
@@ -351,9 +351,9 @@ def mainLoop():
     """
     main scheduler loop
     """
-    global scheduler
-    global bConnected
-    global stats
+    # global scheduler
+    # global bConnected
+    # global stats
 
     while bConnected:
         f = scheduler.step()
@@ -376,9 +376,9 @@ def trap_signal(sig, heap):
 def action(a):
     global bRunning
     global bConnected
-    global probeProcess
+    # global probeProcess
     global aModules
-    global srv
+    # global srv
 
     if a['name'] == "restart":
         args = a['args']

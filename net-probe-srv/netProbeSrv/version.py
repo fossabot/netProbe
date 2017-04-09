@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:14:29 alex>
+# Time-stamp: <2017-04-09 16:13:33 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -39,5 +39,5 @@ def ws_version():
     """
     version web service
     """
-    global aVersion
+    # global aVersion
     return make_response(jsonify(aVersion), 200)

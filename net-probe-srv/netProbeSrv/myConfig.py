@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 15:35:40 alex>
+# Time-stamp: <2017-04-09 15:56:06 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -52,7 +52,6 @@ def ws_myconfig():
         return host
 
     config = lDB.getConfigForHost(host)
-    print(config)
 
     r = {
         'probename' : config['probename'],
