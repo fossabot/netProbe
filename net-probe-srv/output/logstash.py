@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:21:40 alex>
+# Time-stamp: <2017-04-09 15:40:18 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -104,7 +104,7 @@ class logstash(output):
             sock.sendto(str.encode(json.dumps(data)), (self.server, self.iPort))
             sock.close()
         except Exception as ex:
-            logging.error("output to logstash error")
+            logging.error("output to logstash error{}".format(", ".join(ex.args)))
 
     # ----------------------------------------------------------
     def sendTCP(self, data):
