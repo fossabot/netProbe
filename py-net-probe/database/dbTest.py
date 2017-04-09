@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 11:32:27 alex>
+# Time-stamp: <2017-04-09 15:42:26 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -49,6 +49,7 @@ class dbTest(object):
 
         self.db = True
 
+    @classmethod
     def cleanJob(self, jobName):
         """suppress the list from the database
 
@@ -90,6 +91,7 @@ class dbTest(object):
 
         logging.info("push result {}".format(result))
 
+    @classmethod
     def popResult(self):
         """pop a result from the queue
         return None if nothing in the queue
