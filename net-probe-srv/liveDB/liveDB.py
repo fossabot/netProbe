@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 14:02:24 alex>
+# Time-stamp: <2017-04-09 15:32:29 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -128,18 +128,21 @@ class liveDB(object):
         return a['version']
 
     # ----------------------------------------------------------
+    @classmethod
     def getConfigForHost(self, host):
         """ return the probe config """
 
         return conf.getConfigForHost(host)
 
     # ----------------------------------------------------------
+    @classmethod
     def getJobsForHost(self, host):
         """ return the probe job config """
 
         return conf.getJobsForHost(host)
 
     # ----------------------------------------------------------
+    @classmethod
     def getNameForHost(self, host):
         """ return the probe name """
 
