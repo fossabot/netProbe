@@ -3,6 +3,7 @@ server
 * push regular stats to back office on probe connected or discovered, last hello...
 * schedule on job definition
 * configuration with fields by probe, not only globals
+* avoid multiple conf read, add timer
 
 probe
 =====
@@ -30,3 +31,5 @@ move to changelog once released
 * upgrade path in configuration file
 * correct upgrade on PI
 * add hostname in conf and on PI
+* fix: correct schedule handling on probes
+* probe test mode without redis
