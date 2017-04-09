@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-26 18:47:08 alex>
+# Time-stamp: <2017-04-09 15:44:11 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -371,7 +371,7 @@ class probeServer(object):
             if re.match("Package: netprobe", s) != None:
                 # package is correct, install it
                 logging.info("install new version")
-                call(["dpkg", "-i", "/home/pi/new.deb"])
+                call(["/usr/bin/dpkg", "-i", "/home/pi/new.deb"])
             else:
                 logging.error("bad package deb")
 
