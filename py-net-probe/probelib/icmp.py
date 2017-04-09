@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:02:42 alex>
+# Time-stamp: <2017-04-09 11:59:57 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -164,7 +164,7 @@ class probe_icmp(probemain):
 
                 # If the packet matches, report it to the user.
                 if rip.get_ip_dst() == src and rip.get_ip_src() == dst and pkt_icmp.ICMP_ECHOREPLY == ricmp.get_icmp_type() and ricmp.get_icmp_id() == i:
-                    logging.info("Ping reply for sequence #{} {:0.2f}".format(ricmp.get_icmp_id(), d*1000))
+                    logging.debug("Ping reply for sequence #{} {:0.2f}".format(ricmp.get_icmp_id(), d*1000))
                     res_ok += 1
 
                 if i+1 <= seq_id:

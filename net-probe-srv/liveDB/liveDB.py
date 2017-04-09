@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:04:52 alex>
+# Time-stamp: <2017-04-09 14:02:24 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -73,12 +73,17 @@ class liveDB(object):
 
         if self.aProbeTable.__contains__(sId) == False:
             self.addHost(sId)
-
+    
+        if self.aProbeTable[sId].__contains__('name'):
+            _name = self.aProbeTable[sId]['name']
+        else:
+            _name = sId
+        # print(self.aProbeTable[sId]['name'])
         new = self.aProbeTable[sId].copy()
         new.update(o)
 
         self.aProbeTable.update({sId : new})
-        logging.info("update host in live DB {}".format(sId))
+        logging.info("update host in live DB for {}".format(_name))
 
     # ----------------------------------------------------------
     def getHostByUid(self, uid):

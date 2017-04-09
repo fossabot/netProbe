@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:31:50 alex>
+# Time-stamp: <2017-04-09 14:10:06 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -216,6 +216,8 @@ class sched(object):
                                                       h, m, s,
                                                       tm_wday, tm_yday, tm_isdst))
 
+                            # print(time.strftime("%d/%m/%Y %H:%M:%S", time.localtime(timeEnable)))
+
                         r = re.match("(\d\d):(\d\d):(\d\d)", schedEntry['disable'])
                         if r == None:
                             logging.error("schedule disable format error, should be HH:MM:SS and is {}".format(schedEntry['enable']))
@@ -228,22 +230,27 @@ class sched(object):
                                                        h, m, s,
                                                        tm_wday, tm_yday, tm_isdst))
 
+                            # print(time.strftime("%d/%m/%Y %H:%M:%S", time.localtime(timeDisable)))
+
                         # are we in this zone
                         now = time.time()
                         #print(now - timeDisable)
                         #print(now - timeEnable)
 
                         if now >= timeEnable and now <= timeDisable:
+                            logging.info("schedule: in zone, exec planned")
                             bExec = True
                             break
                         else:
                             # is next iteration today ?
                             if now < timeEnable:
+                                logging.debug("schedule is before now")
                                 if timeEnable-now < minNextIter:
-                                    minNextIter = timeEnable-now
+                                    minNextIter = timeEnable
 
                             # check tomorrow
                             if now > timeDisable:
+                                logging.debug("schedule is after now")
                                 _nextTime = timeEnable + 3600*24
                                 if _nextTime < minNextIter:
                                     minNextIter = _nextTime
@@ -266,7 +273,12 @@ class sched(object):
             else:
                 # time is not yet arrived to execute the job
                 nextJob = self.aSchedJobs.pop()
-                nextJob['nextExec'] = minNextIter
+                _r = random.SystemRandom()
+                nextJob['nextExec'] = minNextIter + int(_r.random() * (nextJob['freq']))
+
+                logging.info("next iter in {:.0f} secs at {}".format(minNextIter-time.time(),
+                                                                     time.strftime("%d/%m/%Y %H:%M:%S",
+                                                                                   time.localtime(nextJob['nextExec']))))
 
                 self.aSchedJobs.append(nextJob)
                 return 0

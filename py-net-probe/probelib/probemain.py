@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:03:38 alex>
+# Time-stamp: <2017-04-09 13:50:33 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -29,7 +29,6 @@ import sys
 import logging
 import signal
 import time
-# import random
 
 sys.path.insert(0, os.getcwd())
 from netProbe import ipConf
@@ -70,11 +69,14 @@ class probemain(object):
 
         logging.info("starting probe")
 
-        # redis server
-        if (os.environ.__contains__("PI_REDIS_SRV")):
-            self.db = database.database(os.environ["PI_REDIS_SRV"])
+        if (os.environ.__contains__("PI_DB_TEST")):
+            self.db = database.dbTest.dbTest()
         else:
-            self.db = database.database()
+            # redis server
+            if (os.environ.__contains__("PI_REDIS_SRV")):
+                self.db = database.dbRedis.dbRedis(os.environ["PI_REDIS_SRV"])
+            else:
+                self.db = database.dbRedis.dbRedis()
 
         # create global scheduler
         self.scheduler = sched.sched()
@@ -159,6 +161,10 @@ class probemain(object):
         config = self.db.getJobs(name)
 
         for c in config:
+            if not c.__contains__('active'):
+                logging.error("no active field on job, False by defalut")
+                c['active'] = "False"
+
             if c['active'] == "True":
                 if c['job'] == name:
                     data = c['data']
@@ -169,7 +175,7 @@ class probemain(object):
                             self.addJob(int(c['freq']), f, data)
                         yield c
                 else:
-                    logging.error("should not happen!")
+                    logging.error("should not happen, job={}".format(c['job']))
             else:
                 logging.info("job inactive")
 

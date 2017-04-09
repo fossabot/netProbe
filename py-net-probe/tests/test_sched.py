@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 21:50:33 alex>
+# Time-stamp: <2017-04-09 14:12:04 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -147,7 +147,7 @@ def test_clean():
     # print f
 
     if f < 1:
-        assert False, "clean add job"
+        assert False, "clean add job {}<1".format(f)
 
     scheduler.clean()
 
@@ -450,8 +450,8 @@ def test_ext_not_between():
         assert False, "first step should be 0"
     
     t = scheduler.step()
-    if not (t > 79100 and t < 79250):
-        assert False, "third step should be around 79200"
+    if not (t > 79100 and t < 79260):
+        assert False, "third step should be around 79200 and is {}".format(t)
 
 # ---------------------------------------------
 def all_sched(b=True):

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-26 18:44:27 alex>
+# Time-stamp: <2017-04-09 13:58:07 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -25,8 +25,8 @@
  client module for the probe system
 """
 
-__version__ = "1.7.3"
-__date__ = "26/03/17-19:32:45"
+__version__ = "1.7.4"
+__date__ = "09/04/17-14:13:10"
 __author__ = "Alex Chauvin"
 
 import time
@@ -122,7 +122,7 @@ if (args.redis != None):
     os.environ["PI_REDIS_SRV"] = args.redis
     logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"]))
 
-db = database.database(args.redis)
+db = database.dbRedis.dbRedis(args.redis)
 
 # -----------------------------------------
 def serverConnect():

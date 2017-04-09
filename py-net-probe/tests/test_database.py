@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-01-29 14:02:27 alex>
+# Time-stamp: <2017-04-09 14:07:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -32,14 +32,14 @@ import database
 def test_create_db():
     """ create database in redis """
 
-    db = database.database()
+    db = database.dbRedis.dbRedis()
 
     if db == None:
         assert False
 
 def test_addjob():
     """ add job in the database """
-    db = database.database()
+    db = database.dbRedis.dbRedis()
 
     if db == None:
         assert False
@@ -52,7 +52,7 @@ def test_addjob():
 
 def test_clean():
     """ clean database """
-    db = database.database()
+    db = database.dbRedis.dbRedis()
 
     if db == None:
         assert False
