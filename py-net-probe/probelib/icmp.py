@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 11:59:57 alex>
+# Time-stamp: <2017-04-09 16:24:21 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -49,6 +49,7 @@ class probe_icmp(probemain):
         self.mainLoop()
 
     # -----------------------------------------
+    @classmethod
     def f_testv4(self, data):
         """testing method for insertion in the job list, check if ip version 4
 

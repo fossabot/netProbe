@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:06:27 alex>
+# Time-stamp: <2017-04-09 16:21:56 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -55,6 +55,7 @@ class config(object):
             try:
                 self.scheduler[k] = self.conf.getint("scheduler", k)
             except Exception as ex:
+                logging.error("exception {}".format(", ".join(ex.args)))
                 assert False, "key not found in the config file {}".format(k)
             
         return

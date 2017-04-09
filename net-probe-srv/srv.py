@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-26 17:20:31 alex>
+# Time-stamp: <2017-04-09 16:20:50 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -127,7 +127,7 @@ from netProbeSrv import upgrade
 def trap_HUP_signal(sig, heap):
     """ trap signal for config reload """
 
-    global conf
+    # global conf
 
     conf.reload()
 

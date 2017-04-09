@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 13:50:33 alex>
+# Time-stamp: <2017-04-09 16:26:30 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -180,6 +180,7 @@ class probemain(object):
                 logging.info("job inactive")
 
     # -----------------------------------------
+    @classmethod
     def fTestNone(self, data):
         return True
 
@@ -200,6 +201,7 @@ class probemain(object):
         self.db.pushResult(r)
 
     # -----------------------------------------
+    @classmethod
     def f_testOK(self, data):
         """testing method that is always ok
 

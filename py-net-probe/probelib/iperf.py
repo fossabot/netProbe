@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:00:53 alex>
+# Time-stamp: <2017-04-09 16:25:02 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -101,8 +101,8 @@ class probe_iperf(probemain):
             try:
                 p = subprocess.Popen(aParams, stdout=subprocess.PIPE)
                 o = json.loads(p.communicate()[0])
-            except:
-                logging.error("launching iperf")
+            exceptException as ex:
+                logging.error("launching iperf {}".format(", ".join(ex.args))):
                 return
 
             if p.returncode != 0:

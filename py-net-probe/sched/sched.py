@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 14:10:06 alex>
+# Time-stamp: <2017-04-09 16:22:52 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -117,6 +117,7 @@ class sched(object):
                                 'nextExec' : atTime})
 
     # ------------------------------------
+    @classmethod
     def str2atTime(self, s):
         """ convert a time string to a atTime usable in addAt()
         HH:MM in 24h00 format

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:15:29 alex>
+# Time-stamp: <2017-04-09 16:23:51 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -204,7 +204,7 @@ def ping():
     called by the scheduler
     """
 
-    global stats
+    # global stats
     global bConnected
 
     if bConnected == False:
@@ -259,7 +259,7 @@ def getConfig():
     """
     get my probe config from the server
     """
-    global probeJobs
+    # global probeJobs
     global bConnected
     # global aModules
 
@@ -412,8 +412,8 @@ def popResults(_db):
     """pop the results from the database queue and push these to the server
 
     """
-    global stats
-    global bConnected
+    # global stats
+    # global bConnected
 
     if bConnected == False:
         return
@@ -443,8 +443,8 @@ def pushStats(srv):
     """call the stats.push
 
     """
-    global stats
-    global bConnected
+    # global stats
+    # global bConnected
 
     if bConnected == False:
         return

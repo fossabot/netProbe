@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 14:04:19 alex>
+# Time-stamp: <2017-04-09 16:20:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -42,7 +42,7 @@ def ws_upgrade():
 
     logging.debug("/upgrade")
 
-    global lDB
+    # global lDB
 
     if request.method == 'POST':
         _r = wsCheckParams(["uid"])

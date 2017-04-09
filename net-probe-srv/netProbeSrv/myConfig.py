@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 15:56:06 alex>
+# Time-stamp: <2017-04-09 16:20:33 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -40,7 +40,7 @@ def ws_myconfig():
 
     logging.info("/myConfig")
 
-    global lDB
+    # global lDB
 
     _r = wsCheckParams(["uid"])
     if _r != None: return _r
