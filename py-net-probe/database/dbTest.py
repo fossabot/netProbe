@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 15:42:26 alex>
+# Time-stamp: <2017-04-09 15:49:56 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -26,7 +26,7 @@
 """
 
 import logging
-import time
+# import time
 import json
 import sys
 
@@ -56,12 +56,15 @@ class dbTest(object):
         """
         logging.info("delete {}".format(jobName))
 
+
+    @classmethod
     def addJob(self, jobName, job):
         """add a job in the job list
 
         """
         logging.info("add job {} {}".format(jobName,json.dumps(job)))
 
+    @classmethod
     def getJobs(self, jobName):
         """extracts all jobs and return an array
 
@@ -75,12 +78,14 @@ class dbTest(object):
 
         return a
 
+    @classmethod
     def dumpJob(self, jobName):
         """dump the content of the db for jobname, return a generator
 
         """
         logging.info("dumpJob")
 
+    @classmethod
     def pushResult(self, result):
         """add a result in the queue for the main process
         result is a dict
@@ -98,6 +103,7 @@ class dbTest(object):
         """
         logging.info("pop result")
 
+    @classmethod
     def lenResultQueue(self):
         """get queue size
         """
