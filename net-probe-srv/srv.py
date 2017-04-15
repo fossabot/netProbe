@@ -24,8 +24,8 @@
  server module for the probe system
 """
 
-__version__ = "1.7.4"
-__date__ = "09/04/17-14:13:10"
+__version__ = "1.7.5"
+__date__ = "15/04/17-17:09:14"
 
 import logging
 import signal
