@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 14:03:19 alex>
+# Time-stamp: <2017-04-15 14:52:30 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -294,13 +294,19 @@ class config(object):
 
         """
 
-        logging.info("get jobs for {}".format(sId))
+        probename = sId
+        jobs = None
 
         if self.aHostTable.__contains__(sId):
-            return self.aHostTable[sId]['jobs']
-        else:
+            jobs = self.aHostTable[sId]['jobs']
+            probename = self.aHostTable[sId]['probename'] 
+
+        logging.info("get jobs for {}".format(probename))
+
+        if jobs == None:
             logging.error("should not ask for unknown host in the configuration")
-            return None
+
+        return jobs
 
     # ----------------------------------------------------------
     def getConfigForHost(self, sId):
@@ -308,13 +314,19 @@ class config(object):
 
         """
 
-        logging.info("get configuration for {}".format(sId))
+        probename = sId
+        r = None
 
         if self.aHostTable.__contains__(sId):
-            return self.aHostTable[sId]
-        else:
+            r = self.aHostTable[sId]
+            probename = self.aHostTable[sId]['probename'] 
+
+        logging.info("get configuration for {}".format(probename))
+
+        if r == None:
             logging.error("should not ask for unknown host in the configuration")
-            return None
+
+        return r
 
     # ----------------------------------------------------------
     def getFWVersionForHost(self, sId):
@@ -322,13 +334,19 @@ class config(object):
 
         """
 
-        logging.info("get configuration for {}".format(sId))
+        probename = sId
+        r = None
 
         if self.aHostTable.__contains__(sId):
-            return self.aHostTable[sId]['firmware']
-        else:
+            r = self.aHostTable[sId]['firmware']
+            probename = self.aHostTable[sId]['probename'] 
+
+        logging.info("get firwmare for {}".format(probename))
+
+        if r == None:
             logging.error("should not ask for unknown host in the configuration")
-            return None
+    
+        return r
 
     # ----------------------------------------------------------
     def getNameForHost(self, sId):
