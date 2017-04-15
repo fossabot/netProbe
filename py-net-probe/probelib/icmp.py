@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:24:21 alex>
+# Time-stamp: <2017-04-15 15:02:21 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -98,7 +98,7 @@ class probe_icmp(probemain):
         pkt_icmp = ImpactPacket.ICMP()
         pkt_icmp.set_icmp_type(pkt_icmp.ICMP_ECHO)
 
-        # Include a 156-character long payload inside the ICMP packet.
+        # Include a payload inside the ICMP packet.
         size = 64
         if _config.__contains__('size'):
             size = int(_config['size'])
