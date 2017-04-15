@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 17:48:49 alex>
+# Time-stamp: <2017-04-15 15:35:32 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -25,8 +25,8 @@
  client module for the probe system
 """
 
-__version__ = "1.7.4"
-__date__ = "09/04/17-14:13:10"
+__version__ = "1.7.5"
+__date__ = "15/04/17-17:09:14"
 __author__ = "Alex Chauvin"
 
 import time
@@ -48,7 +48,7 @@ from config import conf
 
 from probe import restartProbe, stopAllProbes, checkProbes, statsProbes
 
-aModules = ['icmp', 'health', 'http', 'iperf', 'temp', 'ntp']
+aModules = ['icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute']
 
 # ----------- parse args
 try:

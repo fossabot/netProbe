@@ -16,6 +16,8 @@ probe
 * add IP address in stats frames
 * add configuration change in updates of jobs
 * add jobs restart in updates
+* add next exec in probe stats
+* minimum delay between 2 iteration on modules
 
 raspberry
 =========
@@ -33,3 +35,5 @@ move to changelog once released
 * fix: correct schedule handling on probes
 * probe test mode without redis
 * NTP probe
+* add iperf exec result to stats
+* add traceroute probe
