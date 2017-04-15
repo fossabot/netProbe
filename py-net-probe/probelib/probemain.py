@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:26:30 alex>
+# Time-stamp: <2017-04-15 15:46:00 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -46,6 +46,7 @@ class probemain(object):
         constructor
         """
         self.ip = None
+        self.bNow = False
 
         self.name = name
         _logFormat = '%(asctime)-15s '+str(name)+' [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
@@ -71,6 +72,8 @@ class probemain(object):
 
         if (os.environ.__contains__("PI_DB_TEST")):
             self.db = database.dbTest.dbTest()
+            if (os.environ.__contains__("PI_SCHED_NOW")):
+                self.bNow = True
         else:
             # redis server
             if (os.environ.__contains__("PI_REDIS_SRV")):
@@ -144,14 +147,20 @@ class probemain(object):
         """add a job in the scheduler
 
         """
-        self.scheduler.add(self.name, freq, f, data, 2)
+        if self.bNow == True:
+            self.scheduler.add(self.name, freq, f, data, 1)
+        else:
+            self.scheduler.add(self.name, freq, f, data, 2)
 
     # -----------------------------------------
     def addJobExtended(self, freq, schedData, f, data):
         """add a job in the scheduler with extended scheduler constraints
 
         """
-        self.scheduler.addExtended(self.name, freq, schedData, f, data, 2)
+        if self.bNow == True:
+            self.scheduler.addExtended(self.name, freq, schedData, f, data, 1)
+        else:
+            self.scheduler.addExtended(self.name, freq, schedData, f, data, 2)
 
     # -----------------------------------------
     def getConfig(self, name, f, testf):
