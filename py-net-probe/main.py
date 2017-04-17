@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-17 14:29:32 alex>
+# Time-stamp: <2017-04-17 20:31:44 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -41,7 +41,7 @@ import hostId
 import database
 import json
 import platform
-from subprocess import call, check_output, CalledProcessError
+from subprocess import call, check_output
 import re
 
 from config import conf
@@ -377,7 +377,7 @@ def action(a):
     global bRunning
     global bConnected
     # global probeProcess
-    global aModules
+    # global aModules
     # global srv
 
     if a['name'] == "restart":

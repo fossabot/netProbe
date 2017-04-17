@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 17:47:48 alex>
+# Time-stamp: <2017-04-17 20:38:08 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -67,14 +67,13 @@ class probe_ntp(probemain):
             p = subprocess.Popen(aParams, stdout=subprocess.PIPE)
             o = p.communicate()[0]
         except Exception as ex:
-            logging.error("launching ntpdc {}".format(", ".join(ex.args)))
+            logging.error("launching ntpdc sysinfo {}".format(", ".join(ex.args)))
             return
 
         if p.returncode != 0:
-            logging.error("communication with ntpdc")
+            logging.error("communication with ntpdc for sysinfo")
             return
 
-        # print(o)
         result = {}
 
         r = re.search('^stratum:\\s*(\d*)', o, re.MULTILINE)
@@ -117,14 +116,12 @@ class probe_ntp(probemain):
             return
 
         if p.returncode != 0:
-            logging.error("communication with ntpdc showpeer")
+            logging.error("communication with ntpdc for showpeer")
             return
-
-        # print(o)
 
         r = re.search('^offset (.*), delay (.*), error', o, re.MULTILINE)
         if r==None:
-            logging.info("ntp error, stratum not found in ntpdc -c sysinfo")
+            logging.info("ntp error, offset not found in ntpdc -c sysinfo")
             return
         result["ntp-offset"] = float(r.group(1).strip())*1000
         result["ntp-delay"] = float(r.group(2).strip())*1000
