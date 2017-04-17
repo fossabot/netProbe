@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-17 17:02:33 alex>
+# Time-stamp: <2017-04-17 18:03:21 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -25,12 +25,12 @@
 """
 
 import time
-import select
-import socket
+# import select
+# import socket
 import logging
 
-from impacket import version
-from impacket.dcerpc.v5 import samr, transport, srvs
+# from impacket import version
+from impacket.dcerpc.v5 import transport, srvs
 from impacket.dcerpc.v5.dtypes import NULL
 from impacket.smbconnection import *
 
@@ -38,7 +38,7 @@ from .probemain import probemain
 import datetime
 import re
 
-import pprint
+# import pprint
 
 class probe_smb(probemain):
     """ SMB probe
@@ -187,8 +187,8 @@ class probe_smb(probemain):
 
         r = []
         resp = self.smbClient.listShares()
-        for i in range(len(resp)):
-            r.append(resp[i]['shi1_netname'][:-1])
+        for respi in resp:
+            r.append(respi['shi1_netname'][:-1])
 
         self.aShares = r
 
@@ -243,7 +243,7 @@ class probe_smb(probemain):
         self.share = share
 
     # --------------------------------------------------
-    def cd(self, dir):
+    def cd(self, _dir):
         """change directory on the share
         """
         if self.bConnected == False:
@@ -254,7 +254,7 @@ class probe_smb(probemain):
             logging.error("not on a share")
             return
 
-        pwd = ntpath.normpath(string.replace(dir,'/','\\'))
+        pwd = ntpath.normpath(string.replace(_dir,'/','\\'))
         logging.debug("cd to normalize path {}".format(pwd))
 
         # Let's try to open the directory to see if it's valid
@@ -269,7 +269,7 @@ class probe_smb(probemain):
             logging.error("cd: {}".format(str(e)))
             return False
 
-        logging.debug("success cd to {}".format(dir))
+        logging.debug("success cd to {}".format(_dir))
         self.pwd = pwd
         return True
 
@@ -476,10 +476,10 @@ class probe_smb(probemain):
             endFile = False
 
             while endFile == False:
-                buffer = self.smbClient.readFile(self.tid, fid, offset, blocksize)
-                if len(buffer) == 0:
+                _buffer = self.smbClient.readFile(self.tid, fid, offset, blocksize)
+                if len(_buffer) == 0:
                     endFile = True
-                offset += len(buffer)
+                offset += len(_buffer)
 
             result["smb-step-{:02d}-read-KB".format(iStep)] = offset / 1024.0
             result["smb-step-{:02d}-Mbps".format(iStep)] = (offset * 8 / (time.time() - _ms))/1024000
@@ -594,8 +594,9 @@ class probe_smb(probemain):
 
         result['smb-delay-ms'] = round((time.time() - _msTotal) * 1000)
 
+        import pprint
         pprint.pprint(result)
 
         # logging.info("smb results : {}".format(result))
-        exit()
+        # exit()
         #self.pushResult(result)
