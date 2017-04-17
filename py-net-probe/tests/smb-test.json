@@ -1,0 +1,84 @@
+[
+    { "id" : 1,
+      "job" : "smb",
+      "freq" : 300,
+      "version" : 1,
+      "active": "True",
+      "data" : {
+	  "_comment": {
+	      "domain" : "",
+	      "user" : "test",
+	      "password" : "pwd",
+	      "ip": "192.168.16.135",
+	      "port" : 445
+	  },
+	  "server": "storparis",
+	  "steps" : {
+	      "-01": {
+		  "type": "get_dce_info"
+	      },
+
+	      "-02": {
+		  "type": "get_file_stats",
+		  "share": "music",
+		  "path": "/Calogero/L'Embellie",
+		  "file": "AlbumArtSmall.jpg"
+	      },
+
+	      "-03": {
+		  "type": "get_file_stats",
+		  "share": "music",
+		  "path": "/Calogero/L'Embellie",
+		  "file": "AlbumArtSmall.txt"
+	      },
+
+	      "-04": {
+		  "type": "get_file_stats",
+		  "share": "music",
+		  "path": "/notfound",
+		  "file": "AlbumArtSmall.txt"
+	      },
+
+	      "-05": {
+		  "type": "get_file_stats",
+		  "share": "notfound",
+		  "path": "/dir",
+		  "file": "file"
+	      },
+
+	      "-06": {
+		  "type": "get_share",
+		  "share": "music"
+	      },
+
+	      "-07": {
+		  "type": "get_share",
+		  "share": "notfound"
+	      },
+
+	      "-01": {
+		  "type": "get_file_stats",
+		  "share": "tmp",
+		  "path": "/test1",
+		  "file": "CRA-v0.3.R*"
+	      },
+
+	      "01": {
+		  "type": "read_file",
+		  "share": "tmp",
+		  "file": "/test1/test2.txt",
+		  "blocksize": 1024
+	      }
+
+	  }
+      },
+
+      "schedule" : [
+	  {
+	      "type": "inside",
+	      "enable": "00:00:00",
+	      "disable": "23:59:59"
+	  }
+      ]
+    }
+]

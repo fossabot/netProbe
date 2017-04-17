@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-15 17:05:21 alex>
+# Time-stamp: <2017-04-17 14:13:11 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -214,6 +214,7 @@ class probe_traceroute(probemain):
             try:
                 hostName = socket.gethostbyaddr(step[_hop])[0]
             except Exception as ex:
+                logging.debug("timeout {}".format(" ".join(ex.args)))
                 hostName = step[_hop]
             result["traceroute-addr-{:02d}".format(_hop+1)] = step[_hop]
             result["traceroute-name-{:02d}".format(_hop+1)] = hostName

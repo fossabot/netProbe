@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-15 15:35:32 alex>
+# Time-stamp: <2017-04-17 14:29:32 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -48,7 +48,7 @@ from config import conf
 
 from probe import restartProbe, stopAllProbes, checkProbes, statsProbes
 
-aModules = ['icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute']
+aModules = ['icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute', 'smb']
 
 # ----------- parse args
 try:

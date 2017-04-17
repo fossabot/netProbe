@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-17 14:29:14 alex>
+# Time-stamp: <2017-04-17 14:29:25 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -21,9 +21,9 @@
 # --------------------------------------------------------------------
 
 """
- probe for the traceroute protocol
+ probe for the smb protocol
 """
 
-from probelib.traceroute import probe_traceroute
+from probelib.smb import probe_smb
 
-probe_traceroute()
+probe_smb()

@@ -4,6 +4,7 @@ server
 * schedule on job definition
 * configuration with fields by probe, not only globals
 * avoid multiple conf read, add timer
+* use gc ?
 
 probe
 =====
@@ -18,6 +19,8 @@ probe
 * add jobs restart in updates
 * add next exec in probe stats
 * minimum delay between 2 iteration on modules
+* local lock between modules
+* global lock between probes
 
 raspberry
 =========
