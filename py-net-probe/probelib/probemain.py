@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-15 15:46:00 alex>
+# Time-stamp: <2017-04-18 21:37:12 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -124,9 +124,8 @@ class probemain(object):
         while self.bRunning:
             ppid = os.getppid()
             if (ppid == 1):
+                logging.info("ppid == 1, zombie, exiting")
                 self.bRunning = False
-                # print "ppid = {} exists ? {}".format(ppid, os.path.isdir("/proc/"+str(ppid)))
-
             else:
                 f = self.scheduler.step()
                 time.sleep(f)

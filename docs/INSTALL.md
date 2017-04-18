@@ -25,7 +25,9 @@ pip install requests
 pip install netifaces
 pip install redis
 pip install psutil
+pip install pycrypto
 ```
+
 
 requires impacket from :
 * https://github.com/CoreSecurity/impacket

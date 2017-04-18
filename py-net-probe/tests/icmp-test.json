@@ -18,7 +18,7 @@
 	  {
 	      "type": "inside",
 	      "enable": "14:00:00",
-	      "disable": "14:30:00"
+	      "disable": "23:30:00"
 	  }
       ]
     }
