@@ -1,6 +1,18 @@
 Changelog
 =========
 
+1.7 - 23/04/2017
+-----
+* upgrade path in configuration file
+* correct upgrade on PI
+* add hostname in conf and on PI
+* fix: correct schedule handling on probes
+* probe test mode without redis
+* NTP probe
+* add iperf exec result to stats
+* add traceroute probe
+
+
 1.6 - 25/03/2017
 -----
 * pushAction for upgrading specific probe

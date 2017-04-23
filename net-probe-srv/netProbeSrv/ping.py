@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 16:24:07 alex>
+# Time-stamp: <2017-04-09 16:13:11 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -39,9 +39,9 @@ def ws_ping():
     answers ok if everything is good
     """
 
-    logging.info("/ping")
+    logging.debug("/ping")
 
-    global lDB
+    # global lDB
     # global conf
 
     r = {

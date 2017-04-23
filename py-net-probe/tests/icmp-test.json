@@ -1,0 +1,25 @@
+[
+    { "id" : 1,
+      "job" : "icmp",
+      "freq" : 10,
+      "version" : 2,
+      "active": "True",
+      "data" : {
+	  "target" : "www.bikeo.fr",
+	  "version" : 4,
+	  "sequence" : 3,
+	  "wait" : 1,
+	  "tos" : 0,
+	  "timeout" : 0.5,
+	  "size": 64
+      },
+
+      "schedule" : [
+	  {
+	      "type": "inside",
+	      "enable": "14:00:00",
+	      "disable": "23:30:00"
+	  }
+      ]
+    }
+]

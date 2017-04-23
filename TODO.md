@@ -3,8 +3,8 @@ server
 * push regular stats to back office on probe connected or discovered, last hello...
 * schedule on job definition
 * configuration with fields by probe, not only globals
-* hostname
-* upgrade path in configuration file
+* avoid multiple conf read, add timer
+* use gc ?
 
 probe
 =====
@@ -17,7 +17,10 @@ probe
 * add IP address in stats frames
 * add configuration change in updates of jobs
 * add jobs restart in updates
-
+* add next exec in probe stats
+* minimum delay between 2 iteration on modules
+* local lock between modules
+* global lock between probes
 
 raspberry
 =========
@@ -27,5 +30,5 @@ History
 =======
 move to changelog once released
 
-1.7
+1.8
 -----

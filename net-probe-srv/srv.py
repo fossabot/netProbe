@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-14 18:28:23 alex>
+# Time-stamp: <2017-04-09 16:20:50 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,7 +24,8 @@
  server module for the probe system
 """
 
-__version__ = "1.6"
+__version__ = "1.7.7"
+__date__ = "23/04/17-13:41:48"
 
 import logging
 import signal
@@ -84,7 +85,7 @@ if not isinstance(args.debug, bool):
     logging.error('debug arg is not taking argument')
     exit()
 
-logging.info("starting server, version {}".format(__version__))
+logging.info("starting server, version {}, {}".format(__version__, __date__))
 logging.debug("pid {}".format(os.getpid()))
 
 try:
@@ -118,7 +119,7 @@ if args.check == True:
 
 from netProbeSrv import app
 from netProbeSrv import main, ping, version, discover, results
-from netProbeSrv import job
+from netProbeSrv import job, myConfig
 from netProbeSrv import pushAction, admin
 from netProbeSrv import upgrade
 
@@ -126,7 +127,7 @@ from netProbeSrv import upgrade
 def trap_HUP_signal(sig, heap):
     """ trap signal for config reload """
 
-    global conf
+    # global conf
 
     conf.reload()
 

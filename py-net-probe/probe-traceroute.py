@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:13:33 alex>
+# Time-stamp: <2017-04-17 14:29:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -21,23 +21,9 @@
 # --------------------------------------------------------------------
 
 """
- version WS
+ probe for the traceroute protocol
 """
 
-from flask import make_response, jsonify
-from netProbeSrv import app
+from probelib.traceroute import probe_traceroute
 
-aVersion = {
-    "answer" : "OK",
-    "version" : "1.7.7",
-    "date" : "23/04/17-13:41:48",
-    "author" : "Alex Chauvin"
-}
-
-@app.route('/version', methods=['GET'])
-def ws_version():
-    """
-    version web service
-    """
-    # global aVersion
-    return make_response(jsonify(aVersion), 200)
+probe_traceroute()

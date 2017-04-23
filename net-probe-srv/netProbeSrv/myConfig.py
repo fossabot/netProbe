@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:15:48 alex>
+# Time-stamp: <2017-04-09 16:20:33 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -21,52 +21,43 @@
 # --------------------------------------------------------------------
 
 """
- admin WS
-
- used to pilot the server
+ jobs WS used for a probe to get its main configuration
 """
 
-# from flask import make_response, jsonify, request
-from flask import make_response, jsonify
+from flask import make_response, jsonify, request
 from netProbeSrv import app
 from liveDB import lDB
-# import time
-from config import conf
 import logging
 
-# -----------------------------------------------
-@app.route('/admin/reload', methods=['POST'])
-def ws_adminReload():
-    """ reload configuration
+# from config import conf
+from ws_global import wsCheckParams, wsCheckHostUID
+
+@app.route('/myConfig', methods=['POST'])
+def ws_myconfig():
+    """
+    provide main configuration for the probe
     """
 
-    logging.info("/admin/reload")
-
-    # global conf
-
-    conf.reload()
-
-    r = {
-        "answer" : "OK"
-    }
-
-    return make_response(jsonify(r), 200)
-
-# -----------------------------------------------
-@app.route('/admin/getProbes', methods=['GET'])
-def ws_dbGetProbes():
-    """ ask for the list of the probes in the system
-    """
-
-    logging.info("/admin/getProbes")
+    logging.info("/myConfig")
 
     # global lDB
 
-    p = lDB.getListProbes()
+    _r = wsCheckParams(["uid"])
+    if _r != None: return _r
+
+    uid = int(request.form['uid'])
+
+    host = wsCheckHostUID(uid)
+    if not isinstance(host, unicode):
+        return host
+
+    config = lDB.getConfigForHost(host)
 
     r = {
-        "answer" : "OK",
-        "probes" : p
+        'probename' : config['probename'],
+        'hostname' : config['hostname'],
+        'firmware' : config['firmware']
     }
 
-    return make_response(jsonify(r), 200)
+    return make_response(jsonify({"answer" : "OK",
+                                  "config" : r}), 200)

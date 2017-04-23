@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:00:53 alex>
+# Time-stamp: <2017-04-17 20:26:35 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -93,6 +93,7 @@ class probe_iperf(probemain):
 
         result = {
             "iperf-target" : self.sTarget,
+            "iperf-exec": "ok",
         }
 
         aParams = ["iperf3", "-c", self.sTarget, "-J", "-t", str(self.iDuration), "-S", str(self.iTOS)]
@@ -101,12 +102,18 @@ class probe_iperf(probemain):
             try:
                 p = subprocess.Popen(aParams, stdout=subprocess.PIPE)
                 o = json.loads(p.communicate()[0])
-            except:
-                logging.error("launching iperf")
+            except Exception as ex:
+                logging.error("launching iperf {}".format(", ".join(ex.args)))
+                result["iperf-exec"] = "ko"
+                result["iperf-reason"] = "error in launching iperf"
+                self.pushResult(result)
                 return
 
             if p.returncode != 0:
                 logging.error("communication with iperf server on {}".format(self.sTarget))
+                result["iperf-exec"] = "ko"
+                result["iperf-reason"] = "error in iperf communication with server"
+                self.pushResult(result)
                 return
 
             result["iperf-port"] = int(o['start']['connecting_to']['port'])
@@ -125,8 +132,8 @@ class probe_iperf(probemain):
             try:
                 p = subprocess.Popen(aParams, stdout=subprocess.PIPE)
                 o = json.loads(p.communicate()[0])
-            except:
-                logging.error("launching iperf")
+            except Exception as ex:
+                logging.error("launching iperf {}".format(", ".join(ex.args)))
                 return
 
             if p.returncode != 0:

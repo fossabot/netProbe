@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 16:04:12 alex>
+# Time-stamp: <2017-04-09 15:54:19 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -42,7 +42,7 @@ def ws_pushAction():
     """
 
     logging.info("/pushAction")
-    global lDB
+    # global lDB
 
     _r = wsCheckParams(["uid", "action"])
     if _r != None: return _r

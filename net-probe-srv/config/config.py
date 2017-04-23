@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:04:38 alex>
+# Time-stamp: <2017-04-15 14:52:30 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -44,6 +44,7 @@ class config(object):
         # self.outputMethodName = "none"
         self.fileName = "none"
         self.iTemplateJobsId = 1000
+        self.fwVersion = {}
 
         return
 
@@ -122,36 +123,44 @@ class config(object):
             for t in hostData['template']:
                 self.applyTemplateToHost(hostData, t)
 
+        _probeData = {
+            "jobs" : {},
+            "probename": "unknown",
+            "firmware": "current",
+            "hostname": "unknown_probe"
+        }
+
         if hostData.__contains__('jobs'):
-            jobs = hostData['jobs']
+            _probeData['jobs'] = hostData['jobs']
             # check if active present, or put it to True
-            for j in jobs:
+            for j in hostData['jobs']:
                 if not j.__contains__('active'):
                     j['active'] = "True"
-        else:
-            jobs = {}
+
+        if hostData.__contains__('firmware'):
+            _probeData['firmware'] = hostData['firmware']
+
+        if hostData.__contains__('hostname'):
+            _probeData['hostname'] = hostData['hostname']
 
         if hostData.__contains__('probename'):
-            probename = hostData['probename']
+            _probeData['probename'] = hostData['probename']
 
             for hkey in self.aHostTable:
                 h = self.aHostTable[hkey]
 
-                if h.__contains__('probename') and h['probename'] == probename:
+                if h.__contains__('probename') and h['probename'] == _probeData['probename']:
                     # if same name but different id, insert a new key
                     if (hkey != sId):
                         del(self.aHostTable[hkey])
                         hkey = sId
-                    self.aHostTable[hkey] = {"jobs" : jobs, "probename": probename}
-                    logging.info("update probename {}".format(probename))
+                    self.aHostTable[hkey] = _probeData
+                    logging.info("update probename {}".format(_probeData['probename']))
                     return
 
-        else:
-            probename = "unknown"
-
         if sId != "" and sId != None and sId != False:
-            logging.info("add host {} to the DB".format(probename))
-            self.aHostTable[sId] = {"jobs" : jobs, "probename": probename}
+            logging.info("add host {} to the DB".format(_probeData['probename']))
+            self.aHostTable[sId] = _probeData
 
     # ----------------------------------------------------------
     def addTemplate(self, templateData):
@@ -171,7 +180,23 @@ class config(object):
             jobs = {}
 
         self.aTemplates[sName] = {"jobs" : jobs}
-        
+
+    # ----------------------------------------------------------
+    def readGlobal(self, conf):
+        """handle the global part of the configuration file
+
+        """
+        confGlobal = conf['global']
+        if confGlobal.__contains__('firmware'):
+            confFW = confGlobal['firmware']
+            self.fwVersion = {}
+            for v in confFW.keys():
+                self.fwVersion[v] = confFW[v]
+
+            if not self.fwVersion.__contains__('current'):
+                logging.error("configuration firmware does not contains 'current'")
+                self.fwVersion['current'] = 'unknown'
+
     # ----------------------------------------------------------
     def loadFile(self, sFile):
         """load host file and update configuraion
@@ -194,6 +219,10 @@ class config(object):
             conf = json.loads(c)
         except Exception as ex:
             assert False, "configuration file load exception : {}".format(", ".join(ex.args))
+
+        # global
+        if conf.__contains__('global'):
+            self.readGlobal(conf)
 
         # template
         if conf.__contains__('template'):
@@ -265,13 +294,19 @@ class config(object):
 
         """
 
-        logging.info("get jobs for {}".format(sId))
+        probename = sId
+        jobs = None
 
         if self.aHostTable.__contains__(sId):
-            return self.aHostTable[sId]['jobs']
-        else:
+            jobs = self.aHostTable[sId]['jobs']
+            probename = self.aHostTable[sId]['probename'] 
+
+        logging.info("get jobs for {}".format(probename))
+
+        if jobs == None:
             logging.error("should not ask for unknown host in the configuration")
-            return None
+
+        return jobs
 
     # ----------------------------------------------------------
     def getConfigForHost(self, sId):
@@ -279,13 +314,39 @@ class config(object):
 
         """
 
-        logging.info("get configuration for {}".format(sId))
+        probename = sId
+        r = None
 
         if self.aHostTable.__contains__(sId):
-            return self.aHostTable[sId]
-        else:
+            r = self.aHostTable[sId]
+            probename = self.aHostTable[sId]['probename'] 
+
+        logging.info("get configuration for {}".format(probename))
+
+        if r == None:
             logging.error("should not ask for unknown host in the configuration")
-            return None
+
+        return r
+
+    # ----------------------------------------------------------
+    def getFWVersionForHost(self, sId):
+        """return the configuration for the host
+
+        """
+
+        probename = sId
+        r = None
+
+        if self.aHostTable.__contains__(sId):
+            r = self.aHostTable[sId]['firmware']
+            probename = self.aHostTable[sId]['probename'] 
+
+        logging.info("get firwmare for {}".format(probename))
+
+        if r == None:
+            logging.error("should not ask for unknown host in the configuration")
+    
+        return r
 
     # ----------------------------------------------------------
     def getNameForHost(self, sId):
@@ -293,7 +354,7 @@ class config(object):
 
         """
 
-        logging.info("get name for {}".format(sId))
+        logging.debug("get name for {}".format(sId))
 
         if self.aHostTable.__contains__(sId):
             return self.aHostTable[sId]['probename']
@@ -322,6 +383,25 @@ class config(object):
                     p[-8:],
                     len(self.aHostTable[p]['jobs']),
                     templates[:-2]]
+
+    # ----------------------------------------------------------
+    def getCurrentFWVersion(self):
+        """returns the current firmware version
+
+        """
+
+        return self.getFWVersion('current')
+
+    # ----------------------------------------------------------
+    def getFWVersion(self, version):
+        """returns the firmware version
+
+        """
+
+        if self.fwVersion.__contains__(version):
+            return self.fwVersion[version]
+        else:
+            return None
 
     # ----------------------------------------------------------
     def dump(self):

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:58:37 alex>
+# Time-stamp: <2017-04-23 11:47:59 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -35,17 +35,25 @@ def wsCheckParams(params):
         if p == "uid":
             if request.form.__contains__('uid') == False:
                 return make_response(jsonify({"answer":"KO", "reason":"missing uid"}), 412)
+
         if p == "action":
             if request.form.__contains__('action') == False:
                 return make_response(jsonify({"answer":"KO", "reason":"missing action"}), 412)
 
         if p == "hostId":
             if not request.form.__contains__('hostId'):
-                return make_response(jsonify({"answer" : "missing hostId"}), 412)
+                return make_response(jsonify({"answer":"KO", "reason" : "missing hostId"}), 412)
+
+        if p == "data":
+            if not request.form.__contains__('data'):
+                return make_response(jsonify({"answer":"KO", "reason" : "missing data"}), 412)
+
+    return None
+
 # -------------------------------------------------------------
 def wsCheckHostUID(uid):
     """check if we have the host in database"""
-    global lDB
+    # global lDB
 
     host = lDB.getHostByUid(uid)
 

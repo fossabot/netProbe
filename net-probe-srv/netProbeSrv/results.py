@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:30:43 alex>
+# Time-stamp: <2017-04-23 13:40:29 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -37,6 +37,7 @@ import json
 import zlib
 from base64 import b64decode
 import datetime
+from ws_global import wsCheckParams, wsCheckHostUID
 
 @app.route('/results', methods=['POST'])
 def ws_results():
@@ -44,36 +45,61 @@ def ws_results():
     answers ok if everything is good
     """
 
-    logging.info("/results")
+    logging.debug("/results")
 
-    if request.method != 'POST':
-        return make_response(jsonify({"answer" : "KO"}), 300)
+    _r = wsCheckParams(["uid", "data"])
+    if _r != None:
+        return _r
 
     uid = int(request.form['uid'])
     host = lDB.getHostByUid(uid)
     if host == None:
         logging.error("probe not known {}".format(uid))
+        return make_response(jsonify({"answer" : "KO", "reason":"probe not known"}), 404)
 
     probename = lDB.getNameForHost(host)
 
-    # fTime = float(request.form['time'])
     bCompressed = False
-    if request.form['compressed'] == "yes":
+    if request.form.__contains__('compressed') and request.form['compressed'] == "yes":
         bCompressed = True
 
     data = []
-    if bCompressed:
-        s = zlib.decompress(b64decode(request.form['data']))
-        data = json.loads(s)
-    else:
-        data.append(json.loads(b64decode(request.form['data'])))
 
+    b64d = b64decode(request.form['data'])
+
+    try:
+        if bCompressed:
+            s = zlib.decompress(b64d)
+            data = json.loads(s)
+        else:
+            data.append(json.loads(b64d))
+    except Exception as ex:
+        logging.error("{}".format(" ".join(ex.args)))
+        return make_response(jsonify({"answer" : "KO", "reason":"no json"}), 417)
+    
     for d in data:
+        if not d.__contains__('timestamp'):
+            logging.error("missing timestamp")
+            return make_response(jsonify({"answer" : "KO", "reason":"missing timestamp"}), 417)
+
+        if not d.__contains__('probeuid'):
+            logging.error("missing probe uid")
+            return make_response(jsonify({"answer" : "KO", "reason":"missing probe uid"}), 417)
+
+        if not d.__contains__('probename'):
+            logging.error("missing probe name")
+            return make_response(jsonify({"answer" : "KO", "reason":"missing probe name"}), 417)
+
+        if not d.__contains__('date'):
+            logging.error("missing date")
+            return make_response(jsonify({"answer" : "KO", "reason":"missing date"}), 417)
+
         d['timestamp'] = datetime.datetime.utcfromtimestamp(d['date']).isoformat()
         d['probeuid'] = uid
         d['probename'] = probename
 
         for o in outputer:
             o.send(d)
+            print "output to ",o
 
     return make_response(jsonify({"answer" : "OK"}), 200)

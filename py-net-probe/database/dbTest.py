@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:02:20 alex>
+# Time-stamp: <2017-04-09 15:49:56 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -25,101 +25,67 @@
  probe database for configuration and data
 """
 
-import redis
 import logging
-import time
+# import time
 import json
+import sys
 
 # import pprint
 
-class database(object):
+class dbTest(object):
     """
-    database class based on redis (db=1)
+    database class for testing only
     """
 
     def __init__(self, host=None):
         """
         constructor
         """
-        self.backOff = 1
         self.db = None
-        self.dbRedisId = 1
-
-        self.connect(host)
 
     def connect(self, host=None):
         """
-        connect to the redis server
-        wait until it connects
         """
 
-        while True:
-            if host == None:
-                host = "localhost"
-                self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2)
-            else:
-                self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2, host=host)
+        self.db = True
 
-            logging.info("connect to redis {}".format(host))
-
-            try:
-                self.db.ping()
-                break
-
-            except redis.ConnectionError, e:
-                self.backOff *= 1.5
-                if self.backOff > 30:
-                    self.db = None
-                    raise Exception('redis not running ? abort')
-                logging.error("redis : {}, next try in {:.2f}".format(e.message, self.backOff))
-                time.sleep(self.backOff)
-         
-        self.backOff = 1
-
+    @classmethod
     def cleanJob(self, jobName):
         """suppress the list from the database
 
         """
-        if self.db == None:
-            raise Exception("redis not started")
-        return self.db.delete(jobName)
+        logging.info("delete {}".format(jobName))
 
+
+    @classmethod
     def addJob(self, jobName, job):
         """add a job in the job list
 
         """
-        if self.db == None:
-            raise Exception("redis not started")
-        self.db.rpush(jobName, json.dumps(job))
+        logging.info("add job {} {}".format(jobName,json.dumps(job)))
 
+    @classmethod
     def getJobs(self, jobName):
         """extracts all jobs and return an array
 
         """
-        if self.db == None:
-            raise Exception("redis not started")
+        logging.info("getJobs")
 
+        s = sys.stdin.read()
         a = []
-        l = self.db.llen(jobName)
-        if l > 0:
-            for i in range(l):
-                s = self.db.lindex(jobName, i)
-                a.append(json.loads(s))
+
+        a=json.loads(s)
 
         return a
 
+    @classmethod
     def dumpJob(self, jobName):
         """dump the content of the db for jobname, return a generator
 
         """
-        if self.db == None:
-            raise Exception("redis not started")
+        logging.info("dumpJob")
 
-        l = self.db.llen(jobName)
-        if l > 0:
-            for i in range(l):
-                yield self.db.lindex(jobName, i)
-
+    @classmethod
     def pushResult(self, result):
         """add a result in the queue for the main process
         result is a dict
@@ -128,18 +94,18 @@ class database(object):
         if not isinstance(result, dict):
             raise Exception("pushResult not provided a dict")
 
-        if self.db == None:
-            raise Exception("redis not started")
+        logging.info("push result {}".format(result))
 
-        self.db.rpush("results", json.dumps(result))
-
+    @classmethod
     def popResult(self):
         """pop a result from the queue
         return None if nothing in the queue
         """
-        return self.db.lpop("results")
+        logging.info("pop result")
 
+    @classmethod
     def lenResultQueue(self):
         """get queue size
         """
-        return self.db.llen("results")
+        logging.info("lenResultQueue")
+        return 0

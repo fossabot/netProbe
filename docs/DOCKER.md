@@ -6,10 +6,11 @@ image
 
 in the docker directory, Dockerfile based on the debian jessie version
 
-docker build -t netprobe .
+docker build -t netprobe:%v% .
+docker tag netprobe:%v% netprobe:latest
 
-docker run --name redis -d redis
-docker run --name pi01 --link redis:redis -it netprobe bash
+docker run --rm --name redis -d redis
+docker run --rm --name pi01 --link redis:redis -it netprobe:%v%
 
 
 Docker server

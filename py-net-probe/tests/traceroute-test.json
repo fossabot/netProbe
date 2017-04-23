@@ -1,0 +1,26 @@
+[
+    { "id" : 1,
+      "job" : "traceroute",
+      "freq" : 300,
+      "version" : 1,
+      "active": "True",
+      "data" : {
+	  "target" : "github.com",
+	  "version" : 4,
+	  "sequence" : 5,
+	  "range": 30,
+	  "wait" : 0.1,
+	  "tos" : 0,
+	  "timeout" : 0.5,
+	  "size": 64
+      },
+
+      "schedule" : [
+	  {
+	      "type": "inside",
+	      "enable": "00:00:00",
+	      "disable": "23:59:59"
+	  }
+      ]
+    }
+]

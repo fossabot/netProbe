@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:03:55 alex>
+# Time-stamp: <2017-04-09 15:34:23 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -54,7 +54,7 @@ class probe_temp(probemain):
 
         """
         jobs = super(probe_temp, self).getConfig(name, f, self.fTestNone)
-        for j in jobs:
+        for _ in jobs:
             logging.info("add temperature job to scheduler")
 
     # -----------------------------------------

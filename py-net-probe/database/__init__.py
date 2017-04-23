@@ -1,6 +1,6 @@
-# Time-stamp: <2017-03-15 15:06:37 alex>
+# -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:01:48 alex>
+# Time-stamp: <2017-04-09 11:15:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -21,7 +21,8 @@
 # --------------------------------------------------------------------
 
 """
-scheduler package
+database package, redis and test modules
 """
 
-from .database import database
+from . import dbRedis
+from . import dbTest

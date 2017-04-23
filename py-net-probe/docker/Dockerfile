@@ -1,6 +1,6 @@
 # Docker file for testing the probe
 #
-# Time-stamp: <2017-01-29 14:44:21 alex>
+# Time-stamp: <2017-04-18 21:47:36 alex>
 #
 # docker build -t netprobe .
 # docker run -d netprobe
@@ -29,12 +29,9 @@ MAINTAINER Alex
 
 RUN apt-get -y upgrade
 RUN apt-get -y update
-RUN apt-get -y install apt-transport-https
+RUN apt-get -y install apt-utils dialog apt-transport-https
 
-RUN apt-get -y install gcc
-RUN apt-get -y install vim
-RUN apt-get -y install python-pip
-RUN apt-get -y install python-dev
+RUN apt-get -y install gcc vim python-pip python-dev
 
 RUN apt-get -y install git
 RUN pip install --upgrade pip
@@ -43,15 +40,19 @@ RUN pip install --upgrade pip
 RUN pip install netifaces
 RUN pip install redis
 RUN pip install psutil
+RUN pip install pycrypto
 
 RUN apt-get -y install iperf3
 
-RUN git clone https://github.com/CoreSecurity/impacket
+RUN mkdir -p /home/pi/py-net-probe
+
+COPY start.sh /
+RUN chmod +x /start.sh
 
 COPY netprobe.deb /
 RUN dpkg -i /netprobe.deb
 
-COPY start.sh /
-RUN chmod +x /start.sh
+RUN git clone https://github.com/CoreSecurity/impacket
+RUN mv /impacket/impacket /home/pi/py-net-probe
 
 CMD ["/start.sh"]

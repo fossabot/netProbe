@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:15:58 alex>
+# Time-stamp: <2017-04-17 20:31:44 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -25,8 +25,8 @@
  client module for the probe system
 """
 
-__version__ = "1.6.2"
-__date__ = "15/03/17-16:26:36"
+__version__ = "1.7.7"
+__date__ = "23/04/17-13:41:48"
 __author__ = "Alex Chauvin"
 
 import time
@@ -40,11 +40,15 @@ import sched
 import hostId
 import database
 import json
+import platform
+from subprocess import call, check_output
+import re
+
 from config import conf
 
-from probe import restartProbe, stopAllProbes, checkProbe, checkProbes, statsProbes
+from probe import restartProbe, stopAllProbes, checkProbes, statsProbes
 
-aModules = ['icmp', 'health', 'http', 'iperf', 'temp']
+aModules = ['icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute', 'smb']
 
 # ----------- parse args
 try:
@@ -118,7 +122,7 @@ if (args.redis != None):
     os.environ["PI_REDIS_SRV"] = args.redis
     logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"]))
 
-db = database.database(args.redis)
+db = database.dbRedis.dbRedis(args.redis)
 
 # -----------------------------------------
 def serverConnect():
@@ -127,9 +131,9 @@ def serverConnect():
     """
 
     global srv
-    global stats
+    # global stats
     global bConnected
-    global bRunning
+    # global bRunning
 
     # check IP configuration of probe
     # if no default route !
@@ -200,7 +204,7 @@ def ping():
     called by the scheduler
     """
 
-    global stats
+    # global stats
     global bConnected
 
     if bConnected == False:
@@ -236,9 +240,9 @@ def pushJobsToDB(jobName):
     """ change the job definition for the probe job in the db called only
     if the job config has been updated
     """
-    global db
-    global probeJobs
-    global stats
+    # global db
+    # global probeJobs
+    # global stats
 
     # suppress the old definition in db
     db.cleanJob(jobName)
@@ -255,9 +259,9 @@ def getConfig():
     """
     get my probe config from the server
     """
-    global probeJobs
+    # global probeJobs
     global bConnected
-    global aModules
+    # global aModules
 
     if bConnected == False:
         return
@@ -273,7 +277,47 @@ def getConfig():
         bConnected = False
         return None
 
-    for c in config:
+    if not config.__contains__('jobs'):
+        logging.error("can't get my jobs")
+        bConnected = False
+        return None
+
+    if not config.__contains__('config'):
+        logging.error("can't get my config")
+        bConnected = False
+        return None
+
+    # handle configuration
+    # do we have to change the hostname ?
+    currentHostname = platform.node()
+    newHostname = config['config']['hostname']
+    if currentHostname != newHostname:
+        logging.info("changing hostname to {}".format(newHostname))
+
+        if os.path.isfile("/bin/uname"): 
+            _s = check_output(["/bin/uname", "-m"])
+            if re.match("arm", _s) == None:
+                logging.info(" avoid on non ARM platform")
+            else:
+                try:
+                    logging.info("turning FS to RW")
+                    call(["/bin/mount", "-o", "remount,rw", "/"])
+
+                    f = file("/etc/hostname", 'w')
+                    f.write(newHostname)
+                    f.close()
+
+                    logging.info("turning FS to RO")
+                    call(["/bin/mount", "-o", "remount,ro", "/"])
+
+                    os.system("/bin/hostname {}".format(newHostname))
+                except IOError:
+                    logging.error("accessing hostname file /etc/hostname")
+        else:
+            logging.info(" no /bin/uname")
+        
+    # handle jobs
+    for c in config['jobs']:
         # update job or create
         if probeJobs.__contains__(c['id']):
             a = probeJobs[c['id']]
@@ -307,9 +351,9 @@ def mainLoop():
     """
     main scheduler loop
     """
-    global scheduler
-    global bConnected
-    global stats
+    # global scheduler
+    # global bConnected
+    # global stats
 
     while bConnected:
         f = scheduler.step()
@@ -332,9 +376,9 @@ def trap_signal(sig, heap):
 def action(a):
     global bRunning
     global bConnected
-    global probeProcess
-    global aModules
-    global srv
+    # global probeProcess
+    # global aModules
+    # global srv
 
     if a['name'] == "restart":
         args = a['args']
@@ -368,8 +412,8 @@ def popResults(_db):
     """pop the results from the database queue and push these to the server
 
     """
-    global stats
-    global bConnected
+    # global stats
+    # global bConnected
 
     if bConnected == False:
         return
@@ -399,8 +443,8 @@ def pushStats(srv):
     """call the stats.push
 
     """
-    global stats
-    global bConnected
+    # global stats
+    # global bConnected
 
     if bConnected == False:
         return

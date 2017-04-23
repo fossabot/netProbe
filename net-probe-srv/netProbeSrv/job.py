@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 16:13:05 alex>
+# Time-stamp: <2017-04-09 15:59:06 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -38,9 +38,9 @@ def ws_myjobs():
     provide job list to probe asking for
     """
 
-    logging.info("/myjobs")
+    logging.debug("/myjobs")
 
-    global lDB
+    # global lDB
 
     if request.method == 'POST':
         _r = wsCheckParams(["uid"])
@@ -52,9 +52,9 @@ def ws_myjobs():
         if not isinstance(host, unicode):
             return host
 
-        jobs = lDB.getJobsForHost(host)
-
         conf.reload()
+
+        jobs = lDB.getJobsForHost(host)
 
         return make_response(jsonify({"answer" : "OK",
                                       "jobs" : jobs}), 200)

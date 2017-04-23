@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:03:38 alex>
+# Time-stamp: <2017-04-18 21:37:12 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -29,7 +29,6 @@ import sys
 import logging
 import signal
 import time
-# import random
 
 sys.path.insert(0, os.getcwd())
 from netProbe import ipConf
@@ -47,6 +46,7 @@ class probemain(object):
         constructor
         """
         self.ip = None
+        self.bNow = False
 
         self.name = name
         _logFormat = '%(asctime)-15s '+str(name)+' [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
@@ -70,11 +70,16 @@ class probemain(object):
 
         logging.info("starting probe")
 
-        # redis server
-        if (os.environ.__contains__("PI_REDIS_SRV")):
-            self.db = database.database(os.environ["PI_REDIS_SRV"])
+        if (os.environ.__contains__("PI_DB_TEST")):
+            self.db = database.dbTest.dbTest()
+            if (os.environ.__contains__("PI_SCHED_NOW")):
+                self.bNow = True
         else:
-            self.db = database.database()
+            # redis server
+            if (os.environ.__contains__("PI_REDIS_SRV")):
+                self.db = database.dbRedis.dbRedis(os.environ["PI_REDIS_SRV"])
+            else:
+                self.db = database.dbRedis.dbRedis()
 
         # create global scheduler
         self.scheduler = sched.sched()
@@ -119,9 +124,8 @@ class probemain(object):
         while self.bRunning:
             ppid = os.getppid()
             if (ppid == 1):
+                logging.info("ppid == 1, zombie, exiting")
                 self.bRunning = False
-                # print "ppid = {} exists ? {}".format(ppid, os.path.isdir("/proc/"+str(ppid)))
-
             else:
                 f = self.scheduler.step()
                 time.sleep(f)
@@ -142,14 +146,20 @@ class probemain(object):
         """add a job in the scheduler
 
         """
-        self.scheduler.add(self.name, freq, f, data, 2)
+        if self.bNow == True:
+            self.scheduler.add(self.name, freq, f, data, 1)
+        else:
+            self.scheduler.add(self.name, freq, f, data, 2)
 
     # -----------------------------------------
     def addJobExtended(self, freq, schedData, f, data):
         """add a job in the scheduler with extended scheduler constraints
 
         """
-        self.scheduler.addExtended(self.name, freq, schedData, f, data, 2)
+        if self.bNow == True:
+            self.scheduler.addExtended(self.name, freq, schedData, f, data, 1)
+        else:
+            self.scheduler.addExtended(self.name, freq, schedData, f, data, 2)
 
     # -----------------------------------------
     def getConfig(self, name, f, testf):
@@ -159,6 +169,10 @@ class probemain(object):
         config = self.db.getJobs(name)
 
         for c in config:
+            if not c.__contains__('active'):
+                logging.error("no active field on job, False by defalut")
+                c['active'] = "False"
+
             if c['active'] == "True":
                 if c['job'] == name:
                     data = c['data']
@@ -169,11 +183,12 @@ class probemain(object):
                             self.addJob(int(c['freq']), f, data)
                         yield c
                 else:
-                    logging.error("should not happen!")
+                    logging.error("should not happen, job={}".format(c['job']))
             else:
                 logging.info("job inactive")
 
     # -----------------------------------------
+    @classmethod
     def fTestNone(self, data):
         return True
 
@@ -194,6 +209,7 @@ class probemain(object):
         self.db.pushResult(r)
 
     # -----------------------------------------
+    @classmethod
     def f_testOK(self, data):
         """testing method that is always ok
 

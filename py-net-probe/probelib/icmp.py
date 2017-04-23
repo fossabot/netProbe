@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:02:42 alex>
+# Time-stamp: <2017-04-15 15:02:21 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -49,6 +49,7 @@ class probe_icmp(probemain):
         self.mainLoop()
 
     # -----------------------------------------
+    @classmethod
     def f_testv4(self, data):
         """testing method for insertion in the job list, check if ip version 4
 
@@ -97,7 +98,7 @@ class probe_icmp(probemain):
         pkt_icmp = ImpactPacket.ICMP()
         pkt_icmp.set_icmp_type(pkt_icmp.ICMP_ECHO)
 
-        # Include a 156-character long payload inside the ICMP packet.
+        # Include a payload inside the ICMP packet.
         size = 64
         if _config.__contains__('size'):
             size = int(_config['size'])
@@ -164,7 +165,7 @@ class probe_icmp(probemain):
 
                 # If the packet matches, report it to the user.
                 if rip.get_ip_dst() == src and rip.get_ip_src() == dst and pkt_icmp.ICMP_ECHOREPLY == ricmp.get_icmp_type() and ricmp.get_icmp_id() == i:
-                    logging.info("Ping reply for sequence #{} {:0.2f}".format(ricmp.get_icmp_id(), d*1000))
+                    logging.debug("Ping reply for sequence #{} {:0.2f}".format(ricmp.get_icmp_id(), d*1000))
                     res_ok += 1
 
                 if i+1 <= seq_id:

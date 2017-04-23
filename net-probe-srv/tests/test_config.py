@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-14 18:26:48 alex>
+# Time-stamp: <2017-03-26 16:57:15 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -752,6 +752,7 @@ def test_template_2loads():
         "probe" : [
             { "id" : "temp01",
               "probename" : "temp01",
+              "hostname" : "host",
               "template" : [
                   "T01"
               ]

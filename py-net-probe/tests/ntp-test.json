@@ -1,0 +1,9 @@
+[
+    { "id" : 1,
+      "job" : "ntp",
+      "freq" : 5,
+      "version" : 1,
+      "active": "True",
+      "data" : {}
+    }
+]
