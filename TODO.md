@@ -30,13 +30,5 @@ History
 =======
 move to changelog once released
 
-1.7
+1.8
 -----
-* upgrade path in configuration file
-* correct upgrade on PI
-* add hostname in conf and on PI
-* fix: correct schedule handling on probes
-* probe test mode without redis
-* NTP probe
-* add iperf exec result to stats
-* add traceroute probe

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 15:44:11 alex>
+# Time-stamp: <2017-04-23 12:06:08 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -288,6 +288,8 @@ class probeServer(object):
         """push results to the server
         aResult should be an array
         """
+
+        logging.info("push results")
 
         if not isinstance(aResult, list):
             raise Exception("pushResult not provided an array")

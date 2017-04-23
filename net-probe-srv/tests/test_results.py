@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-23 11:08:23 alex>
+# Time-stamp: <2017-04-23 13:40:55 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -26,6 +26,8 @@ import nose
 import json
 import pprint
 import time
+from base64 import b64encode
+import zlib
 
 sys.path.append(os.getcwd())
 import logging
@@ -41,7 +43,7 @@ from netProbeSrv import admin
 
 # ---------------------------------------------
 def insertOneHost(id, probename, jobs, ipv4, ipv6):
-    """check action ws with bad action
+    """adds one host 
 
     """
     global app
@@ -76,10 +78,11 @@ def insertOneHost(id, probename, jobs, ipv4, ipv6):
     return uid
 
 # ---------------------------------------------
-def test_push_1():
-    """check action ws with bad action
+def test_result_nob64():
+    """check push result wo base64 data
 
     """
+
     global app
     global conf
     global lDB
@@ -93,19 +96,23 @@ def test_push_1():
              "version" : 1,
              "data" : {}}]
 
-    uid = insertOneHost("p1", "test_push1", aJobs, "127.2.0.1", ":2:1")
+    uid = insertOneHost("p1", "test_res", aJobs, "127.2.0.1", ":2:1")
 
-    rv = c.post("/pushAction", data=dict(uid=uid, action="no action"))
+    # without base64
+    d = {}
+    rv = c.post("/results", data=dict(uid=uid, data=json.dumps(d)))
 
     j = json.loads(rv.data)
     if j['answer'] != 'KO':
         assert False, "action error"
 
+
 # ---------------------------------------------
-def test_push_2():
-    """check action ws : restart all
+def test_result_1():
+    """check push result
 
     """
+
     global app
     global conf
     global lDB
@@ -119,30 +126,33 @@ def test_push_2():
              "version" : 1,
              "data" : {}}]
 
-    uid = insertOneHost("p2", "test_push2", aJobs, "127.2.0.2", ":2:2")
+    uid = insertOneHost("p1", "test_res", aJobs, "127.2.0.1", ":2:1")
 
-    rv = c.post("/pushAction", data=dict(uid=uid, action="restart", module="all"))
+    d = {}
+
+    rv = c.post("/results", data=dict(uid=uid, data=b64encode(json.dumps(d))))
+    d['timestamp'] = time.time()
+    rv = c.post("/results", data=dict(uid=uid, data=b64encode(json.dumps(d))))
+
+    d['probeuid'] = "aa"
+    rv = c.post("/results", data=dict(uid=uid, data=b64encode(json.dumps(d))))
+
+    d['probename'] = "test_res"
+    rv = c.post("/results", data=dict(uid=uid, data=b64encode(json.dumps(d))))
+
+    d['date'] = time.time()
+    rv = c.post("/results", data=dict(uid=uid, data=b64encode(json.dumps(d))))
 
     j = json.loads(rv.data)
     if j['answer'] != 'OK':
-        assert False, "action error {}".format(j)
-
-    # ping the server and check the return
-    rv = c.post("/ping", data=dict(uid=uid, hostId="p2"))
-
-    j = json.loads(rv.data)
-
-    if j['answer'] != "OK":
-        assert False, "ping known host"
-    a = j['action']
-    if a['name'] != "restart" or type(a['args']) != dict:
-        assert False, "action not in ping reply"
+        assert False, "action error"
 
 # ---------------------------------------------
-def test_push_3():
-    """check action ws : restart job health
+def test_result_2():
+    """check push result with compression
 
     """
+
     global app
     global conf
     global lDB
@@ -156,39 +166,32 @@ def test_push_3():
              "version" : 1,
              "data" : {}}]
 
-    uid = insertOneHost("p3", "test_push3", aJobs, "127.2.0.3", ":2:3")
+    uid = insertOneHost("p1", "test_res", aJobs, "127.2.0.1", ":2:1")
 
-    rv = c.post("/pushAction", data=dict(uid=uid, action="restart", module="job", job="health"))
+    d = {}
+
+    d['timestamp'] = time.time()
+    d['probeuid'] = "aa"
+    d['probename'] = "test_res"
+    d['date'] = time.time()
+    rv = c.post("/results", data=dict(uid=uid, compressed="yes", data=b64encode(zlib.compress(json.dumps([d])))))
 
     j = json.loads(rv.data)
+    print j
     if j['answer'] != 'OK':
-        assert False, "action error {}".format(j)
-
-    # ping the server and check the return
-    rv = c.post("/ping", data=dict(uid=uid, hostId="p3"))
-
-    j = json.loads(rv.data)
-
-    if j['answer'] != "OK":
-        assert False, "ping known host"
-    a = j['action']
-    if a['name'] != "restart" or type(a['args']) != dict:
-        assert False, "action not in ping reply"
-
-    args = a['args']
-    if args['module'] != "job" or args['job'] != "health":
-        assert False, "bad job to restart"
+        assert False, "action error"
 
 # ---------------------------------------------
-def test_unknown():
-    """check push on unknown host
+def test_result_nodata():
+    """check push result wo data
 
     """
+
     global app
     global conf
     global lDB
-
     lDB.cleanDB()
+
     c = app.test_client()
 
     aJobs = [{"id" : 1,
@@ -197,24 +200,27 @@ def test_unknown():
              "version" : 1,
              "data" : {}}]
 
-    uid = insertOneHost("p1", "test_push1", aJobs, "127.2.0.1", ":2:1")
+    uid = insertOneHost("p1", "test_res", aJobs, "127.2.0.1", ":2:1")
 
-    rv = c.post("/pushAction", data=dict(uid=(uid+1), action="no action"))
+    # without data
+    d = {}
+    rv = c.post("/results", data=dict(uid=uid))
 
     j = json.loads(rv.data)
     if j['answer'] != 'KO':
         assert False, "action error"
 
 # ---------------------------------------------
-def test_restart():
-    """check restart 
+def test_result_badprobe():
+    """check push result bad probe
 
     """
+
     global app
     global conf
     global lDB
-
     lDB.cleanDB()
+
     c = app.test_client()
 
     aJobs = [{"id" : 1,
@@ -223,62 +229,30 @@ def test_restart():
              "version" : 1,
              "data" : {}}]
 
-    uid = insertOneHost("p1", "test_push1", aJobs, "127.2.0.1", ":2:1")
+    uid = insertOneHost("p1", "test_res", aJobs, "127.2.0.1", ":2:1")
 
-    rv = c.post("/pushAction", data=dict(uid=uid, action="restart"))
+    # without data
+    rv = c.post("/results", data=dict(uid=uid+1, data=''))
 
     j = json.loads(rv.data)
+    print j
     if j['answer'] != 'KO':
         assert False, "action error"
-
-    # check restart job without job specification
-    rv = c.post("/pushAction", data=dict(uid=uid, action="restart", module="job"))
-
-    j = json.loads(rv.data)
-    if j['answer'] != 'KO':
-        assert False, "action error"
-
-# ---------------------------------------------
-def test_upgrade():
-    """check upgrade
-
-    """
-    global app
-    global conf
-    global lDB
-
-    lDB.cleanDB()
-    c = app.test_client()
-
-    aJobs = [{"id" : 1,
-             "job" : "health",
-             "freq" : 10,
-             "version" : 1,
-             "data" : {}}]
-
-    uid = insertOneHost("p1", "test_push1", aJobs, "127.2.0.1", ":2:1")
-
-    rv = c.post("/pushAction", data=dict(uid=uid, action="upgrade"))
-
-    j = json.loads(rv.data)
-    if j['answer'] != 'OK':
-        assert False, "upgrade error"
 
 # ---------------------------------------------
 def all(b=True):
     if b:
-        test_push_1()
-        test_push_2()
-        test_push_3()
-        test_unknown()
-        test_restart()
-    test_upgrade()
+        test_result_1()
+        test_result_nodata()
+        test_result_nob64()
+        test_result_badprobe()
+    test_result_2()
 
 # ---------------------------------------------
 if __name__ == '__main__':
     _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
     logging.basicConfig(format=_logFormat,
-                        level=logging.INFO)
+                        level=logging.DEBUG)
 
     all(True)
 

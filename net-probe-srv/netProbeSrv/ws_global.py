@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:13:46 alex>
+# Time-stamp: <2017-04-23 11:47:59 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -42,7 +42,14 @@ def wsCheckParams(params):
 
         if p == "hostId":
             if not request.form.__contains__('hostId'):
-                return make_response(jsonify({"answer" : "missing hostId"}), 412)
+                return make_response(jsonify({"answer":"KO", "reason" : "missing hostId"}), 412)
+
+        if p == "data":
+            if not request.form.__contains__('data'):
+                return make_response(jsonify({"answer":"KO", "reason" : "missing data"}), 412)
+
+    return None
+
 # -------------------------------------------------------------
 def wsCheckHostUID(uid):
     """check if we have the host in database"""

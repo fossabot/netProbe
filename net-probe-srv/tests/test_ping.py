@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 16:24:21 alex>
+# Time-stamp: <2017-04-23 11:49:26 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -87,7 +87,7 @@ def test_ping_no_host():
 
     j = json.loads(rv.data)
     # print j, rv.status_code
-    if rv.status_code != 400 and j['answer'] != "missing hostId":
+    if rv.status_code != 400 and j['answer'] != "KO" and j['reason'] != "missing hostId":
         assert False, "ping missing host id not working"
 
 # ---------------------------------------------
