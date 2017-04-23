@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-15 14:52:30 alex>
+# Time-stamp: <2017-04-23 14:25:34 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -28,6 +28,7 @@ import json
 import logging
 from output import outputer
 import output
+import time
 
 # import pprint
 
@@ -45,6 +46,8 @@ class config(object):
         self.fileName = "none"
         self.iTemplateJobsId = 1000
         self.fwVersion = {}
+        self.lastLoad = 0
+        self.config_cache = -1
 
         return
 
@@ -197,6 +200,9 @@ class config(object):
                 logging.error("configuration firmware does not contains 'current'")
                 self.fwVersion['current'] = 'unknown'
 
+        if confGlobal.__contains__('config_cache'):
+            self.config_cache = int(confGlobal['config_cache'])
+
     # ----------------------------------------------------------
     def loadFile(self, sFile):
         """load host file and update configuraion
@@ -204,6 +210,10 @@ class config(object):
         """
 
         logging.info("load config file {}".format(sFile))
+
+        if self.lastLoad > 0 and time.time() - self.lastLoad < self.config_cache:
+            logging.debug("cache too young ({:.0f}<{}), abort".format(time.time() - self.lastLoad, self.config_cache))
+            return
 
         try:
             f = file(sFile, 'r')
@@ -219,6 +229,8 @@ class config(object):
             conf = json.loads(c)
         except Exception as ex:
             assert False, "configuration file load exception : {}".format(", ".join(ex.args))
+
+        self.lastLoad = time.time()
 
         # global
         if conf.__contains__('global'):

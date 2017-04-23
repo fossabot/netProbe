@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:20:50 alex>
+# Time-stamp: <2017-04-23 14:25:04 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -66,6 +66,9 @@ except ImportError:
     exit()
 
 # ----- set the log level and format
+LOGGER = logging.getLogger('apscheduler')
+LOGGER.setLevel(logging.ERROR)
+
 _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
 logLevel = logging.ERROR
 
@@ -79,7 +82,7 @@ if args.log[0] == 'INFO':
     logLevel=logging.INFO
 
 logging.basicConfig(format=_logFormat, level=logLevel)
-#logging.basicConfig(level=logLevel)
+# logging.basicConfig(level=logLevel)
 
 if not isinstance(args.debug, bool):
     logging.error('debug arg is not taking argument')

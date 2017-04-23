@@ -3,7 +3,6 @@ server
 * push regular stats to back office on probe connected or discovered, last hello...
 * schedule on job definition
 * configuration with fields by probe, not only globals
-* avoid multiple conf read, add timer
 * use gc ?
 
 probe
@@ -32,3 +31,5 @@ move to changelog once released
 
 1.8
 -----
+* changed hostId calculation => impact on existing installed probes
+* avoid multiple conf read, add timer
