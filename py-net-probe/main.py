@@ -1,7 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-17 20:31:44 alex>
-#
+# Time-stamp: <2017-04-23 14:18:53 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -148,7 +147,7 @@ def serverConnect():
 
     # get hostId
     #
-    hid = hostId.hostId(ip.getLinkAddr()+ip.getIfIPv4())
+    hid = hostId.hostId(ip.getLinkAddr()+"@"+ip.getIfIPv4())
 
     stats.setIPv4(ip.getIfIPv4())
     stats.setIPv6(ip.getIfIPv6())
