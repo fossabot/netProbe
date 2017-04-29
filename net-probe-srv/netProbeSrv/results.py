@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-23 13:40:29 alex>
+# Time-stamp: <2017-04-29 15:37:09 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -78,18 +78,6 @@ def ws_results():
         return make_response(jsonify({"answer" : "KO", "reason":"no json"}), 417)
     
     for d in data:
-        if not d.__contains__('timestamp'):
-            logging.error("missing timestamp")
-            return make_response(jsonify({"answer" : "KO", "reason":"missing timestamp"}), 417)
-
-        if not d.__contains__('probeuid'):
-            logging.error("missing probe uid")
-            return make_response(jsonify({"answer" : "KO", "reason":"missing probe uid"}), 417)
-
-        if not d.__contains__('probename'):
-            logging.error("missing probe name")
-            return make_response(jsonify({"answer" : "KO", "reason":"missing probe name"}), 417)
-
         if not d.__contains__('date'):
             logging.error("missing date")
             return make_response(jsonify({"answer" : "KO", "reason":"missing date"}), 417)
@@ -100,6 +88,6 @@ def ws_results():
 
         for o in outputer:
             o.send(d)
-            print "output to ",o
+            logging.debug("output to {}".format(o))
 
     return make_response(jsonify({"answer" : "OK"}), 200)
