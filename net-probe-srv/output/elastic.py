@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:05:45 alex>
+# Time-stamp: <2017-04-29 15:45:45 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -98,3 +98,7 @@ class elastic(output):
         except ElasticsearchException:
             logging.error("error sending back to elastic server")
 
+    # ----------------------------------------------------------
+    def __str__(self):
+        """return the string of the outputer for debug purposes"""
+        return "elastic outputer {}".format(self.es_server)
