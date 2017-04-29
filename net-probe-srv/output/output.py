@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:06:11 alex>
+# Time-stamp: <2017-04-29 15:44:41 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -72,3 +72,8 @@ class output(object):
     def getType(self):
         """return the type of the outputer"""
         return self.type
+
+    # ----------------------------------------------------------
+    def __str__(self):
+        """return the string of the outputer for debug purposes"""
+        return "{} outputer".format(self.type)

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 15:40:18 alex>
+# Time-stamp: <2017-04-29 15:47:28 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -121,3 +121,8 @@ class logstash(output):
             sock.close()
         except socket.error:
             logging.error("can't communicate with logstash")
+
+    # ----------------------------------------------------------
+    def __str__(self):
+        """return the string of the outputer for debug purposes"""
+        return "logstash outputer {} {}:{}".format(self.server, self.transport, self.iPort)
