@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:50:08 alex>
+# Time-stamp: <2017-04-30 16:05:42 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -21,10 +21,13 @@
 # --------------------------------------------------------------------
 
 """
+statistics class to gather information to be pushed back to the
+server and to outputers
 """
 
 import re
 import time
+import logging
 
 class stats(object):
     """class to gather stats"""
@@ -61,16 +64,19 @@ class stats(object):
 
     # ---------------------------------------------------------
     def setJob(self, j):
+        """ add jobs information """
         self.setVar("job-{}-version".format(j['job']), j['version'])
         self.setVar("job-{}-freq".format(j['job']), j['freq'])
         self.setVar("job-{}-id".format(j['job']), j['id'])
 
     # ---------------------------------------------------------
     def setLastRun(self, job, date):
+        """ last running occurence in stats """
         self.setVar("job-{}-last".format(job), date)
         
     # ---------------------------------------------------------
     def push(self, srv):
+        """push information back to server"""
         data = {
             "IPv4" : str(self.sIPv4),
             "IPv6" : str(self.sIPv6)
@@ -95,14 +101,11 @@ class stats(object):
         """
         function to print the whole internal object
         """
-        print "** DEBUG **"
-        print "IPv4 = {}".format(self.sIPv4)
-        print "IPv6 = {}".format(self.sIPv6)
+        logging.debug("IPv4 = {}".format(self.sIPv4))
+        logging.debug("IPv6 = {}".format(self.sIPv6))
 
         for v in self.aVal:
             if re.match("job-.*-last", v):
-                print "{} = {}".format(v, time.time()-self.aVal[v])
+                logging.debug("{} = {}".format(v, time.time()-self.aVal[v]))
             else:
-                print "{} = {}".format(v, self.aVal[v])
-
-        print "**********"
+                logging.debug("{} = {}".format(v, self.aVal[v]))

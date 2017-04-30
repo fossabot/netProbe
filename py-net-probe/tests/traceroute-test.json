@@ -5,9 +5,9 @@
       "version" : 1,
       "active": "True",
       "data" : {
-	  "target" : "github.com",
+	  "target" : "www.bikeo.fr",
 	  "version" : 4,
-	  "sequence" : 5,
+	  "sequence" : 2,
 	  "range": 30,
 	  "wait" : 0.1,
 	  "tos" : 0,

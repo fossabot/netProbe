@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:34:21 alex>
+# Time-stamp: <2017-04-30 17:31:21 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -113,7 +113,7 @@ class probe_http(probemain):
             if s != None:
                 result['http-server'] = s
 
-        except urllib2.URLError, e:
+        except urllib2.URLError as e:
             sError = str(e.reason)
         except Exception as ex:
             sError = str(", ".join(ex.args))
@@ -127,3 +127,7 @@ class probe_http(probemain):
 
         logging.info("http result : {}".format(result))
         self.pushResult(result)
+
+        if 'run_once' in _config:
+            logging.info("run only once, exit")
+            exit()

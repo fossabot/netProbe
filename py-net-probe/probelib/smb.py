@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-17 18:03:21 alex>
+# Time-stamp: <2017-04-30 17:31:00 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -25,18 +25,16 @@
 """
 
 import time
-# import select
-# import socket
 import logging
+import datetime
+import re
 
 # from impacket import version
 from impacket.dcerpc.v5 import transport, srvs
 from impacket.dcerpc.v5.dtypes import NULL
-from impacket.smbconnection import *
+from impacket.smbconnection import SMBConnection, ntpath, string, FILE_DIRECTORY_FILE, FILE_READ_DATA, FILE_LIST_DIRECTORY, FILE_SHARE_READ, FILE_SHARE_WRITE
 
 from .probemain import probemain
-import datetime
-import re
 
 # import pprint
 
@@ -53,6 +51,20 @@ class probe_smb(probemain):
 
         self.smbClient = None
 
+        self.aShares = None
+        self.dceInfo = None
+        self.domain = None
+        self.ip = None
+        self.password = None
+        self.port = None
+        self.pwd = None
+        self.server = None
+        self.share = None
+        self.tid = None
+        self.username = None
+        self.bConnected = None
+        self.bGuestConnected = None
+
         self.__clean()
 
         self.checkNet()
@@ -61,6 +73,7 @@ class probe_smb(probemain):
 
     # -----------------------------------------
     def __clean(self):
+        """clean all variables"""
         self.bConnected = False
         self.bGuestConnected = True
 
@@ -72,7 +85,7 @@ class probe_smb(probemain):
 
     # -----------------------------------------
     @classmethod
-    def f_testv4(self, data):
+    def f_testv4(cls, data):
         """testing method for insertion in the job list, check if ip version 4
 
         """
@@ -95,7 +108,7 @@ class probe_smb(probemain):
             self.smbClient = SMBConnection(self.server, self.ip, sess_port=self.port)
             self.smbClient.login(self.username, self.password, self.domain, '', '')
 
-        except Exception, e:
+        except Exception as e:
             logging.error(str(e))
             self.bConnected = False
             return False
@@ -117,12 +130,12 @@ class probe_smb(probemain):
     def getDCEInfo(self):
         """information on the DCE/RPC connection
         """
-        if self.bConnected == False:
+        if self.bConnected is False:
             return
 
         rpctransport = transport.SMBTransport(self.smbClient.getRemoteHost(), 
-                                              filename = r'\srvsvc',
-                                              smb_connection = self.smbClient)
+                                              filename=r'\srvsvc',
+                                              smb_connection=self.smbClient)
         dce = rpctransport.get_dce_rpc()
         dce.connect()                     
         dce.bind(srvs.MSRPC_UUID_SRVS)
@@ -159,8 +172,8 @@ class probe_smb(probemain):
 
         try:
             rpctransport = transport.SMBTransport(self.smbClient.getRemoteHost(), 
-                                                  filename = r'\srvsvc', 
-                                                  smb_connection = self.smbClient)
+                                                  filename=r'\srvsvc', 
+                                                  smb_connection=self.smbClient)
             dce = rpctransport.get_dce_rpc()
             dce.connect()                     
             dce.bind(srvs.MSRPC_UUID_SRVS)
@@ -181,7 +194,7 @@ class probe_smb(probemain):
     def getShares(self):
         """get shares available on the server
         """
-        if self.bConnected == False:
+        if self.bConnected is False:
             logging.error("No connection open")
             return
 
@@ -200,12 +213,12 @@ class probe_smb(probemain):
 
         """
 
-        if self.bConnected == False:
+        if self.bConnected is False:
             logging.error("No connection open")
             return
 
         resp = self.smbClient.listShares()
-        for i in range(len(resp)):
+        for i, _ in enumerate(resp):
             netname = resp[i]['shi1_netname'][:-1]
 
             _r = re.match(regexp, netname)
@@ -222,7 +235,7 @@ class probe_smb(probemain):
     def useShare(self, share):
         """use a share
         """
-        if self.bConnected == False:
+        if self.bConnected is False:
             logging.error("No connection open")
             return False
 
@@ -246,25 +259,25 @@ class probe_smb(probemain):
     def cd(self, _dir):
         """change directory on the share
         """
-        if self.bConnected == False:
+        if self.bConnected is False:
             logging.error("No connection open")
             return
 
-        if self.tid == None:
+        if self.tid is None:
             logging.error("not on a share")
             return
 
-        pwd = ntpath.normpath(string.replace(_dir,'/','\\'))
+        pwd = ntpath.normpath(string.replace(_dir, '/', '\\'))
         logging.debug("cd to normalize path {}".format(pwd))
 
         # Let's try to open the directory to see if it's valid
         try:
             fid = self.smbClient.openFile(self.tid, pwd, 
-                                          creationOption = FILE_DIRECTORY_FILE,
-                                          desiredAccess = FILE_READ_DATA | FILE_LIST_DIRECTORY,
-                                          shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE)
+                                          creationOption=FILE_DIRECTORY_FILE,
+                                          desiredAccess=FILE_READ_DATA | FILE_LIST_DIRECTORY,
+                                          shareMode=FILE_SHARE_READ | FILE_SHARE_WRITE)
 
-            self.smbClient.closeFile(self.tid,fid)
+            self.smbClient.closeFile(self.tid, fid)
         except Exception, e:
             logging.error("cd: {}".format(str(e)))
             return False
@@ -274,10 +287,10 @@ class probe_smb(probemain):
         return True
 
     # --------------------------------------------------
-    def lsFiles(self, filter='*'):
+    def lsFiles(self, _filter='*'):
         """list files in the directory
         """
-        if self.bConnected == False:
+        if self.bConnected is False:
             logging.error("No connection open")
             return False
 
@@ -285,13 +298,13 @@ class probe_smb(probemain):
             logging.error("No share selected, see useShare()")
             return False
 
-        if self.tid == None:
+        if self.tid is None:
             logging.error("not on a share")
             return False
 
         logging.debug("ls on share {} in {}".format(self.share, self.pwd))
 
-        pwd = ntpath.join(self.pwd,filter)
+        pwd = ntpath.join(self.pwd, _filter)
 
         r = []
 
@@ -315,7 +328,7 @@ class probe_smb(probemain):
         """get off the server
         """
 
-        if self.smbClient is None or self.bConnected == False:
+        if self.smbClient is None or self.bConnected is False:
             logging.error("No connection open")
         else:
             self.smbClient.logoff()
@@ -364,18 +377,18 @@ class probe_smb(probemain):
         _ms = time.time()
 
         sError = "smb-step-{:02d}-error".format(iStep)
-        if self.useShare(_step['share']) == False:
+        if self.useShare(_step['share']) is False:
             result[sError] = "share not available: {}".format(_step['share'])
             return result
         result["smb-step-{:02d}-share".format(iStep)] = _step['share']
 
-        if self.cd(_step['path']) == False:
+        if self.cd(_step['path']) is False:
             result[sError] = "path not available in share: {}".format(_step['share'])
             return result
         result["smb-step-{:02d}-path".format(iStep)] = str(_step['path'])
 
         a = self.lsFiles(_step['file'])
-        if a == False:
+        if a is False:
             result[sError] = "file access error: {}".format(_step['file'])
             return result
 
@@ -453,12 +466,12 @@ class probe_smb(probemain):
 
         result["smb-step-{:02d}-action".format(iStep)] = _step['type']
 
-        if self.useShare(_step['share']) == False:
-            result[sError] = "share not available: {}".format(_step['share'])
+        if self.useShare(_step['share']) is False:
+            result["smb-step-{:02d}-error"] = "share not available: {}".format(_step['share'])
             return result
         result["smb-step-{:02d}-share".format(iStep)] = _step['share']
 
-        fileName = ntpath.normpath(string.replace(_step['file'],'/','\\'))
+        fileName = ntpath.normpath(string.replace(_step['file'], '/', '\\'))
         logging.debug("open file {}".format(fileName))
 
         if _step.__contains__('blocksize'):
@@ -475,7 +488,7 @@ class probe_smb(probemain):
             offset = 0
             endFile = False
 
-            while endFile == False:
+            while endFile is False:
                 _buffer = self.smbClient.readFile(self.tid, fid, offset, blocksize)
                 if len(_buffer) == 0:
                     endFile = True
@@ -484,7 +497,7 @@ class probe_smb(probemain):
             result["smb-step-{:02d}-read-KB".format(iStep)] = offset / 1024.0
             result["smb-step-{:02d}-Mbps".format(iStep)] = (offset * 8 / (time.time() - _ms))/1024000
 
-            self.smbClient.closeFile(self.tid,fid)
+            self.smbClient.closeFile(self.tid, fid)
         except Exception, e:
             logging.error("open file: {}".format(str(e)))
             result["smb-step-{:02d}-error".format(iStep)] = "error in open file: {}".format(_step['file'])
@@ -541,7 +554,7 @@ class probe_smb(probemain):
 
         logging.info("connect")
         _ms = time.time()
-        if self.connect() == False:
+        if self.connect() is False:
             logging.error("connect error")
             result['smb-error'] = "connect error"
             self.pushResult(result)
@@ -600,3 +613,7 @@ class probe_smb(probemain):
         # logging.info("smb results : {}".format(result))
         # exit()
         #self.pushResult(result)
+
+        if 'run_once' in _config:
+            logging.info("run only once, exit")
+            exit()

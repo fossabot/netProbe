@@ -14,56 +14,56 @@
 	  },
 	  "server": "storparis",
 	  "steps" : {
-	      "-01": {
+	      "01": {
 		  "type": "get_dce_info"
 	      },
 
-	      "-02": {
+	      "02": {
 		  "type": "get_file_stats",
 		  "share": "music",
 		  "path": "/Calogero/L'Embellie",
 		  "file": "AlbumArtSmall.jpg"
 	      },
 
-	      "-03": {
+	      "03": {
 		  "type": "get_file_stats",
 		  "share": "music",
 		  "path": "/Calogero/L'Embellie",
 		  "file": "AlbumArtSmall.txt"
 	      },
 
-	      "-04": {
+	      "04": {
 		  "type": "get_file_stats",
 		  "share": "music",
 		  "path": "/notfound",
 		  "file": "AlbumArtSmall.txt"
 	      },
 
-	      "-05": {
+	      "05": {
 		  "type": "get_file_stats",
 		  "share": "notfound",
 		  "path": "/dir",
 		  "file": "file"
 	      },
 
-	      "-06": {
+	      "06": {
 		  "type": "get_share",
 		  "share": "music"
 	      },
 
-	      "-07": {
+	      "07": {
 		  "type": "get_share",
 		  "share": "notfound"
 	      },
 
-	      "-01": {
+	      "08": {
 		  "type": "get_file_stats",
 		  "share": "tmp",
 		  "path": "/test1",
 		  "file": "CRA-v0.3.R*"
 	      },
 
-	      "01": {
+	      "09": {
 		  "type": "read_file",
 		  "share": "tmp",
 		  "file": "/test1/test2.txt",

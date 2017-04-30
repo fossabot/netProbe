@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-23 14:18:53 alex>
+# Time-stamp: <2017-04-30 17:05:16 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -25,7 +25,7 @@
 """
 
 __version__ = "1.8.0"
-__date__ = "29/04/17-16:02:01"
+__date__ = "29/04/17-17:11:11"
 __author__ = "Alex Chauvin"
 
 import time
@@ -33,15 +33,16 @@ import logging
 import os
 # import pprint
 import signal
-
-import netProbe
+import traceback
 import sched
-import hostId
-import database
 import json
 import platform
 from subprocess import call, check_output
 import re
+
+import netProbe
+import hostId
+import database
 
 from config import conf
 
@@ -65,7 +66,7 @@ try:
     args = parser.parse_args()
 
 except ImportError:
-    log.error('parse error')
+    logging.error('parse error - exit')
     exit()
 
 # limit log level for request module
@@ -78,13 +79,13 @@ _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message
 logLevel = logging.ERROR
 
 if args.log == 'INFO':
-    logLevel=logging.INFO
+    logLevel = logging.INFO
 if args.log == 'DEBUG':
-    logLevel=logging.DEBUG
+    logLevel = logging.DEBUG
 if args.log == 'WARNING':
-    logLevel=logging.WARNING
+    logLevel = logging.WARNING
 if args.log == 'ERROR':
-    logLevel=logging.ERROR
+    logLevel = logging.ERROR
 
 logging.basicConfig(format=_logFormat, level=logLevel)
 # logging.basicConfig(level=logLevel)
@@ -114,10 +115,10 @@ stats.setVar("probe version", __version__)
 
 # checks if we are in a standard docker container with redis linked
 # the PI_REDIS_SRV env var is set for the subprocess probes
-if (os.environ.__contains__("REDIS_PORT_6379_TCP_ADDR")):
+if os.environ.__contains__("REDIS_PORT_6379_TCP_ADDR"):
     args.redis = os.environ["REDIS_PORT_6379_TCP_ADDR"]
 
-if (args.redis != None):
+if args.redis != None:
     os.environ["PI_REDIS_SRV"] = args.redis
     logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"]))
 
@@ -139,7 +140,7 @@ def serverConnect():
     #
     ip = netProbe.ipConf()
 
-    if ip.hasDefaultRoute() == False:
+    if ip.hasDefaultRoute() is False:
         logging.error("no default route, abort")
         exit(1)
     else:
@@ -147,30 +148,30 @@ def serverConnect():
 
     # get hostId
     #
-    hid = hostId.hostId(ip.getLinkAddr()+"@"+ip.getIfIPv4())
+    hid = hostId.hostId(ip.getLinkAddr())
 
     stats.setIPv4(ip.getIfIPv4())
     stats.setIPv6(ip.getIfIPv6())
 
     bConnected = False
 
-    iSleepConnectDelay = 0
+    iSleepConnectDelay = 0.0
 
-    while bConnected == False:
-        if bRunning == False:
+    while bConnected is False:
+        if bRunning is False:
             logging.error("stop main probe")
             exit()
 
         logging.info("sleep for {:0.0f}s".format(iSleepConnectDelay))
         time.sleep(iSleepConnectDelay)
 
-        if iSleepConnectDelay == 0:
-            iSleepConnectDelay = 1
+        if iSleepConnectDelay == 0.0:
+            iSleepConnectDelay = 1.0
         else:
-            if iSleepConnectDelay < 60:
+            if iSleepConnectDelay < 60.0:
                 iSleepConnectDelay = iSleepConnectDelay * 1.5
             else:
-                iSleepConnectDelay = 60
+                iSleepConnectDelay = 60.0
 
         # connect to probe server
         #
@@ -184,10 +185,10 @@ def serverConnect():
 
         # send identification to get id & certificate
         #
-        if srv.discover(hid.get(), ip.getIfIPv4(), ip.getIfIPv6(), __version__) == True:
+        if srv.discover(hid.get(), ip.getIfIPv4(), ip.getIfIPv6(), __version__) is True:
             bConnected = True
 
-        if bConnected and srv.ping() == False:
+        if bConnected and srv.ping() is False:
             logging.error("service ping not working")
             continue
 
@@ -206,12 +207,12 @@ def ping():
     # global stats
     global bConnected
 
-    if bConnected == False:
+    if bConnected is False:
         return
 
     r = srv.ping()
 
-    if r == None:
+    if r is None:
         _iRetry = stats.getVar("ping-server-retry")
         logging.warning("ping without answer, retry={}".format(_iRetry))
         if _iRetry > 2:
@@ -246,7 +247,7 @@ def pushJobsToDB(jobName):
     # suppress the old definition in db
     db.cleanJob(jobName)
 
-    for i in probeJobs.keys():
+    for i in probeJobs:
         j = probeJobs[i]
         if j['job'] == jobName:
             del j['restart']
@@ -262,7 +263,7 @@ def getConfig():
     global bConnected
     # global aModules
 
-    if bConnected == False:
+    if bConnected is False:
         return
 
     logging.info("get configuration from server")
@@ -271,7 +272,7 @@ def getConfig():
     restart = {}
 
     config = srv.getConfig()
-    if config == None:
+    if config is None:
         logging.error("can't get my config")
         bConnected = False
         return None
@@ -293,27 +294,40 @@ def getConfig():
     if currentHostname != newHostname:
         logging.info("changing hostname to {}".format(newHostname))
 
+        bOnPI = bool(os.path.exists("/home/pi/py-net-probe"))
+        bOnARM = True
+
         if os.path.isfile("/bin/uname"): 
             _s = check_output(["/bin/uname", "-m"])
-            if re.match("arm", _s) == None:
-                logging.info(" avoid on non ARM platform")
+            if re.match("arm", _s) is None:
+                if not bOnPI:
+                    logging.info(" avoid on non ARM platform")
+                else:
+                    logging.info(" can do it on docker")
+                bOnARM = False
             else:
-                try:
+                bOnARM = True
+        else:
+            logging.info(" no /bin/uname")
+
+        if bOnPI:
+            try:
+                if bOnARM:
                     logging.info("turning FS to RW")
                     call(["/bin/mount", "-o", "remount,rw", "/"])
 
-                    f = file("/etc/hostname", 'w')
-                    f.write(newHostname)
-                    f.close()
+                f = file("/etc/hostname", 'w')
+                f.write(newHostname)
+                f.close()
 
+                if bOnARM:
                     logging.info("turning FS to RO")
                     call(["/bin/mount", "-o", "remount,ro", "/"])
 
-                    os.system("/bin/hostname {}".format(newHostname))
-                except IOError:
-                    logging.error("accessing hostname file /etc/hostname")
-        else:
-            logging.info(" no /bin/uname")
+                os.system("/bin/hostname {}".format(newHostname))
+            except IOError:
+                logging.error("accessing hostname file /etc/hostname")
+
         
     # handle jobs
     for c in config['jobs']:
@@ -362,10 +376,13 @@ def mainLoop():
 def trap_signal(sig, heap):
     """ trap all signals for stop """
 
+    print sig, heap
+
     global bRunning
     global bConnected
 
-    logging.info("exit signal received, wait for next step")
+    logging.info("exit signal received {}, wait for next step".format(sig))
+    traceback.print_stack(heap)
 
     bRunning = False
     bConnected = False
@@ -380,8 +397,8 @@ def action(a):
     # global srv
 
     if a['name'] == "restart":
-        args = a['args']
-        if args['module'] == "all":
+        _args = a['args']
+        if _args['module'] == "all":
             logging.info("restart received from server, exiting")
             # stopAllProbes(probeProcess)
 
@@ -389,8 +406,8 @@ def action(a):
             bConnected = False
             return
 
-        if args['module'] == "job":
-            job = args['job']
+        if _args['module'] == "job":
+            job = _args['job']
             logging.info("restart job {} received from server".format(job))
 
             if job in aModules:
@@ -414,7 +431,7 @@ def popResults(_db):
     # global stats
     # global bConnected
 
-    if bConnected == False:
+    if bConnected is False:
         return
 
     a = []
@@ -438,17 +455,17 @@ def popResults(_db):
         srv.pushResults(a)
 
 # -----------------------------------------
-def pushStats(srv):
+def pushStats(_srv):
     """call the stats.push
 
     """
     # global stats
     # global bConnected
 
-    if bConnected == False:
+    if bConnected is False:
         return
 
-    stats.push(srv)
+    stats.push(_srv)
 
 # -----------------------------------------
 

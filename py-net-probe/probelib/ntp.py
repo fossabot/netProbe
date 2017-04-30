@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-17 20:38:08 alex>
+# Time-stamp: <2017-04-30 17:53:20 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -77,31 +77,31 @@ class probe_ntp(probemain):
         result = {}
 
         r = re.search('^stratum:\\s*(\d*)', o, re.MULTILINE)
-        if r==None:
+        if r is None:
             logging.info("ntp error, stratum not found in ntpdc -c sysinfo")
             return
         result["ntp-stratum"] = int(r.group(1).strip())
 
         r = re.search('^system peer:\\s*(.*)', o, re.MULTILINE)
-        if r==None:
+        if r is None:
             logging.info("ntp error, system peer not found in ntpdc -c sysinfo")
             return
         result["ntp-peer"] = r.group(1).strip()
 
         r = re.search('^jitter:\\s*(.*) s', o, re.MULTILINE)
-        if r==None:
+        if r is None:
             logging.info("ntp error, jitter not found in ntpdc -c sysinfo")
             return
         result["ntp-jitter"] = float(r.group(1).strip())*1000
 
         r = re.search('^root distance:\\s*(.*) s', o, re.MULTILINE)
-        if r==None:
+        if r is None:
             logging.info("ntp error, distance not found in ntpdc -c sysinfo")
             return
         result["ntp-distance"] = float(r.group(1).strip())*1000
 
         r = re.search('^root dispersion:\\s*(.*) s', o, re.MULTILINE)
-        if r==None:
+        if r is None:
             logging.info("ntp error, dispersion not found in ntpdc -c sysinfo")
             return
         result["ntp-dispersion"] = float(r.group(1).strip())*1000
@@ -120,7 +120,7 @@ class probe_ntp(probemain):
             return
 
         r = re.search('^offset (.*), delay (.*), error', o, re.MULTILINE)
-        if r==None:
+        if r is None:
             logging.info("ntp error, offset not found in ntpdc -c sysinfo")
             return
         result["ntp-offset"] = float(r.group(1).strip())*1000
@@ -128,3 +128,7 @@ class probe_ntp(probemain):
 
         logging.info("ntp result : {}".format(result))
         self.pushResult(result)
+
+        if 'run_once' in _config:
+            logging.info("run only once, exit")
+            exit()

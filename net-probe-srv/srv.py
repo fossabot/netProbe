@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-23 14:25:04 alex>
+# Time-stamp: <2017-04-29 16:42:46 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -25,7 +25,7 @@
 """
 
 __version__ = "1.8.0"
-__date__ = "29/04/17-16:02:01"
+__date__ = "29/04/17-17:11:11"
 
 import logging
 import signal
@@ -40,9 +40,6 @@ LOGGER = logging.getLogger('werkzeug')
 LOGGER.setLevel(logging.ERROR)
 LOGGER = logging.getLogger('urllib3')
 LOGGER.setLevel(logging.ERROR)
-
-#from output import outputer
-#import output
 
 # ----------- parse args
 try:
@@ -129,8 +126,6 @@ from netProbeSrv import upgrade
 # -----------------------------------------
 def trap_HUP_signal(sig, heap):
     """ trap signal for config reload """
-
-    # global conf
 
     conf.reload()
 

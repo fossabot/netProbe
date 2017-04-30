@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-02-20 22:01:49 alex>
+# Time-stamp: <2017-04-30 17:31:15 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -115,3 +115,7 @@ class probe_health(probemain):
         logging.info("health results : {}".format(result))
 
         self.pushResult(result)
+
+        if 'run_once' in _config:
+            logging.info("run only once, exit")
+            exit()

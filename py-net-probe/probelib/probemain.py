@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-18 21:37:12 alex>
+# Time-stamp: <2017-04-30 17:28:25 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -29,10 +29,10 @@ import sys
 import logging
 import signal
 import time
+import sched
 
 sys.path.insert(0, os.getcwd())
 from netProbe import ipConf
-import sched
 import database
 
 class probemain(object):
@@ -52,31 +52,31 @@ class probemain(object):
         _logFormat = '%(asctime)-15s '+str(name)+' [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
 
         # log level
-        logLevel=logging.ERROR
+        logLevel = logging.ERROR
 
-        if (os.environ.__contains__("PI_LOG_LEVEL")):
+        if os.environ.__contains__("PI_LOG_LEVEL"):
             lvl = str(os.environ["PI_LOG_LEVEL"])
             if lvl == 'INFO':
-                logLevel=logging.INFO
+                logLevel = logging.INFO
             if lvl == 'DEBUG':
-                logLevel=logging.DEBUG
+                logLevel = logging.DEBUG
             if lvl == 'WARNING':
-                logLevel=logging.WARNING
+                logLevel = logging.WARNING
             if lvl == 'ERROR':
-                logLevel=logging.ERROR
+                logLevel = logging.ERROR
 
         logging.basicConfig(format=_logFormat,
                             level=logLevel)
 
         logging.info("starting probe")
 
-        if (os.environ.__contains__("PI_DB_TEST")):
+        if os.environ.__contains__("PI_DB_TEST"):
             self.db = database.dbTest.dbTest()
-            if (os.environ.__contains__("PI_SCHED_NOW")):
+            if os.environ.__contains__("PI_SCHED_NOW"):
                 self.bNow = True
         else:
             # redis server
-            if (os.environ.__contains__("PI_REDIS_SRV")):
+            if os.environ.__contains__("PI_REDIS_SRV"):
                 self.db = database.dbRedis.dbRedis(os.environ["PI_REDIS_SRV"])
             else:
                 self.db = database.dbRedis.dbRedis()
@@ -98,7 +98,7 @@ class probemain(object):
         logging.info("check if default route is present")
         self.ip = ipConf()
 
-        if self.ip.hasDefaultRoute() == False:
+        if self.ip.hasDefaultRoute() is False:
             logging.warning("no default route")
 
     # -----------------------------------------
@@ -123,7 +123,7 @@ class probemain(object):
 
         while self.bRunning:
             ppid = os.getppid()
-            if (ppid == 1):
+            if ppid == 1:
                 logging.info("ppid == 1, zombie, exiting")
                 self.bRunning = False
             else:
@@ -146,7 +146,7 @@ class probemain(object):
         """add a job in the scheduler
 
         """
-        if self.bNow == True:
+        if self.bNow is True:
             self.scheduler.add(self.name, freq, f, data, 1)
         else:
             self.scheduler.add(self.name, freq, f, data, 2)
@@ -156,7 +156,7 @@ class probemain(object):
         """add a job in the scheduler with extended scheduler constraints
 
         """
-        if self.bNow == True:
+        if self.bNow is True:
             self.scheduler.addExtended(self.name, freq, schedData, f, data, 1)
         else:
             self.scheduler.addExtended(self.name, freq, schedData, f, data, 2)
@@ -176,6 +176,10 @@ class probemain(object):
             if c['active'] == "True":
                 if c['job'] == name:
                     data = c['data']
+
+                    if os.environ.__contains__("PI_RUN_ONCE"):
+                        data['run_once'] = True
+
                     if testf(data):
                         if c.__contains__('schedule'):
                             self.addJobExtended(int(c['freq']), c['schedule'], f, data)
@@ -189,7 +193,8 @@ class probemain(object):
 
     # -----------------------------------------
     @classmethod
-    def fTestNone(self, data):
+    def fTestNone(cls, data):
+        """ test method by default """
         return True
 
     # -----------------------------------------
@@ -210,7 +215,7 @@ class probemain(object):
 
     # -----------------------------------------
     @classmethod
-    def f_testOK(self, data):
+    def f_testOK(cls, data):
         """testing method that is always ok
 
         """

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-23 14:18:26 alex>
+# Time-stamp: <2017-04-30 16:28:29 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -45,7 +45,7 @@ class hostId(object):
 
         try:
             f = file('/proc/cpuinfo', 'r')
-        except IOError, e:
+        except IOError as e:
             print "ERROR accessing cpuinfo {}".format(e)
             raise Exception('ERROR accessing cpuinfo')
 
@@ -57,7 +57,7 @@ class hostId(object):
         iFound = False
 
         for l in aLines:
-            if iFound == False:
+            if iFound is False:
                 r = re.match("flags[^:]+: (.*)", l)
                 if r != None:
                     flags = r.group(1).split()

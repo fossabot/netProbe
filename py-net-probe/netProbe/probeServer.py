@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-23 12:06:08 alex>
+# Time-stamp: <2017-04-30 17:06:01 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -32,17 +32,17 @@ True
 """
 
 import socket
-import requests
 import time
 import json
 import logging
-# import pprint
 import zlib
 from base64 import b64encode
 import os
 import re
+from subprocess import call, check_output, CalledProcessError
 
-from subprocess import call,check_output, CalledProcessError
+import requests
+
 
 class probeServer(object):
     """class to talk to the probe server"""
@@ -60,17 +60,16 @@ class probeServer(object):
         self.uid = 0
         self.sHostId = ""
 
-        if True:
-            self.session = requests.Session()
-            adapter = requests.adapters.HTTPAdapter(pool_connections=2,
-                                                    pool_maxsize=4)
-            self.session.mount('http', adapter)
+        self.session = requests.Session()
+        adapter = requests.adapters.HTTPAdapter(pool_connections=2,
+                                                pool_maxsize=4)
+        self.session.mount('http', adapter)
 
-        else:
-            self.session = requests
+        """ else:
+            self.session = requests"""
 
     # -----------------------------------------------------------------
-    def findServer(self, serverName = None):
+    def findServer(self, serverName=None):
         """
         check which server host to contact
         based on server names
@@ -84,7 +83,7 @@ class probeServer(object):
                     'probe-srv']
 
         if serverName != None:
-            aServers = [ serverName ]
+            aServers = [serverName]
 
         for server in aServers:
             try:
@@ -114,7 +113,7 @@ class probeServer(object):
 
         returns None or structure with action
         """
-        if self.bServerAvail == False:
+        if self.bServerAvail is False:
             self.uid = 0
             self.sHostId = "unknown"
 
@@ -127,7 +126,7 @@ class probeServer(object):
         delta = -1
         self.lastCmdRespTime = -1
 
-        dReturn = { 'status' : 'OK' }
+        dReturn = {'status' : 'OK'}
 
         try:
             now = time.time()
@@ -188,7 +187,7 @@ class probeServer(object):
         """
         calls the discover web service on the server in order to
         announce the probe itself
-        if the probe is known... TODO
+        if the probe is known...
         :param sHostId: hostid string to uniquely identify the probe
         :param sIpV4: IP v4 address of the probe
         :param sIpV6: IP v6 address of the probe
@@ -236,7 +235,7 @@ class probeServer(object):
         get configuration for this probe from server
         """
 
-        if self.bServerAvail == False or self.uid == 0:
+        if self.bServerAvail is False or self.uid == 0:
             return None
 
         data = {
@@ -294,7 +293,7 @@ class probeServer(object):
         if not isinstance(aResult, list):
             raise Exception("pushResult not provided an array")
         
-        if self.bServerAvail == False or self.uid == 0:
+        if self.bServerAvail is False or self.uid == 0:
             return None
 
         data = {
@@ -331,13 +330,17 @@ class probeServer(object):
         """upgrade the software
         """
 
+        bOnARM = True
+
         logging.info("check for software upgrade")
 
         if os.path.isfile("/bin/uname"): 
             s = check_output(["/bin/uname", "-m"])
-            if re.match("arm", s) == None:
-                logging.info(" avoid on non ARM platform")
-                return
+            if re.match("arm", s) is None:
+                bOnARM = False
+                if not os.path.exists("/home/pi/py-net-probe"):
+                    logging.info(" avoid on non ARM/PI platform")
+                    return
         else:
             logging.info(" no /bin/uname")
             return
@@ -355,9 +358,9 @@ class probeServer(object):
                 logging.info("error in upgrade")
                 return
 
-            logging.info("turning FS to RW")
-
-            call(["/bin/mount", "-o", "remount,rw", "/"])
+            if bOnARM:
+                logging.info("turning FS to RW")
+                call(["/bin/mount", "-o", "remount,rw", "/"])
 
             with open("/home/pi/new.deb", 'wb') as fd:
                 for chunk in r.iter_content(1024):
@@ -377,16 +380,17 @@ class probeServer(object):
             else:
                 logging.error("bad package deb")
 
-        except CalledProcessError,e:
+        except CalledProcessError as e:
             logging.error("error in call for dpkg")
-            print(e)
+            logging.error(e)
             exit()
 
         os.unlink("/home/pi/new.deb")
 
-        logging.info("turning FS back to RO")
-        call(["/bin/sync"])
-        call(["/bin/mount", "-o", "remount,ro", "/"])
+        if bOnARM:
+            logging.info("turning FS back to RO")
+            call(["/bin/sync"])
+            call(["/bin/mount", "-o", "remount,ro", "/"])
 
         logging.info("exiting")
         exit()

@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-03-25 12:07:27 alex>
+# Time-stamp: <2017-04-30 14:11:19 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -19,6 +19,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+dirs = netProbeSrv config output liveDB
+
 all:
 	@echo make lint
 	@echo make flakes
@@ -26,14 +28,16 @@ all:
 	@echo make test
 
 lint: clean
-	pylint --rcfile=~/.pylint srv.py netProbeSrv/*py config/*py output/*py liveDB/*py
+	pylint --rcfile=~/.pylint srv.py $(dirs:%=%/*.py)
 
 flakes: clean
-	@pyflakes *py */*py
+	@pyflakes *py $(dirs:%=%/*.py)
 
 clean:
-	rm -f *pyc */*pyc
-	rm -f *~ */*~
+	@rm -f $(dirs:%=%/*pyc)
+	@rm -f $(dirs:%=%/*~)
+	@rm -f *pyc
+	@rm -f *~
 
 test: clean
 	@nosetests tests
@@ -50,3 +54,8 @@ version:
 	@cp /tmp/srv.py srv.py
 	@rm -f /tmp/srv.py
 
+cc: clean
+	@echo complexity
+	@radon cc $(dirs) *py -a -nc
+	@echo maintenability
+	@radon mi $(dirs) *py -nb
