@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-01 16:37:35 alex>
+# Time-stamp: <2017-05-08 10:51:09 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -25,7 +25,7 @@
 """
 
 __version__ = "1.8.1"
-__date__ = "08/05/17-10:35:48"
+__date__ = "08/05/17-10:47:27"
 __author__ = "Alex Chauvin"
 
 import time
@@ -371,16 +371,16 @@ def mainLoop():
         time.sleep(f)
 
 # -----------------------------------------
-def trap_signal(sig, heap):
+def trap_signal(sig, _):
     """ trap all signals for stop """
 
-    print sig, heap
+    # print sig, heap
 
     global bRunning
     global bConnected
 
     logging.info("exit signal received {}, wait for next step".format(sig))
-    traceback.print_stack(heap)
+    # traceback.print_stack(heap)
 
     bRunning = False
     bConnected = False
@@ -390,9 +390,6 @@ def trap_signal(sig, heap):
 def action(a):
     global bRunning
     global bConnected
-    # global probeProcess
-    # global aModules
-    # global srv
 
     if a['name'] == "restart":
         _args = a['args']

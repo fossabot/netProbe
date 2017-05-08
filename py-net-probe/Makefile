@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-04-30 18:21:05 alex>
+# Time-stamp: <2017-05-08 11:03:25 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -42,7 +42,7 @@ lint: clean
 	@pylint --rcfile=~/.pylint main.py probe*.py $(dirs:%=%/*.py)
 
 flakes: clean
-	@pyflakes *py $(dirs:%=%/*.py)
+	@pyflakes *.py $(dirs:%=%/*.py)
 
 cc: clean
 	@echo complexity
@@ -84,11 +84,21 @@ coverage-probes: all-probes
 	@cp .coverage .coverage-probes
 	coverage report -m
 
-all-probes: probe-ntp probe-smb probe-icmp probe-traceroute
+all-probes: probe-ntp probe-smb probe-icmp probe-traceroute probe-http probe-https
 
 probe-ntp: clean
 	@echo "**** NTP"
 	@cat tests/ntp-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-ntp.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+
+probe-http: clean
+	@echo "**** HTTP"
+	@cat tests/http-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-http.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+
+probe-https: clean
+	@echo "**** HTTPS"
+	@cat tests/https-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-http.py
 	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
 
 probe-smb: clean

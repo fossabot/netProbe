@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 17:53:20 alex>
+# Time-stamp: <2017-05-08 11:06:00 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -122,9 +122,9 @@ class probe_ntp(probemain):
         r = re.search('^offset (.*), delay (.*), error', o, re.MULTILINE)
         if r is None:
             logging.info("ntp error, offset not found in ntpdc -c sysinfo")
-            return
-        result["ntp-offset"] = float(r.group(1).strip())*1000
-        result["ntp-delay"] = float(r.group(2).strip())*1000
+        else:
+            result["ntp-offset"] = float(r.group(1).strip())*1000
+            result["ntp-delay"] = float(r.group(2).strip())*1000
 
         logging.info("ntp result : {}".format(result))
         self.pushResult(result)

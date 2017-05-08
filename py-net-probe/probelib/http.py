@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 17:31:21 alex>
+# Time-stamp: <2017-05-08 10:59:41 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -76,7 +76,7 @@ class probe_http(probemain):
             "http-url" : sURL
         }
 
-        sError = "ok"
+        sError = "no-error"
         sReturnCode = "error"
         
         fNow = time.time()
