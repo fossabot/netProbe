@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 16:53:49 alex>
+# Time-stamp: <2017-04-30 18:34:47 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -192,7 +192,7 @@ class sched(object):
                 bExec = False
                 schedData = nextJob['schedule']
 
-                (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
+                (tm_year, tm_mon, tm_day, _, _, _, tm_wday, tm_yday, tm_isdst) = time.localtime()
 
                 for schedEntry in schedData:
                     if not schedEntry.__contains__('type'):

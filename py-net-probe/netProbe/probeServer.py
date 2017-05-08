@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 17:06:01 alex>
+# Time-stamp: <2017-04-30 18:32:29 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -64,9 +64,6 @@ class probeServer(object):
         adapter = requests.adapters.HTTPAdapter(pool_connections=2,
                                                 pool_maxsize=4)
         self.session.mount('http', adapter)
-
-        """ else:
-            self.session = requests"""
 
     # -----------------------------------------------------------------
     def findServer(self, serverName=None):

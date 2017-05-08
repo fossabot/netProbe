@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 17:30:38 alex>
+# Time-stamp: <2017-04-30 18:32:56 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -126,35 +126,9 @@ class probe_traceroute(probemain):
         s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
 
         seq_id = int(self._setValueFromConfig(_config, 'sequence', default=3, _min=1, _max=10))
-
-        """
-        seq_id = 3
-        if _config.__contains__('sequence'):
-            seq_id = int(_config['sequence'])
-        """
-
         sleep_delay = float(self._setValueFromConfig(_config, 'sleep', default=0.25, _min=0.1, _max=10))
-        """
-        sleep_delay = 0.25
-        if _config.__contains__('sleep'):
-            sleep_delay = int(_config['sleep'])
-        """
-
         timeout = float(self._setValueFromConfig(_config, 'timeout', default=3, _min=0.1, _max=10))
-        """"
-        timeout = 3
-        if _config.__contains__('timeout'):
-            timeout = float(_config['timeout'])
-        """
-
         iRange = int(self._setValueFromConfig(_config, 'range', default=30, _min=1, _max=30))
-        """
-        iRange = 30
-        if _config.__contains__('range'):
-            iRange = int(_config['range'])
-            iRange = max(1,iRange)
-            iRange = min(30,iRange)
-        """
 
         res_timeout = [0]*(iRange-1)
         res_ok = [0]*(iRange-1)

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 17:05:16 alex>
+# Time-stamp: <2017-05-01 16:37:35 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  client module for the probe system
 """
 
-__version__ = "1.8.0"
-__date__ = "29/04/17-17:11:11"
+__version__ = "1.8.1"
+__date__ = "08/05/17-10:35:48"
 __author__ = "Alex Chauvin"
 
 import time
@@ -302,8 +302,6 @@ def getConfig():
             if re.match("arm", _s) is None:
                 if not bOnPI:
                     logging.info(" avoid on non ARM platform")
-                else:
-                    logging.info(" can do it on docker")
                 bOnARM = False
             else:
                 bOnARM = True

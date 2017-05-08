@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 14:08:11 alex>
+# Time-stamp: <2017-04-30 18:32:01 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -210,7 +210,8 @@ class config(object):
             self.config_cache = int(confGlobal['config_cache'])
 
     # ----------------------------------------------------------
-    def addOutputer_Debug(self, conf):
+    @classmethod
+    def addOutputer_Debug(cls, conf):
         """add debug default outputer from the configuration
 
         """
@@ -218,7 +219,8 @@ class config(object):
             outputer.append(output.debug())
 
     # ----------------------------------------------------------
-    def addOutputer_Ukn(self, conf):
+    @classmethod
+    def addOutputer_Ukn(cls, conf):
         """check if the outputer is known
 
         """
@@ -231,7 +233,8 @@ class config(object):
             assert False, "bad output name"
 
     # ----------------------------------------------------------
-    def addOutputer_Elastic(self, conf):
+    @classmethod
+    def addOutputer_Elastic(cls, conf):
         """add elastic search outputer if present in the configuration
 
         """
@@ -245,7 +248,8 @@ class config(object):
             assert False, "missing parameters for elastic output"
 
     # ----------------------------------------------------------
-    def addOutputer_Logstash(self, conf):
+    @classmethod
+    def addOutputer_Logstash(cls, conf):
         """add logstash outputer if present in the configuration
 
         """
