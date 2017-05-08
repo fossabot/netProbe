@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-03-15 14:20:20 alex>
+# Time-stamp: <2017-05-08 11:03:25 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -19,17 +19,36 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-all:
+dirs = netProbe sched hostId database probelib config
+PYTHON = python
+
+all: clean
+	@echo make cc
 	@echo make flakes
 	@echo make lint
 	@echo make clean
 	@echo make test
+	@echo make deb
+	@echo make coverage-all
+	@echo make  coverage-probes
+	@echo make  coverage
+	@echo make all-probes
+	@echo make  probe-ntp
+	@echo make  probe-smb
+	@echo make  probe-icmp
+	@echo make  probe-traceroute
 
 lint: clean
-	@pylint --rcfile=~/.pylint main.py probe*.py netProbe sched hostId database probelib config
+	@pylint --rcfile=~/.pylint main.py probe*.py $(dirs:%=%/*.py)
 
 flakes: clean
-	@pyflakes *py */*py
+	@pyflakes *.py $(dirs:%=%/*.py)
+
+cc: clean
+	@echo complexity
+	@radon cc $(dirs) *py -a -nc
+	@echo maintenability
+	@radon mi $(dirs) *py -nb
 
 deb: clean version
 	@echo make deb package for PI
@@ -39,9 +58,9 @@ deb: clean version
 	fpm -s dir -t deb -n "netprobe" -a noarch --description "netProbe Pi client" -v `cat ../VERSION` --before-install deb/pre.sh --after-install deb/post.sh -C deb --deb-no-default-config-files --license GPL-3.0 --maintainer "ach@meta-x.org" --url "https://github.com/achauvinhameau/netProbe" --vendor none home
 
 clean:
-	@rm -f *pyc netProbe/*pyc sched/*pyc hostId/*pyc database/*pyc tests/*pyc
-	@rm -f probelib/*pyc config/*pyc
-	@rm -f *~ netProbe/*~ sched/*~ hostId/*~ database/*~ tests/*~ probelib/*~ config/*~ deb/*~
+	@rm -f $(dirs:%=%/*pyc)
+	@rm -f $(dirs:%=%/*~)
+	@rm -f tests/*pyc tests/*~
 	@rm -f docker/scratch/*~
 	@rm -f docker/*~
 	@rm -rf deb/home
@@ -49,11 +68,56 @@ clean:
 test: clean
 	@nosetests tests
 
+coverage-all: coverage-probes coverage
+	@coverage combine .coverage-main .coverage-probes
+	@coverage report -m
+
 coverage: clean
-	PI_TEST_NO_OUTPUT=1 coverage run ./tests/test_all.py
+	@PI_TEST_NO_OUTPUT=1 coverage run ./tests/test_all.py
+	@cp .coverage .coverage-main
+	@coverage report -m
+
+coverage-probes: PYTHON=PI_TEST_NO_OUTPUT=1 coverage run
+coverage-probes: all-probes
+	@sudo chown $(shell whoami) .coverage-*
+	@coverage combine .coverage-*
+	@cp .coverage .coverage-probes
 	coverage report -m
+
+all-probes: probe-ntp probe-smb probe-icmp probe-traceroute probe-http probe-https
+
+probe-ntp: clean
+	@echo "**** NTP"
+	@cat tests/ntp-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-ntp.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+
+probe-http: clean
+	@echo "**** HTTP"
+	@cat tests/http-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-http.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+
+probe-https: clean
+	@echo "**** HTTPS"
+	@cat tests/https-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-http.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+
+probe-smb: clean
+	@echo "**** SMB"
+	@cat tests/smb-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-smb.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+
+probe-icmp: clean
+	@echo "**** ICMP"
+	@cat tests/icmp-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-icmp.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+
+probe-traceroute: clean
+	@echo "**** TRACEROUTE"
+	@cat tests/traceroute-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-traceroute.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
 
 version:
 	@awk '/^__version/ { $$0="__version__ = \"'`cat ../VERSION`'\"" }; /^__date__/ { $$0="__date__ = \"'`date +%0d/%0m/%y-%H:%M:%S`'\"" } ; { print }' < main.py > /tmp/main.py
 	@cp /tmp/main.py main.py
 	@rm -f /tmp/main.py
+

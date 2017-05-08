@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-15 14:52:30 alex>
+# Time-stamp: <2017-04-30 18:32:01 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -28,6 +28,7 @@ import json
 import logging
 from output import outputer
 import output
+import time
 
 # import pprint
 
@@ -45,6 +46,8 @@ class config(object):
         self.fileName = "none"
         self.iTemplateJobsId = 1000
         self.fwVersion = {}
+        self.lastLoad = 0
+        self.config_cache = -1
 
         return
 
@@ -68,7 +71,7 @@ class config(object):
         """
 
         if not self.aTemplates.__contains__(tName):
-            logging.warning("add a template non existant {} {}".format(hostData['id'], tName))
+            logging.warning("add a non existant template {} {}".format(hostData['id'], tName))
             return
 
         logging.info("applyTemplateToHost {} {}".format(hostData['probename'], tName))
@@ -76,40 +79,41 @@ class config(object):
         hjs = None
 
         t = self.aTemplates[tName]
-        if t.__contains__('jobs'):
+        if not t.__contains__('jobs'):
+            return
 
-            # already some jobs on the probe ? maybe an update only
-            if hostData.__contains__('probename'):
-                probename = hostData['probename']
+        # already some jobs on the probe ? maybe an update only
+        if hostData.__contains__('probename'):
+            probename = hostData['probename']
 
-                for hkey in self.aHostTable:
-                    h = self.aHostTable[hkey]
-                    
-                    if h.__contains__('probename') and h['probename'] == probename:
-                        if h.__contains__('jobs'):
-                            hjs = h['jobs']
-                            break
+            for hkey in self.aHostTable:
+                h = self.aHostTable[hkey]
+                
+                if h.__contains__('probename') and h['probename'] == probename:
+                    if h.__contains__('jobs'):
+                        hjs = h['jobs']
+                        break
 
-            for j in t['jobs']:
-                newJob = j.copy()
-                newJob['id'] = 0
+        for j in t['jobs']:
+            newJob = j.copy()
+            newJob['id'] = 0
 
-                if hjs != None:
-                    for hj in hjs:
-                        if hj.__contains__('template'):
-                            if hj['template'] == tName and hj['data'] == newJob['data']:
-                                newJob['id'] = hj['id']
+            if hjs != None:
+                for hj in hjs:
+                    if hj.__contains__('template'):
+                        if hj['template'] == tName and hj['data'] == newJob['data']:
+                            newJob['id'] = hj['id']
 
-                if newJob['id'] == 0:
-                    newJob['id'] = self.iTemplateJobsId
-                    self.iTemplateJobsId += 1
+            if newJob['id'] == 0:
+                newJob['id'] = self.iTemplateJobsId
+                self.iTemplateJobsId += 1
 
-                newJob['template'] = tName
+            newJob['template'] = tName
 
-                if hostData.__contains__('jobs'):
-                    hostData['jobs'].append(newJob)
-                else:
-                    hostData['jobs'] = [ newJob ]
+            if hostData.__contains__('jobs'):
+                hostData['jobs'].append(newJob)
+            else:
+                hostData['jobs'] = [ newJob ]
 
     # ----------------------------------------------------------
     def addHost(self, hostData):
@@ -182,10 +186,15 @@ class config(object):
         self.aTemplates[sName] = {"jobs" : jobs}
 
     # ----------------------------------------------------------
-    def readGlobal(self, conf):
+    def confReadGlobal(self, conf):
         """handle the global part of the configuration file
 
         """
+
+        if not conf.__contains__('global'):
+            logging.info("no global section in the configuartion file")
+            return
+
         confGlobal = conf['global']
         if confGlobal.__contains__('firmware'):
             confFW = confGlobal['firmware']
@@ -197,6 +206,84 @@ class config(object):
                 logging.error("configuration firmware does not contains 'current'")
                 self.fwVersion['current'] = 'unknown'
 
+        if confGlobal.__contains__('config_cache'):
+            self.config_cache = int(confGlobal['config_cache'])
+
+    # ----------------------------------------------------------
+    @classmethod
+    def addOutputer_Debug(cls, conf):
+        """add debug default outputer from the configuration
+
+        """
+        if conf['engine'] == "debug":
+            outputer.append(output.debug())
+
+    # ----------------------------------------------------------
+    @classmethod
+    def addOutputer_Ukn(cls, conf):
+        """check if the outputer is known
+
+        """
+
+        # create a fake object for checking method name
+        o = output.output()
+
+        if not o.checkMethodName(conf['engine']):
+            logging.error("unknown output method name '{}', possible values are : {}".format(conf['engine'], ", ".join(o.getMethodName())))
+            assert False, "bad output name"
+
+    # ----------------------------------------------------------
+    @classmethod
+    def addOutputer_Elastic(cls, conf):
+        """add elastic search outputer if present in the configuration
+
+        """
+        if conf['engine'] != "elastic":
+            return
+
+        if conf.__contains__('parameters'):
+            outputer.append(output.elastic(conf['parameters'][0]))
+        else:
+            logging.error("elastic output without parameters, exiting")
+            assert False, "missing parameters for elastic output"
+
+    # ----------------------------------------------------------
+    @classmethod
+    def addOutputer_Logstash(cls, conf):
+        """add logstash outputer if present in the configuration
+
+        """
+        if conf['engine'] != "logstash":
+            return
+
+        if conf.__contains__('parameters'):
+            outputer.append(output.logstash(conf['parameters'][0]))
+        else:
+            logging.error("logstash output without parameters, exiting")
+            assert False, "missing parameters for logstash output"
+
+    # ----------------------------------------------------------
+    def confAddTemplates(self, conf):
+        """ add templates from conf
+
+        """
+        if conf.__contains__('template'):
+            for t in conf['template']:
+                self.addTemplate(t)
+
+    # ----------------------------------------------------------
+    def confAddProbes(self, conf):
+        """ add probes from config
+
+        """
+
+        if not conf.__contains__('probe'):
+            logging.error("cannot find probe configuration, exiting")
+            assert False, "no probe config"
+
+        for p in conf['probe']:
+            self.addHost(p)
+
     # ----------------------------------------------------------
     def loadFile(self, sFile):
         """load host file and update configuraion
@@ -204,6 +291,10 @@ class config(object):
         """
 
         logging.info("load config file {}".format(sFile))
+
+        if self.lastLoad > 0 and time.time() - self.lastLoad < self.config_cache:
+            logging.debug("cache too young ({:.0f}<{}), abort".format(time.time() - self.lastLoad, self.config_cache))
+            return
 
         try:
             f = file(sFile, 'r')
@@ -220,57 +311,23 @@ class config(object):
         except Exception as ex:
             assert False, "configuration file load exception : {}".format(", ".join(ex.args))
 
-        # global
-        if conf.__contains__('global'):
-            self.readGlobal(conf)
+        self.lastLoad = time.time()
 
-        # template
-        if conf.__contains__('template'):
-            for t in conf['template']:
-                self.addTemplate(t)
-
-        # group
-
-        # probes
-        if not conf.__contains__('probe'):
-            logging.error("cannot find probe configuration, exiting")
-            assert False, "no probe config"
-
-        for p in conf['probe']:
-            self.addHost(p)
+        self.confReadGlobal(conf)
+        self.confAddTemplates(conf)
+        self.confAddProbes(conf)
 
         # clean outputer array before inserting new configuration
         while (len(outputer) > 0):
             outputer.pop()
 
-        # create a fake object for checking method name
-        o = output.output()
-
         if conf.__contains__('output'):
             for outputConf in conf['output']:
                 if outputConf['active'] == "True":
-
-                    if not o.checkMethodName(outputConf['engine']):
-                        logging.error("unknown output method name '{}', possible values are : {}".format(outputConf['engine'], ", ".join(o.getMethodName())))
-                        assert False, "bad output name"
-                    else:
-                        if outputConf['engine'] == "debug":
-                            outputer.append(output.debug())
-
-                        if outputConf['engine'] == "elastic":
-                            if outputConf.__contains__('parameters'):
-                                outputer.append(output.elastic(outputConf['parameters'][0]))
-                            else:
-                                logging.error("elastic output without parameters, exiting")
-                                assert False, "missing parameters for elastic output"
-
-                        if outputConf['engine'] == "logstash":
-                            if outputConf.__contains__('parameters'):
-                                outputer.append(output.logstash(outputConf['parameters'][0]))
-                            else:
-                                logging.error("logstash output without parameters, exiting")
-                                assert False, "missing parameters for logstash output"
-
+                    self.addOutputer_Debug(outputConf)
+                    self.addOutputer_Elastic(outputConf)
+                    self.addOutputer_Logstash(outputConf)
+                    self.addOutputer_Ukn(outputConf)
         else:
             outputer.append(output.debug())
 

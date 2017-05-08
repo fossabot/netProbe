@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 11:16:02 alex>
+# Time-stamp: <2017-04-30 16:53:29 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -25,10 +25,10 @@
  probe database for configuration and data
 """
 
-import redis
 import logging
 import time
 import json
+import redis
 
 # import pprint
 
@@ -54,7 +54,7 @@ class dbRedis(object):
         """
 
         while True:
-            if host == None:
+            if host is None:
                 host = "localhost"
                 self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2)
             else:
@@ -77,7 +77,8 @@ class dbRedis(object):
         self.backOff = 1
 
     def checkDB(self):
-        if self.db == None:
+        """check if db is set"""
+        if self.db is None:
             raise Exception("redis not started")
 
     def cleanJob(self, jobName):

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:08:16 alex>
+# Time-stamp: <2017-04-30 16:01:01 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -33,8 +33,8 @@ True
 'fe90::a00:...'
 """
 
-import netifaces
 import re
+import netifaces
 
 class ipConf(object):
     """class to gather and store ip configuration of host"""

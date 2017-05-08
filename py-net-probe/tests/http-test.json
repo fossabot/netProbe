@@ -1,0 +1,13 @@
+[
+    { "id" : 1,
+      "job" : "http",
+      "active" : "True",
+      "freq" : 30,
+      "version" : 1,
+      "data" : {
+	  "url" : "http://www.bikeo.fr",
+	  "timeout" : 1.5,
+	  "content" : "bikeo"
+      }
+    }
+]

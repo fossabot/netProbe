@@ -1,6 +1,6 @@
 # Docker file for testing the probe
 #
-# Time-stamp: <2017-04-18 21:47:36 alex>
+# Time-stamp: <2017-05-01 16:36:17 alex>
 #
 # docker build -t netprobe .
 # docker run -d netprobe
@@ -25,34 +25,44 @@
 
 FROM debian:jessie
 
-MAINTAINER Alex
-
-RUN apt-get -y upgrade
-RUN apt-get -y update
-RUN apt-get -y install apt-utils dialog apt-transport-https
-
-RUN apt-get -y install gcc vim python-pip python-dev
-
-RUN apt-get -y install git
-RUN pip install --upgrade pip
-
-# RUN pip install requests
-RUN pip install netifaces
-RUN pip install redis
-RUN pip install psutil
-RUN pip install pycrypto
-
-RUN apt-get -y install iperf3
-
-RUN mkdir -p /home/pi/py-net-probe
+LABEL description "python image near the PI infrastructure with raspbian"
+LABEL maintainer "ach@meta-x.org"
+LABEL version "1.8"
 
 COPY start.sh /
-RUN chmod +x /start.sh
+
+RUN set -ex \
+    && apt-get -y upgrade \
+    && apt-get -y update \
+    && apt-get -y install apt-utils dialog apt-transport-https \
+    \
+    && apt-get -y install gcc vim python-pip python-dev \
+    && apt-get -y install ntp \
+    \
+    && apt-get -y install git \
+    && pip install --upgrade pip \
+    \
+    && pip install netifaces \
+    && pip install redis \
+    && pip install psutil \
+    && pip install pycrypto \
+    \
+    && apt-get -y install iperf3 \
+    \
+    && mkdir -p /home/pi/py-net-probe \
+    \
+    && git clone https://github.com/CoreSecurity/impacket \
+    && mv /impacket/impacket `python -c "import sys; print sys.path[1]"` \
+    && rm -rf /impacket \
+    \
+    && chmod +x /start.sh \
+    \
+    && apt-get -y remove gcc vim python-pip python-dev git \
+    && rm -rf /usr/lib/gcc
 
 COPY netprobe.deb /
-RUN dpkg -i /netprobe.deb
-
-RUN git clone https://github.com/CoreSecurity/impacket
-RUN mv /impacket/impacket /home/pi/py-net-probe
+RUN set -ex \
+    && dpkg -i /netprobe.deb \
+    && rm -f /netprobe.deb
 
 CMD ["/start.sh"]

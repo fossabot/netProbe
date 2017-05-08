@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-15 15:46:24 alex>
+# Time-stamp: <2017-04-30 18:34:47 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -46,7 +46,7 @@ class sched(object):
 
     # ------------------------------------
     def add(self, name, iFreq, func, args=None, startIn=0):
-        """
+        """add a job by calling the addExtended
         """
         self.addExtended(name, iFreq, None, func, args, startIn)
 
@@ -118,7 +118,7 @@ class sched(object):
 
     # ------------------------------------
     @classmethod
-    def str2atTime(self, s):
+    def str2atTime(cls, s):
         """ convert a time string to a atTime usable in addAt()
         HH:MM in 24h00 format
         """
@@ -127,7 +127,7 @@ class sched(object):
 
         (tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
 
-        r = re.match("(\d\d):(\d\d)", s)
+        r = re.match(r"(\d\d):(\d\d)", s)
         if r != None:
             hour = int(r.group(1))
             minute = int(r.group(2))
@@ -192,9 +192,7 @@ class sched(object):
                 bExec = False
                 schedData = nextJob['schedule']
 
-                (tm_year, tm_mon, tm_day,
-                 tm_hour, tm_min, tm_sec,
-                 tm_wday, tm_yday, tm_isdst) = time.localtime()
+                (tm_year, tm_mon, tm_day, _, _, _, tm_wday, tm_yday, tm_isdst) = time.localtime()
 
                 for schedEntry in schedData:
                     if not schedEntry.__contains__('type'):
@@ -205,8 +203,8 @@ class sched(object):
                         timeEnable = 0
                         timeDisable = 0
 
-                        r = re.match("(\d\d):(\d\d):(\d\d)", schedEntry['enable'])
-                        if r == None:
+                        r = re.match(r"(\d\d):(\d\d):(\d\d)", schedEntry['enable'])
+                        if r is None:
                             logging.error("schedule enable format error, should be HH:MM:SS and is {}".format(schedEntry['enable']))
                         else:
                             h = int(r.group(1))
@@ -219,8 +217,8 @@ class sched(object):
 
                             # print(time.strftime("%d/%m/%Y %H:%M:%S", time.localtime(timeEnable)))
 
-                        r = re.match("(\d\d):(\d\d):(\d\d)", schedEntry['disable'])
-                        if r == None:
+                        r = re.match(r"(\d\d):(\d\d):(\d\d)", schedEntry['disable'])
+                        if r is None:
                             logging.error("schedule disable format error, should be HH:MM:SS and is {}".format(schedEntry['enable']))
                         else:
                             h = int(r.group(1))
@@ -263,7 +261,7 @@ class sched(object):
                 nextJob = self.aSchedJobs.pop()
                 nextJob['nextExec'] += nextJob['freq']
 
-                if nextJob['args'] == None:
+                if nextJob['args'] is None:
                     nextJob['func']()
                 else:
                     nextJob['func'](nextJob['args'])

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-29 15:45:45 alex>
+# Time-stamp: <2017-04-30 17:19:14 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -33,43 +33,38 @@ import os
 class elastic(output):
     """ class to handle elastic output """
 
+    # -----------------------------------------
+    @classmethod
+    def _setValueFromConfig(cls, _config, field, default=0, _min=-1000, _max=1000):
+        if _config.__contains__(field):
+            r = _config[field]
+            r = max(_min,r)
+            r = min(_max,r)
+            return r
+
+        return default
+
     # ----------------------------------------------------------
     def __init__(self, conf):
         """constructor"""
 
         output.__init__(self, "elastic")
 
-        if not conf.__contains__('server'):
-            assert False, "elastic configuration missing server"
-
-        if conf.__contains__('index'):
-            sConfIndex = conf['index']
-        else:
-            sConfIndex = "pyprobe"
-
-        if conf.__contains__('shard'):
-            iConfShard = int(conf['shard'])
-            if iConfShard < 1:
-                iConfShard = 1
-            if iConfShard > 12:
-                iConfShard = 12
-        else:
-            iConfShard = 3
-
-        if conf.__contains__('replica'):
-            iConfReplica = int(conf['replica'])
-            if iConfReplica < 0:
-                iConfReplica = 0
-            if iConfReplica > 3:
-                iConfReplica = 3
-        else:
-            iConfReplica = 1
-
-        self.es_server = conf['server']
-
         if (os.environ.__contains__("PI_TEST_NO_OUTPUT")):
             logging.info("no elastic connect, test only")
             return
+
+        sConfIndex = "pyprobe"
+
+        if not conf.__contains__('server'):
+            assert False, "elastic configuration missing server"
+        self.es_server = conf['server']
+
+        if conf.__contains__('index'):
+            sConfIndex = conf['index']
+
+        iConfShard = int(self._setValueFromConfig(conf, 'shard', default=3, _min=1, _max=12))
+        iConfReplica = int(self._setValueFromConfig(conf, 'replica', default=1, _min=0, _max=5))
 
         try:
             self.es = Elasticsearch(host=self.es_server)

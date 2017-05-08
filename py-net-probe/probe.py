@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 15:03:22 alex>
+# Time-stamp: <2017-04-30 16:00:25 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -62,7 +62,7 @@ def restartProbe(jobName, probeProcess):
 
     # starts the probe process
     p = subprocess.Popen(["/usr/bin/python", "probe-{}.py".format(jobName)])
-    if p == None:
+    if p is None:
         logging.error("need to handle subprocess failure")
 
     probeProcess[jobName] = {"handler" : p,
@@ -115,7 +115,7 @@ def checkProbes(probeProcess):
     """
 
     for k in probeProcess.keys():
-        if checkProbe(k, probeProcess) == False:
+        if checkProbe(k, probeProcess) is False:
             restartProbe(k, probeProcess)
 
 # -----------------------------------------
@@ -127,7 +127,7 @@ def statsProbes(a):
     (probeProcess, stats) = a
 
     for k in probeProcess.keys():
-        if checkProbe(k, probeProcess) == True:
+        if checkProbe(k, probeProcess) is True:
             statsProbe(k, probeProcess, stats)
 
 # -----------------------------------------
@@ -147,7 +147,7 @@ def statsProbe(jobName, probeProcess, stats):
 
         a = p.io_counters()
         stats.setVar("stats-{}-{}".format(jobName, "io_read_count"), a[0])
-        stats.setVar("stats-{}-{}".format(jobName, "io_write_count"),a[1])
+        stats.setVar("stats-{}-{}".format(jobName, "io_write_count"), a[1])
         stats.setVar("stats-{}-{}".format(jobName, "io_read_bytes"), a[2])
         stats.setVar("stats-{}-{}".format(jobName, "io_write_bytes"), a[3])
 

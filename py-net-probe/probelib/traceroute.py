@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-17 14:13:11 alex>
+# Time-stamp: <2017-04-30 18:32:56 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -52,7 +52,7 @@ class probe_traceroute(probemain):
 
     # -----------------------------------------
     @classmethod
-    def f_testv4(self, data):
+    def f_testv4(cls, data):
         """testing method for insertion in the job list, check if ip version 4
 
         """
@@ -66,6 +66,17 @@ class probe_traceroute(probemain):
         jobs = super(probe_traceroute, self).getConfig(name, f, self.f_testv4)
         for j in jobs:
             logging.info("add job to scheduler to target {} every {} sec".format(j['data']['target'], j['freq']))
+
+    # -----------------------------------------
+    @classmethod
+    def _setValueFromConfig(cls, _config, field, default=0, _min=-1000, _max=1000):
+        if _config.__contains__(field):
+            r = _config[field]
+            r = max(_min, r)
+            r = min(_max, r)
+            return r
+        return default
+            
 
     # -----------------------------------------
     def job_traceroute(self, _config):
@@ -92,9 +103,9 @@ class probe_traceroute(probemain):
 
         if _config.__contains__('tos'):
             tos = int(_config['tos'])
-            pkt_ip.set_ip_tos(tos)
             if tos > 0:
                 logging.info("set tos to {}".format(tos))
+                pkt_ip.set_ip_tos(tos)
 
         # Create a new ICMP packet of type ECHO.
         pkt_icmp = ImpactPacket.ICMP()
@@ -114,23 +125,10 @@ class probe_traceroute(probemain):
         s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
         s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
 
-        seq_id = 3
-        if _config.__contains__('sequence'):
-            seq_id = int(_config['sequence'])
-
-        sleep_delay = 0.25
-        if _config.__contains__('sleep'):
-            sleep_delay = int(_config['sleep'])
-
-        timeout = 3
-        if _config.__contains__('timeout'):
-            timeout = float(_config['timeout'])
-
-        iRange = 30
-        if _config.__contains__('range'):
-            iRange = int(_config['range'])
-            iRange = max(1,iRange)
-            iRange = min(30,iRange)
+        seq_id = int(self._setValueFromConfig(_config, 'sequence', default=3, _min=1, _max=10))
+        sleep_delay = float(self._setValueFromConfig(_config, 'sleep', default=0.25, _min=0.1, _max=10))
+        timeout = float(self._setValueFromConfig(_config, 'timeout', default=3, _min=0.1, _max=10))
+        iRange = int(self._setValueFromConfig(_config, 'range', default=30, _min=1, _max=30))
 
         res_timeout = [0]*(iRange-1)
         res_ok = [0]*(iRange-1)
@@ -141,7 +139,7 @@ class probe_traceroute(probemain):
 
         iMaxHop = 0
 
-        for _hop in range(1,iRange):
+        for _hop in range(1, iRange):
             pkt_ip.set_ip_ttl(_hop)
 
             for i in range(seq_id):
@@ -198,7 +196,7 @@ class probe_traceroute(probemain):
                     avg_rtt[_hop-1] += timeout
 
             avg_rtt[_hop-1] = (avg_rtt[_hop-1] / seq_id)
-            if (res_ok[_hop-1] > 0):
+            if res_ok[_hop-1] > 0:
                 break
 
             time.sleep(sleep_delay*2)
@@ -214,7 +212,7 @@ class probe_traceroute(probemain):
             try:
                 hostName = socket.gethostbyaddr(step[_hop])[0]
             except Exception as ex:
-                logging.debug("timeout {}".format(" ".join(ex.args)))
+                logging.debug("timeout {}".format(" ".join(str(ex.args))))
                 hostName = step[_hop]
             result["traceroute-addr-{:02d}".format(_hop+1)] = step[_hop]
             result["traceroute-name-{:02d}".format(_hop+1)] = hostName
@@ -232,3 +230,7 @@ class probe_traceroute(probemain):
 
         logging.info("traceroute results : {}".format(result))
         self.pushResult(result)
+
+        if 'run_once' in _config:
+            logging.info("run only once, exit")
+            exit()

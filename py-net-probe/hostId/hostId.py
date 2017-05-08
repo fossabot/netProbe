@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-03-15 14:31:27 alex>
+# Time-stamp: <2017-04-30 16:28:29 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,12 +24,9 @@
 unique identifier for the probe
 """
 
-__version__ = "1.0"
-__date__ = "08/04/2016"
-__author__ = "Alex Chauvin"
-
 import hashlib
 import re
+import logging
 # import pprint
 
 class hostId(object):
@@ -48,7 +45,7 @@ class hostId(object):
 
         try:
             f = file('/proc/cpuinfo', 'r')
-        except IOError, e:
+        except IOError as e:
             print "ERROR accessing cpuinfo {}".format(e)
             raise Exception('ERROR accessing cpuinfo')
 
@@ -56,24 +53,34 @@ class hostId(object):
 
         aLines = f.readlines()
         f.close()
+        
+        iFound = False
 
         for l in aLines:
-            r = re.match("flags[^:]+: (.*)", l)
-            if r != None:
-                sCPU = sCPU+'@'+r.group(1)
+            if iFound is False:
+                r = re.match("flags[^:]+: (.*)", l)
+                if r != None:
+                    flags = r.group(1).split()
+                    sCPU = sCPU+'@'+"@".join(sorted(flags)[:5])
 
-            r = re.match("cpu MHz[^:]+: (.*)", l)
-            if r != None:
-                sCPU = sCPU+'@'+r.group(1)
+                r = re.match("cpu MHz[^:]+: ([^.]*)", l)
+                if r != None:
+                    sCPU = sCPU+'@'+r.group(1)
 
-            r = re.match("model[^:]+: (.*)", l)
-            if r != None:
-                sCPU = str(sCPU)+'@'+str(r.group(1))
+                r = re.match("model[^:]+: (.*)", l)
+                if r != None:
+                    sCPU = str(sCPU)+'@'+str(r.group(1))
+
+                r = re.match("processor[^:]+: [1-9]", l)
+                if r != None:
+                    iFound = True
+                    
+        logging.debug("id = {}".format(sCPU))
 
         self.id = hashlib.sha256(sCPU).hexdigest()
 
     def get(self):
         """
-        returns the id in an md5 format
+        returns the id
         """
         return self.id

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:21:56 alex>
+# Time-stamp: <2017-04-30 17:01:17 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -51,7 +51,7 @@ class config(object):
             'upgrade': 3600*6
         }
 
-        for k in self.scheduler.keys():
+        for k in self.scheduler:
             try:
                 self.scheduler[k] = self.conf.getint("scheduler", k)
             except Exception as ex:

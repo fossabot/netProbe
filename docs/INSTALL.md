@@ -16,6 +16,7 @@ https://github.com/jordansissel/fpm
 yum install ruby-devel gcc make rpm-build
 gem install fpm
 
+pip install radon (for maintenability and complexity)
 pip install coverage (for test)
 
 on the probe

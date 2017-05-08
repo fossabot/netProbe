@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-29 15:37:09 alex>
+# Time-stamp: <2017-04-29 16:00:52 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -87,7 +87,7 @@ def ws_results():
         d['probename'] = probename
 
         for o in outputer:
-            o.send(d)
             logging.debug("output to {}".format(o))
+            o.send(d)
 
     return make_response(jsonify({"answer" : "OK"}), 200)

@@ -1,7 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 15:49:56 alex>
-#
+# Time-stamp: <2017-04-30 16:55:36 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -26,7 +25,6 @@
 """
 
 import logging
-# import time
 import json
 import sys
 
@@ -37,20 +35,18 @@ class dbTest(object):
     database class for testing only
     """
 
-    def __init__(self, host=None):
+    def __init__(self):
         """
         constructor
         """
         self.db = None
 
-    def connect(self, host=None):
-        """
-        """
-
+    def connect(self):
+        """ simulate the connection to the database """
         self.db = True
 
     @classmethod
-    def cleanJob(self, jobName):
+    def cleanJob(cls, jobName):
         """suppress the list from the database
 
         """
@@ -58,35 +54,30 @@ class dbTest(object):
 
 
     @classmethod
-    def addJob(self, jobName, job):
+    def addJob(cls, jobName, job):
         """add a job in the job list
 
         """
-        logging.info("add job {} {}".format(jobName,json.dumps(job)))
+        logging.info("add job {} {}".format(jobName, json.dumps(job)))
 
     @classmethod
-    def getJobs(self, jobName):
+    def getJobs(cls, jobName):
         """extracts all jobs and return an array
 
         """
         logging.info("getJobs")
 
-        s = sys.stdin.read()
-        a = []
-
-        a=json.loads(s)
-
-        return a
+        return json.loads(sys.stdin.read())
 
     @classmethod
-    def dumpJob(self, jobName):
+    def dumpJob(cls):
         """dump the content of the db for jobname, return a generator
 
         """
         logging.info("dumpJob")
 
     @classmethod
-    def pushResult(self, result):
+    def pushResult(cls, result):
         """add a result in the queue for the main process
         result is a dict
 
@@ -97,14 +88,14 @@ class dbTest(object):
         logging.info("push result {}".format(result))
 
     @classmethod
-    def popResult(self):
+    def popResult(cls):
         """pop a result from the queue
         return None if nothing in the queue
         """
         logging.info("pop result")
 
     @classmethod
-    def lenResultQueue(self):
+    def lenResultQueue(cls):
         """get queue size
         """
         logging.info("lenResultQueue")

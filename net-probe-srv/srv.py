@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:20:50 alex>
+# Time-stamp: <2017-04-29 16:42:46 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  server module for the probe system
 """
 
-__version__ = "1.7.7-fix01"
-__date__ = "29/04/17-15:50:29"
+__version__ = "1.8.1"
+__date__ = "08/05/17-10:47:27"
 
 import logging
 import signal
@@ -40,9 +40,6 @@ LOGGER = logging.getLogger('werkzeug')
 LOGGER.setLevel(logging.ERROR)
 LOGGER = logging.getLogger('urllib3')
 LOGGER.setLevel(logging.ERROR)
-
-#from output import outputer
-#import output
 
 # ----------- parse args
 try:
@@ -66,6 +63,9 @@ except ImportError:
     exit()
 
 # ----- set the log level and format
+LOGGER = logging.getLogger('apscheduler')
+LOGGER.setLevel(logging.ERROR)
+
 _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
 logLevel = logging.ERROR
 
@@ -79,7 +79,7 @@ if args.log[0] == 'INFO':
     logLevel=logging.INFO
 
 logging.basicConfig(format=_logFormat, level=logLevel)
-#logging.basicConfig(level=logLevel)
+# logging.basicConfig(level=logLevel)
 
 if not isinstance(args.debug, bool):
     logging.error('debug arg is not taking argument')
@@ -126,8 +126,6 @@ from netProbeSrv import upgrade
 # -----------------------------------------
 def trap_HUP_signal(sig, heap):
     """ trap signal for config reload """
-
-    # global conf
 
     conf.reload()
 

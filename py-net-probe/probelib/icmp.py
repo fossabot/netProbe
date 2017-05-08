@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-15 15:02:21 alex>
+# Time-stamp: <2017-04-30 17:33:37 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -50,7 +50,7 @@ class probe_icmp(probemain):
 
     # -----------------------------------------
     @classmethod
-    def f_testv4(self, data):
+    def f_testv4(cls, data):
         """testing method for insertion in the job list, check if ip version 4
 
         """
@@ -191,3 +191,7 @@ class probe_icmp(probemain):
 
         logging.info("icmp results : {}".format(result))
         self.pushResult(result)
+
+        if 'run_once' in _config:
+            logging.info("run only once, exit")
+            exit()

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 15:32:29 alex>
+# Time-stamp: <2017-04-29 16:55:10 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -184,6 +184,7 @@ class liveDB(object):
         """ remove unseen probe for long time
             started by cron
         """
+
         for hkey in self.aProbeTable:
             h = self.aProbeTable[hkey]
 
