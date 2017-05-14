@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-05-08 11:03:25 alex>
+# Time-stamp: <2017-05-08 18:16:02 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -37,6 +37,8 @@ all: clean
 	@echo make  probe-smb
 	@echo make  probe-icmp
 	@echo make  probe-traceroute
+	@echo make  probe-http
+	@echo make  probe-https
 
 lint: clean
 	@pylint --rcfile=~/.pylint main.py probe*.py $(dirs:%=%/*.py)
@@ -99,6 +101,11 @@ probe-http: clean
 probe-https: clean
 	@echo "**** HTTPS"
 	@cat tests/https-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-http.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+
+probe-dns: clean
+	@echo "**** DNS"
+	@cat tests/dns-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-dns.py
 	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
 
 probe-smb: clean

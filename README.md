@@ -1,5 +1,4 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/783f58bd103940a399331ca5711af28f)](https://www.codacy.com/app/achauvinhameau/netProbe?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=achauvinhameau/netProbe&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/783f58bd103940a399331ca5711af28f)](https://www.codacy.com/app/achauvinhameau/netProbe?utm_source=github.com&utm_medium=referral&utm_content=achauvinhameau/netProbe&utm_campaign=Badge_Coverage)
-
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/783f58bd103940a399331ca5711af28f)](https://www.codacy.com/app/achauvinhameau/netProbe?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=achauvinhameau/netProbe&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/783f58bd103940a399331ca5711af28f)](https://www.codacy.com/app/achauvinhameau/netProbe?utm_source=github.com&utm_medium=referral&utm_content=achauvinhameau/netProbe&utm_campaign=Badge_Coverage) [![Code Climate](https://codeclimate.com/github/achauvinhameau/netProbe/badges/gpa.svg)](https://codeclimate.com/github/achauvinhameau/netProbe)
 Purpose
 =======
 
@@ -27,3 +26,14 @@ The server part is only composed of web service engine running on
 flask and provides simple features like registration of the probe, job
 configuration, result gathering and push to a backend like
 elasticsearch.
+
+Current probes
+==============
+* health : gather the status of the Raspberry
+* http : get URL content, page status, load delay, check content keyword
+* icmp : send ping to target and report delay and loss
+* iperf : check bandwidth
+* ntp : report status of local ntp synch of the probe
+* smb : some checks on CIFS server (mount, get file)
+* temperature : gather raspberry processor temperature
+* traceroute : report path to target and delay at each step

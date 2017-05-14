@@ -27,6 +27,7 @@ pip install netifaces
 pip install redis
 pip install psutil
 pip install pycrypto
+pip install dnspython
 ```
 
 

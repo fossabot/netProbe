@@ -16,3 +16,4 @@ exclude_paths:
   - "docs/"
   - "net-probe-srv/tests/"
   - "py-net-probe/tests/"
+  - "ansible/"

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 17:31:00 alex>
+# Time-stamp: <2017-05-08 18:21:48 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -82,14 +82,6 @@ class probe_smb(probemain):
         self.tid = None
         self.pwd = '\\'
         self.share = ''
-
-    # -----------------------------------------
-    @classmethod
-    def f_testv4(cls, data):
-        """testing method for insertion in the job list, check if ip version 4
-
-        """
-        return data.__contains__('server')
 
     # -----------------------------------------
     def getConfig(self, name, f, testf=None):
