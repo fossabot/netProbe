@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 15:34:23 alex>
+# Time-stamp: <2017-05-14 18:08:18 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -58,7 +58,7 @@ class probe_temp(probemain):
             logging.info("add temperature job to scheduler")
 
     # -----------------------------------------
-    def job_temp(self, _config=None):
+    def job_temp(self, _):
         """temperature job
 
         """

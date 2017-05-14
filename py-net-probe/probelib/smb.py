@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-08 18:21:48 alex>
+# Time-stamp: <2017-05-14 18:16:41 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -85,10 +85,10 @@ class probe_smb(probemain):
 
     # -----------------------------------------
     def getConfig(self, name, f, testf=None):
-        """get the configuration from the database if f_testv4 passed
+        """get the configuration from the database
 
         """
-        jobs = super(probe_smb, self).getConfig(name, f, self.f_testv4)
+        jobs = super(probe_smb, self).getConfig(name, f, self.f_testOK)
         for j in jobs:
             logging.info("add job to scheduler every {} sec".format(j['freq']))
 
