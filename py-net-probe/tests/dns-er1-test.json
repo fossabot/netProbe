@@ -1,0 +1,11 @@
+[
+    { "id" : 1,
+      "job" : "dns",
+      "freq" : 10,
+      "version" : 1,
+      "active": "True",
+      "data" : {
+	  "target": "www.google2.fr"
+      }
+    }
+]

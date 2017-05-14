@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-05-08 18:16:02 alex>
+# Time-stamp: <2017-05-14 17:36:36 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -39,6 +39,7 @@ all: clean
 	@echo make  probe-traceroute
 	@echo make  probe-http
 	@echo make  probe-https
+	@echo make  probe-dns
 
 lint: clean
 	@pylint --rcfile=~/.pylint main.py probe*.py $(dirs:%=%/*.py)
@@ -106,6 +107,12 @@ probe-https: clean
 probe-dns: clean
 	@echo "**** DNS"
 	@cat tests/dns-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-dns.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+	@cat tests/dnsMX-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-dns.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+	@cat tests/dns-er1-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-dns.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+	@cat tests/dns-er2-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-dns.py
 	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
 
 probe-smb: clean

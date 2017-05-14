@@ -1,0 +1,30 @@
+[
+    { "id" : 1,
+      "job" : "dns",
+      "freq" : 10,
+      "version" : 1,
+      "active": "True",
+      "data" : {
+	  "target": "www.google.fr",
+	  "type": "A",
+
+	  "_comment": {
+	      "servers": [
+		  "192.168.16.1",
+		  "192.168.16.135",
+		  "192.168.16.17"
+	      ],
+	      "type": "A",
+	      "proto": "TCP"
+	  }
+      },
+
+      "schedule" : [
+	  {
+	      "type": "inside",
+	      "enable": "00:00:00",
+	      "disable": "23:59:59"
+	  }
+      ]
+    }
+]

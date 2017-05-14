@@ -19,7 +19,6 @@ probe engine
 probe
 =====
 * http probe can use a target IP address different than URL server name
-* DNS probe
 
 raspberry
 =========
@@ -36,3 +35,4 @@ move to changelog once released
 * CIFS probe
 * add IP address in stats frames
 * fix: http response time push as float (not string)
+* DNS probe

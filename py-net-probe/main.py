@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-08 10:51:09 alex>
+# Time-stamp: <2017-05-14 18:05:48 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  client module for the probe system
 """
 
-__version__ = "1.8.1"
-__date__ = "08/05/17-15:41:36"
+__version__ = "1.8.2"
+__date__ = "14/05/17-18:20:29"
 __author__ = "Alex Chauvin"
 
 import time
@@ -33,7 +33,7 @@ import logging
 import os
 # import pprint
 import signal
-import traceback
+# import traceback
 import sched
 import json
 import platform

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-08 18:22:36 alex>
+# Time-stamp: <2017-05-14 18:16:09 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -133,7 +133,7 @@ class probemain(object):
         logging.info("end probe {}".format(self.name))
 
     # -----------------------------------------
-    def trap_signal(self, sig, heap):
+    def trap_signal(self, _, _d):
         """catch the signals to handle the restart of the probe module
 
         """
@@ -186,6 +186,8 @@ class probemain(object):
                         else:
                             self.addJob(int(c['freq']), f, data)
                         yield c
+                    else:
+                        logging.error("condition not present, job will not run")
                 else:
                     logging.error("should not happen, job={}".format(c['job']))
             else:
@@ -193,7 +195,7 @@ class probemain(object):
 
     # -----------------------------------------
     @classmethod
-    def fTestNone(cls, data):
+    def fTestNone(cls, _):
         """ test method by default """
         return True
 
@@ -215,7 +217,7 @@ class probemain(object):
 
     # -----------------------------------------
     @classmethod
-    def f_testOK(cls, data):
+    def f_testOK(cls, _):
         """testing method that is always ok
 
         """
@@ -227,7 +229,7 @@ class probemain(object):
         """testing method for insertion in the job list, check if ip version 4
 
         """
-        return data['version'] == 4
+        return 'version' in data and data['version'] == 4
 
     # -----------------------------------------
     @classmethod

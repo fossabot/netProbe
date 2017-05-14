@@ -1,0 +1,25 @@
+[
+    { "id" : 2,
+      "job" : "dns",
+      "freq" : 10,
+      "version" : 1,
+      "active": "True",
+      "data" : {
+	  "target": "gmail.com",
+	  "type": "MX",
+	  "proto" : "TCP",
+	  "servers": [
+	      "8.8.8.8"
+	  ]
+      },
+
+      "schedule" : [
+	  {
+	      "type": "inside",
+	      "enable": "00:00:00",
+	      "disable": "23:59:59"
+	  }
+      ]
+    }
+
+]

@@ -1,6 +1,7 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:13:33 alex>
+# Time-stamp: <2017-05-08 18:19:00 alex>
+#
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -21,23 +22,10 @@
 # --------------------------------------------------------------------
 
 """
- version WS
+ probe for the icmp protocol
 """
 
-from flask import make_response, jsonify
-from netProbeSrv import app
+# use pdns since dns is a system library
+from probelib.pdns import probe_dns
 
-aVersion = {
-    "answer" : "OK",
-    "version" : "1.8.2",
-    "date" : "14/05/17-18:20:29",
-    "author" : "Alex Chauvin"
-}
-
-@app.route('/version', methods=['GET'])
-def ws_version():
-    """
-    version web service
-    """
-    # global aVersion
-    return make_response(jsonify(aVersion), 200)
+probe_dns()
