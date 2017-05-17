@@ -1,6 +1,7 @@
-#!/bin/sh
+# -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-08 18:06:41 alex>
+# Time-stamp: <2017-05-08 18:19:00 alex>
+#
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -9,7 +10,7 @@
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later 
+# (at your option) any later
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,8 +21,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
-rm -rf /home/pi/py-net-probe/*
+"""
+ probe for the icmp protocol
+"""
 
-# v1.8.1
-# install dnspython
-pip install dnspython
+# use pdns since dns is a system library
+from probelib.pdns import probe_dns
+
+probe_dns()

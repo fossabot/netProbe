@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 18:32:56 alex>
+# Time-stamp: <2017-05-08 18:22:29 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -51,14 +51,6 @@ class probe_traceroute(probemain):
         self.mainLoop()
 
     # -----------------------------------------
-    @classmethod
-    def f_testv4(cls, data):
-        """testing method for insertion in the job list, check if ip version 4
-
-        """
-        return data['version'] == 4
-
-    # -----------------------------------------
     def getConfig(self, name, f, testf=None):
         """get the configuration from the database if f_testv4 passed
 
@@ -67,16 +59,6 @@ class probe_traceroute(probemain):
         for j in jobs:
             logging.info("add job to scheduler to target {} every {} sec".format(j['data']['target'], j['freq']))
 
-    # -----------------------------------------
-    @classmethod
-    def _setValueFromConfig(cls, _config, field, default=0, _min=-1000, _max=1000):
-        if _config.__contains__(field):
-            r = _config[field]
-            r = max(_min, r)
-            r = min(_max, r)
-            return r
-        return default
-            
 
     # -----------------------------------------
     def job_traceroute(self, _config):

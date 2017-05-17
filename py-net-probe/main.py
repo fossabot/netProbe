@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-08 10:51:09 alex>
+# Time-stamp: <2017-05-17 20:44:46 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  client module for the probe system
 """
 
-__version__ = "1.8.1"
-__date__ = "08/05/17-10:47:27"
+__version__ = "1.8.3"
+__date__ = "17/05/17-21:17:30"
 __author__ = "Alex Chauvin"
 
 import time
@@ -33,7 +33,7 @@ import logging
 import os
 # import pprint
 import signal
-import traceback
+# import traceback
 import sched
 import json
 import platform
@@ -48,7 +48,7 @@ from config import conf
 
 from probe import restartProbe, stopAllProbes, checkProbes, statsProbes
 
-aModules = ['icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute', 'smb']
+aModules = ['icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute', 'smb', 'dns']
 
 # ----------- parse args
 try:

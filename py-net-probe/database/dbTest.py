@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 16:55:36 alex>
+# Time-stamp: <2017-05-14 18:06:16 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -61,7 +61,7 @@ class dbTest(object):
         logging.info("add job {} {}".format(jobName, json.dumps(job)))
 
     @classmethod
-    def getJobs(cls, jobName):
+    def getJobs(cls, _):
         """extracts all jobs and return an array
 
         """

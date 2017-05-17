@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-08 10:59:41 alex>
+# Time-stamp: <2017-05-14 13:03:58 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -28,6 +28,7 @@ import logging
 import urllib2
 import time
 import re
+import os
 
 from .probemain import probemain
 
@@ -91,7 +92,8 @@ class probe_http(probemain):
             # check content of the returned page
             if sReContent != "":
                 content = f.read()
-                #print content
+                if os.environ.__contains__("PI_RUN_ONCE"):
+                    print content
                 #print sReContent
                 r = re.search(sReContent, content)
 
@@ -107,7 +109,7 @@ class probe_http(probemain):
 
             i = aInfo.get('Content-Length')
             if i != None:
-                result['http-contentLen'] = i
+                result['http-contentLen'] = int(i)
 
             s = aInfo.get('Server')
             if s != None:
@@ -123,7 +125,7 @@ class probe_http(probemain):
 
         result['http-code'] = sReturnCode
         result['http-error'] = sError
-        result['http-time'] = fTime.__format__('0.4f')
+        result['http-time'] = float(fTime.__format__('0.4f'))
 
         logging.info("http result : {}".format(result))
         self.pushResult(result)

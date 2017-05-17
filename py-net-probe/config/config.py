@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 17:01:17 alex>
+# Time-stamp: <2017-05-14 18:09:06 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -25,7 +25,7 @@
  config class
 """
 
-# import logging
+import logging
 import ConfigParser
 
 # import pprint
@@ -61,7 +61,7 @@ class config(object):
         return
 
     # ----------------------------------------------------------
-    def get(self, section, key):
+    def get(self, _, key):
         """get a key
 
         """

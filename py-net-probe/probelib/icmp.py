@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 17:33:37 alex>
+# Time-stamp: <2017-05-08 18:20:11 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -47,14 +47,6 @@ class probe_icmp(probemain):
         self.checkNet()
         self.getConfig("icmp", self.job_ping)
         self.mainLoop()
-
-    # -----------------------------------------
-    @classmethod
-    def f_testv4(cls, data):
-        """testing method for insertion in the job list, check if ip version 4
-
-        """
-        return data['version'] == 4
 
     # -----------------------------------------
     def getConfig(self, name, f, testf=None):
