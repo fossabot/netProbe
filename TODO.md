@@ -28,11 +28,5 @@ History
 =======
 move to changelog once released
 
-1.8
+1.9
 -----
-* changed hostId calculation, suppress IP => impact on existing installed probes
-* avoid multiple conf read, add timer
-* CIFS probe
-* add IP address in stats frames
-* fix: http response time push as float (not string)
-* DNS probe
