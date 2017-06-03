@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 16:28:29 alex>
+# Time-stamp: <2017-06-03 16:07:33 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -75,9 +75,9 @@ class hostId(object):
                 if r != None:
                     iFound = True
                     
-        logging.debug("id = {}".format(sCPU))
-
         self.id = hashlib.sha256(sCPU).hexdigest()
+
+        logging.info("my id = {}".format(self.id))
 
     def get(self):
         """

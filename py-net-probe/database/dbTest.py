@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-14 18:06:16 alex>
+# Time-stamp: <2017-06-03 16:21:01 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,13 +24,9 @@
  probe database for configuration and data
 """
 
-import logging
-import json
-import sys
+from .db import db
 
-# import pprint
-
-class dbTest(object):
+class dbTest(db):
     """
     database class for testing only
     """
@@ -40,63 +36,3 @@ class dbTest(object):
         constructor
         """
         self.db = None
-
-    def connect(self):
-        """ simulate the connection to the database """
-        self.db = True
-
-    @classmethod
-    def cleanJob(cls, jobName):
-        """suppress the list from the database
-
-        """
-        logging.info("delete {}".format(jobName))
-
-
-    @classmethod
-    def addJob(cls, jobName, job):
-        """add a job in the job list
-
-        """
-        logging.info("add job {} {}".format(jobName, json.dumps(job)))
-
-    @classmethod
-    def getJobs(cls, _):
-        """extracts all jobs and return an array
-
-        """
-        logging.info("getJobs")
-
-        return json.loads(sys.stdin.read())
-
-    @classmethod
-    def dumpJob(cls):
-        """dump the content of the db for jobname, return a generator
-
-        """
-        logging.info("dumpJob")
-
-    @classmethod
-    def pushResult(cls, result):
-        """add a result in the queue for the main process
-        result is a dict
-
-        """
-        if not isinstance(result, dict):
-            raise Exception("pushResult not provided a dict")
-
-        logging.info("push result {}".format(result))
-
-    @classmethod
-    def popResult(cls):
-        """pop a result from the queue
-        return None if nothing in the queue
-        """
-        logging.info("pop result")
-
-    @classmethod
-    def lenResultQueue(cls):
-        """get queue size
-        """
-        logging.info("lenResultQueue")
-        return 0

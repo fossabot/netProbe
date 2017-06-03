@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-17 20:44:46 alex>
+# Time-stamp: <2017-06-03 16:44:23 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  client module for the probe system
 """
 
-__version__ = "1.8.3"
-__date__ = "17/05/17-21:17:30"
+__version__ = "1.9.0"
+__date__ = "03/06/17-16:42:35"
 __author__ = "Alex Chauvin"
 
 import time
@@ -59,7 +59,7 @@ try:
 
     parser.add_argument('--probe', '-p', metavar='probe_loglevel', default='ERROR', type=str, help='log level for probes', nargs=1, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
 
-    parser.add_argument('--redis', '-r', metavar='none', help='redis server', default=None, nargs='?')
+    parser.add_argument('--redis', '-r', metavar='none', help='redis server', default='localhost', nargs='?')
 
     parser.add_argument('--server', '-s', metavar='none', help='PiProbe server', default=None, nargs='?')
 
@@ -123,6 +123,8 @@ if args.redis != None:
     logging.info("set the redis server address to {}".format(os.environ["PI_REDIS_SRV"]))
 
 db = database.dbRedis.dbRedis(args.redis)
+
+db.cleanLock()
 
 # -----------------------------------------
 def serverConnect():
@@ -277,12 +279,12 @@ def getConfig():
         bConnected = False
         return None
 
-    if not config.__contains__('jobs'):
+    if 'jobs' not in config:
         logging.error("can't get my jobs")
         bConnected = False
         return None
 
-    if not config.__contains__('config'):
+    if 'config' not in config:
         logging.error("can't get my config")
         bConnected = False
         return None
@@ -330,7 +332,7 @@ def getConfig():
     # handle jobs
     for c in config['jobs']:
         # update job or create
-        if probeJobs.__contains__(c['id']):
+        if c['id'] in probeJobs:
             a = probeJobs[c['id']]
             if c['version'] > a['version']:
                 a['restart'] = 1
@@ -353,7 +355,7 @@ def getConfig():
         return
 
     for m in aModules:
-        if restart.__contains__(m):
+        if m in restart:
             pushJobsToDB(m)
             restartProbe(m, probeProcess)
 
@@ -388,6 +390,9 @@ def trap_signal(sig, _):
 #
 # -----------------------------------------
 def action(a):
+    """ run an action from the central server
+    """
+
     global bRunning
     global bConnected
 

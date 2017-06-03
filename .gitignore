@@ -20,3 +20,7 @@ net-probe-srv/1.conf
 /py-net-probe/coverage.xml
 /coverage.xml
 /.coverage
+/ansible/playbooks/test.yml
+/net-probe-srv/2.conf
+/py-net-probe/.coverage-main
+/py-net-probe/.coverage-probes

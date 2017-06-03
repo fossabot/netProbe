@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 18:34:47 alex>
+# Time-stamp: <2017-05-21 17:03:27 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -45,13 +45,13 @@ class sched(object):
         self.clean()
 
     # ------------------------------------
-    def add(self, name, iFreq, func, args=None, startIn=0):
+    def add(self, name, iFreq, func, args=None, startIn=0, sLock="none"):
         """add a job by calling the addExtended
         """
-        self.addExtended(name, iFreq, None, func, args, startIn)
+        self.addExtended(name, iFreq, None, func, args, startIn, sLock)
 
     # ------------------------------------
-    def addExtended(self, name, iFreq, schedData, func, args=None, startIn=0):
+    def addExtended(self, name, iFreq, schedData, func, args=None, startIn=0, sLock="none"):
         """
         add a job to the schedule with extended information
         :param name: name of the job, for information
@@ -64,6 +64,7 @@ class sched(object):
            1: now+1
            2: random between 5s and iFreq
            3: now+3
+        :param sLock: is this process exclusive local or global, default not
         """
 
         iNextExec = time.time()
@@ -87,10 +88,15 @@ class sched(object):
 
         logging.info("add job {} : freq = {}, next = {:0.2f}".format(name, iFreq, iNextExec-time.time()))
 
+        # lock ?
+        if sLock not in ["check", "none", "local", "global"]:
+            sLock = "none"
+
         self.aSchedJobs.append({'freq' : iFreq,
                                 'schedule' : schedData,
                                 'func': func,
                                 'args': args,
+                                'lock': str(sLock),
                                 'nextExec' : iNextExec})
 
     # ------------------------------------
@@ -155,7 +161,7 @@ class sched(object):
         return time.mktime((tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst))
 
     # ------------------------------------
-    def step(self):
+    def step(self, objProbe=None):
         """
         run a step and return the delay till next step
         returns the wait time in seconds
@@ -173,9 +179,6 @@ class sched(object):
 
         # pick up the next one (since ordered)
         nextJob = self.aSchedJobs[-1:][0]
-
-        # pprint.pprint(self.aSchedJob)
-        # pprint.pprint(nextJob)
 
         # is the time approaching ?
         fNextSched = nextJob['nextExec'] - time.time()
@@ -254,17 +257,46 @@ class sched(object):
                                 if _nextTime < minNextIter:
                                     minNextIter = _nextTime
 
+            _r = random.SystemRandom()
+
             if bExec:
                 if fNextSched > 0:
                     time.sleep(fNextSched)
-                        
+
+                # lock handling
+                nextJob = self.aSchedJobs[-1]
+                
+                if nextJob['lock'] == "check":
+                    if objProbe.db.checkLock("local"):
+                        logging.debug("locked, will try later")
+                        return _r.random()
+
+                if nextJob['lock'] == "local":
+                    if not objProbe.acquireLocalLock():
+                        return _r.random()
+
                 nextJob = self.aSchedJobs.pop()
+
+                # lock handling
+                #if nextJob['lock'] == "local":
+
                 nextJob['nextExec'] += nextJob['freq']
+
+                # if probe, tell it is running
+                if objProbe != None:
+                    objProbe.db.incrRunningProbe()
 
                 if nextJob['args'] is None:
                     nextJob['func']()
                 else:
                     nextJob['func'](nextJob['args'])
+
+                # if probe, tell it is not running anymore
+                if objProbe != None:
+                    objProbe.db.decrRunningProbe()
+
+                if nextJob['lock'] == "local":
+                    objProbe.releaseLocalLock()
 
                 self.aSchedJobs.append(nextJob)
                 return 0
@@ -272,7 +304,6 @@ class sched(object):
             else:
                 # time is not yet arrived to execute the job
                 nextJob = self.aSchedJobs.pop()
-                _r = random.SystemRandom()
                 nextJob['nextExec'] = minNextIter + int(_r.random() * (nextJob['freq']))
 
                 logging.info("next iter in {:.0f} secs at {}".format(minNextIter-time.time(),

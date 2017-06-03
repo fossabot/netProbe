@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-14 18:16:09 alex>
+# Time-stamp: <2017-06-03 16:23:06 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -87,6 +87,10 @@ class probemain(object):
 
         self.bRunning = True
 
+        self.releaseLocalLock()
+
+        self.pushSimpleLogMsg("INFO", "starting")
+
         signal.signal(signal.SIGTERM, self.trap_signal)
         signal.signal(signal.SIGINT, self.trap_signal)
 
@@ -127,7 +131,7 @@ class probemain(object):
                 logging.info("ppid == 1, zombie, exiting")
                 self.bRunning = False
             else:
-                f = self.scheduler.step()
+                f = self.scheduler.step(self)
                 time.sleep(f)
 
         logging.info("end probe {}".format(self.name))
@@ -138,28 +142,29 @@ class probemain(object):
 
         """
         logging.info("exiting after signal received")
+        self.pushSimpleLogMsg("INFO", "stopping")
 
         self.bRunning = False
 
     # -----------------------------------------
-    def addJob(self, freq, f, data):
+    def addJob(self, freq, f, data, sLock="none"):
         """add a job in the scheduler
 
         """
         if self.bNow is True:
-            self.scheduler.add(self.name, freq, f, data, 1)
+            self.scheduler.add(self.name, freq, f, data, 1, sLock)
         else:
-            self.scheduler.add(self.name, freq, f, data, 2)
+            self.scheduler.add(self.name, freq, f, data, 2, sLock)
 
     # -----------------------------------------
-    def addJobExtended(self, freq, schedData, f, data):
+    def addJobExtended(self, freq, schedData, f, data, sLock="non"):
         """add a job in the scheduler with extended scheduler constraints
 
         """
         if self.bNow is True:
-            self.scheduler.addExtended(self.name, freq, schedData, f, data, 1)
+            self.scheduler.addExtended(self.name, freq, schedData, f, data, 1, sLock)
         else:
-            self.scheduler.addExtended(self.name, freq, schedData, f, data, 2)
+            self.scheduler.addExtended(self.name, freq, schedData, f, data, 2, sLock)
 
     # -----------------------------------------
     def getConfig(self, name, f, testf):
@@ -179,12 +184,17 @@ class probemain(object):
 
                     if os.environ.__contains__("PI_RUN_ONCE"):
                         data['run_once'] = True
+ 
+                    # by default we check the lock before run
+                    sLock = "check"
+                    if "lock" in c:
+                        sLock = c['lock']
 
                     if testf(data):
                         if c.__contains__('schedule'):
-                            self.addJobExtended(int(c['freq']), c['schedule'], f, data)
+                            self.addJobExtended(int(c['freq']), c['schedule'], f, data, sLock)
                         else:
-                            self.addJob(int(c['freq']), f, data)
+                            self.addJob(int(c['freq']), f, data, sLock)
                         yield c
                     else:
                         logging.error("condition not present, job will not run")
@@ -198,22 +208,6 @@ class probemain(object):
     def fTestNone(cls, _):
         """ test method by default """
         return True
-
-    # -----------------------------------------
-    def pushResult(self, result):
-        """push a result back to the database for main process to handle
-
-        """
-        if not isinstance(result, dict):
-            raise Exception("pushResult not provided a dict")
-
-        r = {
-            "data" : result,
-            "name" : self.name,
-            "date" : time.time()
-        }
-
-        self.db.pushResult(r)
 
     # -----------------------------------------
     @classmethod
@@ -240,3 +234,72 @@ class probemain(object):
             r = min(_max, r)
             return r
         return default
+
+    # -----------------------------------------
+    def pushResult(self, result, _type="result"):
+        """push a result back to the database for main process to handle
+
+        """
+        if not isinstance(result, dict):
+            raise Exception("pushResult not provided a dict")
+
+        r = {
+            "data" : result,
+            "name" : str(self.name),
+            "date" : time.time(),
+            "type" : _type
+        }
+
+        self.db.pushResult(r)
+
+    # -----------------------------------------
+    def pushLogMsg(self, msg):
+        """push a structured log message for information purpose
+
+        """
+
+        self.pushResult(msg, "log_msg")
+
+    # -----------------------------------------
+    def pushSimpleLogMsg(self, level, msg):
+        """push a simple log message for information purpose
+
+        """
+
+        m = {
+            "level": str(level).upper(),
+            "message": msg
+        }
+
+        self.pushLogMsg(m)
+
+    # -----------------------------------------
+    def acquireLocalLock(self):
+        """ask for a local lock
+
+        returns True if lock is acquired, False otherwise
+
+        """
+
+        # if a lock is set, block other action
+        if self.db.checkLock("local", str(self.name)):
+            logging.debug("already locked on {}".format(str(self.name)))
+            return False
+
+        # if free, set the lock
+        self.db.setLock(str(self.name), "local")
+
+        if self.db.isProbeRunning():
+            logging.info("lock acquired, but another running")
+            return False
+
+        return True
+
+    # -----------------------------------------
+    def releaseLocalLock(self):
+        """
+
+        """
+
+        self.db.releaseLock("local")
+        return "OK"

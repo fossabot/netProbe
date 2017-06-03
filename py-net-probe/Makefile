@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-05-14 17:36:36 alex>
+# Time-stamp: <2017-06-03 11:19:53 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -102,6 +102,8 @@ probe-http: clean
 probe-https: clean
 	@echo "**** HTTPS"
 	@cat tests/https-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-http.py
+	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
+	@cat tests/https-nossl-test.json | sudo PI_LOG_LEVEL=INFO PI_DB_TEST=1 PI_SCHED_NOW=1 PI_RUN_ONCE=1 $(PYTHON) probe-http.py
 	@if [ -f .coverage ];then mv .coverage .coverage-`date +%s`;fi
 
 probe-dns: clean

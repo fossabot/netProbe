@@ -1,7 +1,6 @@
 server
 ======
 * push regular stats to back office on probe connected or discovered, last hello...
-* schedule on job definition
 * configuration with fields by probe, not only globals
 
 probe engine
@@ -13,8 +12,8 @@ probe engine
 * add jobs restart in updates
 * add next exec in probe stats
 * minimum delay between 2 iteration on modules
-* local lock between modules
 * global lock between probes
+* push messages back to server
 
 probe
 =====
@@ -30,3 +29,5 @@ move to changelog once released
 
 1.9
 -----
+* https add no ssl check
+* local lock between modules

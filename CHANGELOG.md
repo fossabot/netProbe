@@ -9,6 +9,7 @@ Changelog
 * add IP address in stats frames
 * fix: http response time push as float (not string)
 * DNS probe
+* schedule on job definition
 
 1.7 - 23/04/2017
 -----

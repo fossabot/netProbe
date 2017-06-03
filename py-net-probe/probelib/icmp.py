@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-08 18:20:11 alex>
+# Time-stamp: <2017-06-03 16:21:56 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -112,9 +112,9 @@ class probe_icmp(probemain):
         if _config.__contains__('sleep'):
             sleep_delay = int(_config['sleep'])
 
-        timeout = 1
+        fTimeout = 1.0
         if _config.__contains__('timeout'):
-            timeout = float(_config['timeout'])
+            fTimeout = float(_config['timeout'])
 
         res_timeout = 0
         res_ok = 0
@@ -136,7 +136,7 @@ class probe_icmp(probemain):
             s.sendto(pkt_ip.get_packet(), (dst, 0))
 
             # Wait for incoming replies.
-            if s in select.select([s], [], [], timeout)[0]:
+            if s in select.select([s], [], [], fTimeout)[0]:
                 reply = s.recvfrom(2000)[0]
 
                 d = time.time() - now
@@ -166,7 +166,7 @@ class probe_icmp(probemain):
             else:
                 logging.warning("timeout")
                 res_timeout += 1
-                avg_rtt += timeout
+                avg_rtt += fTimeout
 
         avg_rtt = (avg_rtt / seq_id)
 
