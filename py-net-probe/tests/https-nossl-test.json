@@ -1,0 +1,14 @@
+[
+    { "id" : 1,
+      "job" : "http",
+      "active" : "True",
+      "freq" : 30,
+      "version" : 1,
+      "data" : {
+	  "url" : "https://self-signed.badssl.com/",
+	  "timeout" : 1.5,
+	  "content" : "none",
+	  "ssl_check" : "False"
+      }
+    }
+]
