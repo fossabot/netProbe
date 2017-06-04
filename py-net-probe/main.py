@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-03 16:44:23 alex>
+# Time-stamp: <2017-06-04 16:49:46 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  client module for the probe system
 """
 
-__version__ = "1.9.0"
-__date__ = "03/06/17-16:42:35"
+__version__ = "1.9.1"
+__date__ = "04/06/17-15:21:06"
 __author__ = "Alex Chauvin"
 
 import time
@@ -48,7 +48,7 @@ from config import conf
 
 from probe import restartProbe, stopAllProbes, checkProbes, statsProbes
 
-aModules = ['icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute', 'smb', 'dns']
+aModules = ['watchdog', 'icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute', 'smb', 'dns']
 
 # ----------- parse args
 try:
@@ -133,9 +133,7 @@ def serverConnect():
     """
 
     global srv
-    # global stats
     global bConnected
-    # global bRunning
 
     # check IP configuration of probe
     # if no default route !
@@ -206,7 +204,6 @@ def ping():
     called by the scheduler
     """
 
-    # global stats
     global bConnected
 
     if bConnected is False:
@@ -242,9 +239,6 @@ def pushJobsToDB(jobName):
     """ change the job definition for the probe job in the db called only
     if the job config has been updated
     """
-    # global db
-    # global probeJobs
-    # global stats
 
     # suppress the old definition in db
     db.cleanJob(jobName)
@@ -261,9 +255,8 @@ def getConfig():
     """
     get my probe config from the server
     """
-    # global probeJobs
+
     global bConnected
-    # global aModules
 
     if bConnected is False:
         return
@@ -418,7 +411,14 @@ def action(a):
                 return
 
     if a['name'] == "upgrade":
-        srv.upgrade()
+        if srv.upgrade():
+            while popResults(db) > 5:
+                None
+
+            pushStats(srv)
+
+            exit()
+
         return
 
     logging.info("action not handled {}".format(a))
@@ -437,7 +437,7 @@ def popResults(_db):
     a = []
 
     l = _db.lenResultQueue()
-    logging.info("result queue len {}".format(l))
+    logging.info("pop results, queue len {}".format(l))
 
     if l < 5:
         nb = 3
@@ -453,6 +453,8 @@ def popResults(_db):
 
     if len(a) > 0:
         srv.pushResults(a)
+
+    return _db.lenResultQueue()
 
 # -----------------------------------------
 def pushStats(_srv):
@@ -502,7 +504,7 @@ while bRunning:
     scheduler.add("stats push", conf.get("scheduler", "stats_push"), pushStats, srv)
 
     # ask for the upgrade every hour to the server
-    scheduler.add("upgrade", conf.get("scheduler", "upgrade"), srv.upgrade, None)
+    scheduler.add("upgrade", conf.get("scheduler", "upgrade"), srv.upgrade, None, 2)
 
     mainLoop()
 

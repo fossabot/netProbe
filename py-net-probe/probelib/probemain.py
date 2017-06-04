@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-03 16:23:06 alex>
+# Time-stamp: <2017-06-04 16:55:22 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -145,6 +145,8 @@ class probemain(object):
         self.pushSimpleLogMsg("INFO", "stopping")
 
         self.bRunning = False
+
+        self.endJob()
 
     # -----------------------------------------
     def addJob(self, freq, f, data, sLock="none"):
@@ -303,3 +305,8 @@ class probemain(object):
 
         self.db.releaseLock("local")
         return "OK"
+
+    # -----------------------------------------    
+    @classmethod
+    def endJob(cls):
+        return True

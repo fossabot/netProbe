@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 18:32:29 alex>
+# Time-stamp: <2017-06-04 16:50:43 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -264,8 +264,8 @@ class probeServer(object):
             
             if r.status_code == 200:
                 s = json.loads(r.text)
-                if s.__contains__('answer') and s['answer'] != "OK":
-                    if s.__contains__('reason'):
+                if 'answer' in s and s['answer'] != "OK":
+                    if 'reason' in s:
                         logging.error("bad answer from job ws : {}".format(s['reason']))
                     self.bServerAvail = False
                     return None
@@ -276,6 +276,22 @@ class probeServer(object):
         except requests.ConnectionError:
             logging.error("get jobs : connection error")
             return None
+
+        # add watchdog job
+        wj = {
+            'lock': 'none',
+            'job': 'watchdog',
+            'version': 1,
+            'active': 'True',
+            'freq': 5,
+            'data': {},
+            'id': 2000001,
+            'restart': 1
+        }
+
+        answer['jobs'].append(wj)
+
+        print answer
 
         return answer
 
@@ -337,10 +353,10 @@ class probeServer(object):
                 bOnARM = False
                 if not os.path.exists("/home/pi/py-net-probe"):
                     logging.info(" avoid on non ARM/PI platform")
-                    return
+                    return False
         else:
             logging.info(" no /bin/uname")
-            return
+            return False
 
         try:
             data = {
@@ -349,11 +365,11 @@ class probeServer(object):
             r = self.session.post(self.sSrvBaseURL+'/upgrade', data, stream=True)
             if r.status_code == 201:
                 logging.info("no need to upgrade")
-                return
+                return False
 
             if r.status_code != 200:
                 logging.info("error in upgrade")
-                return
+                return False
 
             if bOnARM:
                 logging.info("turning FS to RW")
@@ -365,7 +381,6 @@ class probeServer(object):
 
         except requests.ConnectionError:
             logging.error("reaching srv : connection refused")
-
 
         try:
             logging.info("check downloaded package")
@@ -380,7 +395,7 @@ class probeServer(object):
         except CalledProcessError as e:
             logging.error("error in call for dpkg")
             logging.error(e)
-            exit()
+            return True
 
         os.unlink("/home/pi/new.deb")
 
@@ -390,4 +405,4 @@ class probeServer(object):
             call(["/bin/mount", "-o", "remount,ro", "/"])
 
         logging.info("exiting")
-        exit()
+        return True
