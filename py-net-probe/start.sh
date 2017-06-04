@@ -36,5 +36,5 @@ do
  then
    reboot
  fi
- sleep 15
+ sleep 10
 done

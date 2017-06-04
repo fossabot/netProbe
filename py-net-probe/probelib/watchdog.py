@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-04 17:00:07 alex>
+# Time-stamp: <2017-06-04 20:39:53 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -62,7 +62,8 @@ class probe_watchdog(probemain):
 
         sWatchDogFile = "/dev/watchdog"
 
-        if not os.path.isfile(sWatchDogFile):
+        if not os.path.exists(sWatchDogFile):
+            logging.error("no watchdog file {}".format(sWatchDogFile))
             return
 
         try:

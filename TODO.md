@@ -21,7 +21,6 @@ probe
 
 raspberry
 =========
-* install watchdog
 
 History
 =======
@@ -31,3 +30,5 @@ move to changelog once released
 -----
 * https add no ssl check
 * local lock between modules
+* watchdog
+* post boot script for system upgrade

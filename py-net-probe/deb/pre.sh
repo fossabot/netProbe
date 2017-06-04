@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Time-stamp: <2017-06-04 16:25:09 alex>
+# Time-stamp: <2017-06-04 21:49:40 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -32,9 +32,18 @@ pip install dnspython
 cat > /home/pi/py-net-probe/post-boot.sh <<EOF
 #!/bin/sh
 
+# wait for dhcp to get an address
+sleep 60
+
+killall dhcpcd
+killall cron
+
+sleep 15
+
 mount -o rw,remount /
 mount -o rw,remount /boot
 
+pip install --upgrade pip
 pip install --upgrade -r /home/pi/py-net-probe/pi-python-reqs.txt
 
 apt-get -y update
@@ -46,6 +55,8 @@ apt-get -y autoremove
 apt-get -y install watchdog
 
 mount -o ro,remount /boot
+
+rm -f /home/pi/py-net-probe/post-boot.sh
 
 reboot
 EOF

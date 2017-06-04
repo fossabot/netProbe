@@ -4,3 +4,4 @@ redis >= 2.10.5
 psutil >= 4.0.0
 pycrypto >= 2.6.1
 dnspython >= 1.15.0
+urllib3

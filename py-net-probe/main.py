@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-04 16:49:46 alex>
+# Time-stamp: <2017-06-04 20:35:41 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -25,7 +25,7 @@
 """
 
 __version__ = "1.9.1"
-__date__ = "04/06/17-15:21:06"
+__date__ = "04/06/17-21:51:46"
 __author__ = "Alex Chauvin"
 
 import time
@@ -368,8 +368,6 @@ def mainLoop():
 # -----------------------------------------
 def trap_signal(sig, _):
     """ trap all signals for stop """
-
-    # print sig, heap
 
     global bRunning
     global bConnected

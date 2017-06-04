@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-04 16:50:43 alex>
+# Time-stamp: <2017-06-04 20:36:39 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -290,8 +290,6 @@ class probeServer(object):
         }
 
         answer['jobs'].append(wj)
-
-        print answer
 
         return answer
 
