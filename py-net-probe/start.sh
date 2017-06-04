@@ -20,6 +20,12 @@
 
 cd $(dirname $0)
 
+if [ -f post-boot.sh ]
+then
+ /bin/sh post-boot.sh
+ rm -f post-boot.sh
+fi
+
 while [ true ]
 do
  echo "starting"

@@ -1,5 +1,5 @@
 #
-# Time-stamp: <2017-06-03 11:19:53 alex>
+# Time-stamp: <2017-06-04 13:50:48 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -56,7 +56,7 @@ cc: clean
 deb: clean version
 	@echo make deb package for PI
 	@mkdir -p deb/home/pi/py-net-probe
-	@cp -r init.cfg start.sh *py netProbe probelib sched database hostId config deb/home/pi/py-net-probe
+	@cp -r ../pi-python-reqs.txt init.cfg start.sh *py netProbe probelib sched database hostId config deb/home/pi/py-net-probe
 	@rm -f netprobe_`cat ../VERSION`_all.deb
 	fpm -s dir -t deb -n "netprobe" -a noarch --description "netProbe Pi client" -v `cat ../VERSION` --before-install deb/pre.sh --after-install deb/post.sh -C deb --deb-no-default-config-files --license GPL-3.0 --maintainer "ach@meta-x.org" --url "https://github.com/achauvinhameau/netProbe" --vendor none home
 

@@ -29,8 +29,8 @@ from netProbeSrv import app
 
 aVersion = {
     "answer" : "OK",
-    "version" : "1.9.0",
-    "date" : "03/06/17-16:42:35",
+    "version" : "1.9.1",
+    "date" : "04/06/17-13:35:58",
     "author" : "Alex Chauvin"
 }
 

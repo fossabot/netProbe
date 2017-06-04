@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Time-stamp: <2017-05-08 18:06:41 alex>
+# Time-stamp: <2017-06-04 16:25:09 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -20,8 +20,33 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------
 
+# ----------------------------
 rm -rf /home/pi/py-net-probe/*
 
 # v1.8.1
 # install dnspython
 pip install dnspython
+
+# v1.9.1
+# upgrade PI in post-boot
+cat > /home/pi/py-net-probe/post-boot.sh <<EOF
+#!/bin/sh
+
+mount -o rw,remount /
+mount -o rw,remount /boot
+
+pip install --upgrade -r /home/pi/py-net-probe/pi-python-reqs.txt
+
+apt-get -y update
+apt-get -y upgrade
+apt-get -y clean
+apt-get -y autoclean
+apt-get -y autoremove
+
+apt-get -y install watchdog
+
+mount -o ro,remount /boot
+
+reboot
+EOF
+
