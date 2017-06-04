@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-17 20:44:46 alex>
+# Time-stamp: <2017-06-04 20:35:41 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  client module for the probe system
 """
 
-__version__ = "1.8.3"
-__date__ = "17/05/17-21:17:30"
+__version__ = "1.9.1"
+__date__ = "04/06/17-21:51:46"
 __author__ = "Alex Chauvin"
 
 import time
@@ -48,7 +48,7 @@ from config import conf
 
 from probe import restartProbe, stopAllProbes, checkProbes, statsProbes
 
-aModules = ['icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute', 'smb', 'dns']
+aModules = ['watchdog', 'icmp', 'health', 'http', 'iperf', 'temp', 'ntp', 'traceroute', 'smb', 'dns']
 
 # ----------- parse args
 try:
@@ -59,7 +59,7 @@ try:
 
     parser.add_argument('--probe', '-p', metavar='probe_loglevel', default='ERROR', type=str, help='log level for probes', nargs=1, choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
 
-    parser.add_argument('--redis', '-r', metavar='none', help='redis server', default=None, nargs='?')
+    parser.add_argument('--redis', '-r', metavar='none', help='redis server', default='localhost', nargs='?')
 
     parser.add_argument('--server', '-s', metavar='none', help='PiProbe server', default=None, nargs='?')
 
@@ -124,6 +124,8 @@ if args.redis != None:
 
 db = database.dbRedis.dbRedis(args.redis)
 
+db.cleanLock()
+
 # -----------------------------------------
 def serverConnect():
     """
@@ -131,9 +133,7 @@ def serverConnect():
     """
 
     global srv
-    # global stats
     global bConnected
-    # global bRunning
 
     # check IP configuration of probe
     # if no default route !
@@ -204,7 +204,6 @@ def ping():
     called by the scheduler
     """
 
-    # global stats
     global bConnected
 
     if bConnected is False:
@@ -240,9 +239,6 @@ def pushJobsToDB(jobName):
     """ change the job definition for the probe job in the db called only
     if the job config has been updated
     """
-    # global db
-    # global probeJobs
-    # global stats
 
     # suppress the old definition in db
     db.cleanJob(jobName)
@@ -259,9 +255,8 @@ def getConfig():
     """
     get my probe config from the server
     """
-    # global probeJobs
+
     global bConnected
-    # global aModules
 
     if bConnected is False:
         return
@@ -277,12 +272,12 @@ def getConfig():
         bConnected = False
         return None
 
-    if not config.__contains__('jobs'):
+    if 'jobs' not in config:
         logging.error("can't get my jobs")
         bConnected = False
         return None
 
-    if not config.__contains__('config'):
+    if 'config' not in config:
         logging.error("can't get my config")
         bConnected = False
         return None
@@ -330,7 +325,7 @@ def getConfig():
     # handle jobs
     for c in config['jobs']:
         # update job or create
-        if probeJobs.__contains__(c['id']):
+        if c['id'] in probeJobs:
             a = probeJobs[c['id']]
             if c['version'] > a['version']:
                 a['restart'] = 1
@@ -353,7 +348,7 @@ def getConfig():
         return
 
     for m in aModules:
-        if restart.__contains__(m):
+        if m in restart:
             pushJobsToDB(m)
             restartProbe(m, probeProcess)
 
@@ -374,8 +369,6 @@ def mainLoop():
 def trap_signal(sig, _):
     """ trap all signals for stop """
 
-    # print sig, heap
-
     global bRunning
     global bConnected
 
@@ -388,6 +381,9 @@ def trap_signal(sig, _):
 #
 # -----------------------------------------
 def action(a):
+    """ run an action from the central server
+    """
+
     global bRunning
     global bConnected
 
@@ -413,7 +409,14 @@ def action(a):
                 return
 
     if a['name'] == "upgrade":
-        srv.upgrade()
+        if srv.upgrade():
+            while popResults(db) > 5:
+                None
+
+            pushStats(srv)
+
+            exit()
+
         return
 
     logging.info("action not handled {}".format(a))
@@ -432,7 +435,7 @@ def popResults(_db):
     a = []
 
     l = _db.lenResultQueue()
-    logging.info("result queue len {}".format(l))
+    logging.info("pop results, queue len {}".format(l))
 
     if l < 5:
         nb = 3
@@ -448,6 +451,8 @@ def popResults(_db):
 
     if len(a) > 0:
         srv.pushResults(a)
+
+    return _db.lenResultQueue()
 
 # -----------------------------------------
 def pushStats(_srv):
@@ -497,7 +502,7 @@ while bRunning:
     scheduler.add("stats push", conf.get("scheduler", "stats_push"), pushStats, srv)
 
     # ask for the upgrade every hour to the server
-    scheduler.add("upgrade", conf.get("scheduler", "upgrade"), srv.upgrade, None)
+    scheduler.add("upgrade", conf.get("scheduler", "upgrade"), srv.upgrade, None, 2)
 
     mainLoop()
 

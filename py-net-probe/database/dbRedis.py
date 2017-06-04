@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-30 16:53:29 alex>
+# Time-stamp: <2017-06-03 16:20:39 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -30,37 +30,39 @@ import time
 import json
 import redis
 
+from .db import db
+
 # import pprint
 
-class dbRedis(object):
+class dbRedis(db):
     """
     database class based on redis (db=1)
     """
 
+    # -----------------------------------------
     def __init__(self, host=None):
         """
         constructor
         """
+        db.__init__(self)
+
         self.backOff = 1
-        self.db = None
         self.dbRedisId = 1
 
         self.connect(host)
 
-    def connect(self, host=None):
+    # -----------------------------------------
+    def connect(self, host="localhost"):
         """
         connect to the redis server
         wait until it connects
+        :param host: name of the host where redis server is running
         """
 
         while True:
-            if host is None:
-                host = "localhost"
-                self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2)
-            else:
-                self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2, host=host)
-
             logging.info("connect to redis {}".format(host))
+
+            self.db = redis.Redis(db=self.dbRedisId, max_connections=1, socket_timeout=2, host=host)
 
             try:
                 self.db.ping()
@@ -70,17 +72,19 @@ class dbRedis(object):
                 self.backOff *= 1.5
                 if self.backOff > 30:
                     self.db = None
-                    raise Exception('redis not running ? abort')
+                    raise Exception('redis not running? abort')
                 logging.error("redis : {}, next try in {:.2f}".format(e.message, self.backOff))
                 time.sleep(self.backOff)
          
         self.backOff = 1
 
+    # -----------------------------------------
     def checkDB(self):
         """check if db is set"""
         if self.db is None:
             raise Exception("redis not started")
 
+    # -----------------------------------------
     def cleanJob(self, jobName):
         """suppress the list from the database
 
@@ -88,6 +92,7 @@ class dbRedis(object):
         self.checkDB()
         return self.db.delete(jobName)
 
+    # -----------------------------------------
     def addJob(self, jobName, job):
         """add a job in the job list
 
@@ -95,6 +100,7 @@ class dbRedis(object):
         self.checkDB()
         self.db.rpush(jobName, json.dumps(job))
 
+    # -----------------------------------------
     def getJobs(self, jobName):
         """extracts all jobs and return an array
 
@@ -110,6 +116,7 @@ class dbRedis(object):
 
         return a
 
+    # -----------------------------------------
     def dumpJob(self, jobName):
         """dump the content of the db for jobname, return a generator
 
@@ -121,6 +128,7 @@ class dbRedis(object):
             for i in range(l):
                 yield self.db.lindex(jobName, i)
 
+    # -----------------------------------------
     def pushResult(self, result):
         """add a result in the queue for the main process
         result is a dict
@@ -133,6 +141,7 @@ class dbRedis(object):
 
         self.db.rpush("results", json.dumps(result))
 
+    # -----------------------------------------
     def popResult(self):
         """pop a result from the queue
         return None if nothing in the queue
@@ -140,8 +149,113 @@ class dbRedis(object):
         self.checkDB()
         return self.db.lpop("results")
 
+    # -----------------------------------------
     def lenResultQueue(self):
         """get queue size
         """
         self.checkDB()
         return self.db.llen("results")
+
+    # -----------------------------------------
+    def setLock(self, sModule, sType):
+        """add a lock in the local database
+
+        """
+
+        super(dbRedis, self).setLock(sModule, sType)
+        self.checkDB()
+
+        r = {
+            "module": sModule,
+            "date" : time.time()
+        }
+
+        if sType == "local":
+            logging.debug("set local lock on {}".format(sModule))
+            self.db.set("lock_local", json.dumps(r), ex=3600)
+
+    # -----------------------------------------
+    def releaseLock(self, sType):
+        """
+        release a lock specified by the sType
+        """
+
+        super(dbRedis, self).releaseLock(sType)
+        self.checkDB()
+
+        if sType == "local":
+            logging.debug("clear local lock")
+            self.db.delete("lock_local")
+
+    # -----------------------------------------
+    def checkLock(self, sType="none", sModule="none"):
+        """checks if a lock is in the queue
+
+        returns True if a local lock is present on another module
+        """
+        super(dbRedis, self).checkLock()
+        self.checkDB()
+
+        if sType == "local":
+            l = self.db.get("lock_local")
+            if l is None:
+                return False
+
+            # we have a lock, on wich module ?
+            r = json.loads(l)
+
+            return bool(r['module'] != sModule)
+
+        return False
+
+    # -----------------------------------------
+    def incrRunningProbe(self):
+        """ increment counter of probes running (centralized in the redis PI server
+        """
+        super(dbRedis, self).incrRunningProbe()
+
+        self.checkDB()
+
+        self.db.incr("local_running")
+
+    # -----------------------------------------
+    def decrRunningProbe(self):
+        """ decrement counter of probes running (centralized in the redis PI server
+        
+        """
+
+        super(dbRedis, self).decrRunningProbe()
+
+        self.checkDB()
+
+        self.db.decr("local_running")
+
+    # -----------------------------------------
+    def isProbeRunning(self):
+        """ is a probe already running? Usefull when asking for lock
+        
+        """
+
+        self.checkDB()
+
+        v = self.db.get("local_running")
+        if v is None:
+            return False
+
+        if int(v) == 0:
+            return False
+
+        return True
+
+    # -----------------------------------------
+    def cleanLock(self):
+        """suppress lock and set counter to 0
+
+        """
+
+        super(dbRedis, self).cleanLock()
+
+        self.checkDB()
+
+        self.db.delete("local_running")
+        self.releaseLock("lock_local")

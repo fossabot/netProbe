@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-05-14 13:03:58 alex>
+# Time-stamp: <2017-06-03 10:57:31 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -25,6 +25,7 @@
 """
 
 import logging
+import ssl
 import urllib2
 import time
 import re
@@ -42,6 +43,8 @@ class probe_http(probemain):
 
         """
         probemain.__init__(self, "HTTP")
+
+        self.bSSLcheck = True
 
         self.checkNet()
         self.getConfig("http", self.job_http)
@@ -72,6 +75,9 @@ class probe_http(probemain):
         if _config.__contains__('content'):
             sReContent = str(_config['content'])
 
+        if 'ssl_check' in _config:
+            self.bSSLcheck = bool(_config['ssl_check'] == "True")
+
         result = {
             "http-timeout" : fTimeout,
             "http-url" : sURL
@@ -84,6 +90,9 @@ class probe_http(probemain):
         fTime = 0
 
         try:
+            if not self.bSSLcheck:
+                ssl._create_default_https_context = ssl._create_unverified_context
+
             f = urllib2.urlopen(sURL, data=None, timeout=fTimeout)
             fTime = time.time() - fNow
 

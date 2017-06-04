@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 14:12:04 alex>
+# Time-stamp: <2017-06-03 14:53:11 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -454,6 +454,124 @@ def test_ext_not_between():
         assert False, "third step should be around 79200 and is {}".format(t)
 
 # ---------------------------------------------
+def foo_lock_incr(p):
+    global fLastFoo1
+
+    logging.info("foo_lock_incr")
+
+    if not p.db.isProbeRunning():
+        assert False, "no probe should be running"
+
+    fLastFoo1 = 0
+
+# ---------------------------------------------
+def test_lock_counter():
+    """ a job increment lock counter """
+    global fLastFoo1
+
+    from probelib.probemain import probemain
+
+    p = probemain("test")
+
+    clean()
+    p.db.cleanLock()
+
+    scheduler = sched.sched()
+    scheduler.clean()
+
+    if p.db.isProbeRunning():
+        assert False, "no probe should be running"
+
+    scheduler.add("test_lock_incr", 1, foo_lock_incr, args=p, startIn=1)
+
+    fLastFoo1 = 1
+
+    while fLastFoo1 == 1:
+        t = scheduler.step(p)
+        time.sleep(t)
+
+    if p.db.isProbeRunning():
+        assert False, "no probe should be running"
+
+# ---------------------------------------------
+def test_lock():
+    """ exclusive job should set local lock """
+    global fLastFoo1
+
+    from probelib.probemain import probemain
+
+    p = probemain("test")
+
+    clean()
+    p.db.cleanLock()
+
+    scheduler = sched.sched()
+    scheduler.clean()
+
+    if p.db.isProbeRunning():
+        assert False, "a probe should be running"
+
+    scheduler.addExtended("test_lock", 1, None, foo_lock_incr, args=p, startIn=1, sLock="local")
+
+    fLastFoo1 = 1
+
+    while fLastFoo1 == 1:
+        t = scheduler.step(p)
+        time.sleep(t)
+
+    if p.db.isProbeRunning():
+        assert False, "no probe should be running"
+
+# ---------------------------------------------
+def test_locked():
+    """ if job is locked, wait"""
+    global fLastFoo1
+
+    from probelib.probemain import probemain
+
+    p = probemain("test")
+
+    clean()
+    p.db.cleanLock()
+
+    scheduler = sched.sched()
+    scheduler.clean()
+
+    if p.db.isProbeRunning():
+        assert False, "a probe should be running"
+
+    p2 = probemain("test_locker")
+    logging.info("acquire lock on p2 {}".format(str(p2.acquireLocalLock())))
+
+    if p.acquireLocalLock():
+        assert False, "a lock should be present"
+
+    logging.info("release lock on p2 {}".format(str(p2.releaseLocalLock())))
+
+    scheduler.addExtended("test_lock", 1, None, foo_lock_incr, args=p, startIn=1, sLock="local")
+
+    logging.info("acquire lock on p2 #2 {}".format(str(p2.acquireLocalLock())))
+    fLastFoo1 = 1
+
+    t = scheduler.step(p)
+    if fLastFoo1 != 1:
+        assert False, "function should not have been called"
+    time.sleep(t)
+
+    t = scheduler.step(p)
+    if fLastFoo1 != 1:
+        assert False, "function should not have been called"
+    time.sleep(t)
+
+    logging.info("release lock on p2 #2 {}".format(str(p2.releaseLocalLock())))
+    t = scheduler.step(p)
+    if fLastFoo1 != 0:
+        assert False, "function should have been called"
+
+    if p.db.isProbeRunning():
+        assert False, "no probe should be running"
+
+# ---------------------------------------------
 def all_sched(b=True):
     if b:
         test_create()
@@ -476,10 +594,13 @@ def all_sched(b=True):
         test_ext_between()
         test_ext_not_between()
         test_ext_between_andnext()
+        test_lock_counter()
+        test_lock()
+    test_locked()
 
 if __name__ == '__main__':
     _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s'
     logging.basicConfig(format=_logFormat,
-                        level=logging.INFO)
+                        level=logging.DEBUG)
 
-    all_sched(True)
+    all_sched(False)

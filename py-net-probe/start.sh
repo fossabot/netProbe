@@ -20,6 +20,12 @@
 
 cd $(dirname $0)
 
+if [ -f post-boot.sh ]
+then
+ /bin/sh post-boot.sh
+ rm -f post-boot.sh
+fi
+
 while [ true ]
 do
  echo "starting"
@@ -30,5 +36,5 @@ do
  then
    reboot
  fi
- sleep 15
+ sleep 10
 done

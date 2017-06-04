@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-09 16:20:14 alex>
+# Time-stamp: <2017-06-04 17:41:37 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -25,6 +25,7 @@
 """
 
 import os
+import re
 
 from flask import make_response, jsonify, request, send_from_directory
 import logging
@@ -33,7 +34,27 @@ from liveDB import lDB
 from ws_global import wsCheckParams, wsCheckHostUID
 from config import conf
 
+# -------------------------------------
+def versionToInt(sVersion):
+    """return int value for the version for easy compare
+    """
+    v = 0
 
+    r = re.match(r"(\d+)\.(\d+)(\.(\d+))?", sVersion)
+
+    if r != None:
+        if r.lastindex >= 1:
+            v = 1000000*int(r.group(1))
+
+        if r.lastindex >= 2:
+            v += 1000*int(r.group(2))
+
+        if r.lastindex >= 3:
+            v += int(r.group(4))
+
+    return v
+    
+# -------------------------------------
 @app.route('/upgrade', methods=['POST'])
 def ws_upgrade():
     """
@@ -60,15 +81,22 @@ def ws_upgrade():
             logging.warning("probe with no version")
             return make_response(jsonify({"answer" : "KO", "reason" : "no version provided"}), 400)
 
+
+        iProbeVersion = versionToInt(sVersion)
+
         root = os.path.join(os.getcwd(), "static")
 
         # which version for the host
         nextVersion = conf.getFWVersion(conf.getFWVersionForHost(host))
         # nextVersion = conf.getCurrentFWVersion()
 
-        # what is the next version acceptable ?
-        if sVersion == "1.3.1":
-            nextVersion = "1.3.1b"
+        if iProbeVersion < versionToInt('1.9.1'):
+            nextVersion = '1.9.1'
+
+        if iProbeVersion < versionToInt('1.9.0'):
+            nextVersion = '1.9.0'
+
+        iNextVersion = versionToInt(nextVersion)
 
         fileName = "netprobe_{}_all.deb".format(nextVersion)
 
@@ -79,7 +107,6 @@ def ws_upgrade():
                                           "reason" : "firmware file not found",
                                           "file": "{}".format(fileName)}), 404)
             
-
         logging.info("current version {} for {}, next version {}, file {}".format(sVersion, host, nextVersion, fileName))
 
         # return send_from_directory(root, fileName)
