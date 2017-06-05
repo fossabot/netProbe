@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-04 17:41:37 alex>
+# Time-stamp: <2017-06-05 18:50:22 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -34,26 +34,8 @@ from liveDB import lDB
 from ws_global import wsCheckParams, wsCheckHostUID
 from config import conf
 
-# -------------------------------------
-def versionToInt(sVersion):
-    """return int value for the version for easy compare
-    """
-    v = 0
+from libUpgrade import defNextVersion
 
-    r = re.match(r"(\d+)\.(\d+)(\.(\d+))?", sVersion)
-
-    if r != None:
-        if r.lastindex >= 1:
-            v = 1000000*int(r.group(1))
-
-        if r.lastindex >= 2:
-            v += 1000*int(r.group(2))
-
-        if r.lastindex >= 3:
-            v += int(r.group(4))
-
-    return v
-    
 # -------------------------------------
 @app.route('/upgrade', methods=['POST'])
 def ws_upgrade():
@@ -81,22 +63,12 @@ def ws_upgrade():
             logging.warning("probe with no version")
             return make_response(jsonify({"answer" : "KO", "reason" : "no version provided"}), 400)
 
-
-        iProbeVersion = versionToInt(sVersion)
+        # iProbeVersion = versionToInt(sVersion)
 
         root = os.path.join(os.getcwd(), "static")
 
-        # which version for the host
-        nextVersion = conf.getFWVersion(conf.getFWVersionForHost(host))
-        # nextVersion = conf.getCurrentFWVersion()
-
-        if iProbeVersion < versionToInt('1.9.1'):
-            nextVersion = '1.9.1'
-
-        if iProbeVersion < versionToInt('1.9.0'):
-            nextVersion = '1.9.0'
-
-        iNextVersion = versionToInt(nextVersion)
+        nextVersion = defNextVersion(sVersion, conf.getFWVersion(conf.getFWVersionForHost(host)))
+        # iNextVersion = versionToInt(nextVersion)
 
         fileName = "netprobe_{}_all.deb".format(nextVersion)
 

@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-03 16:21:01 alex>
+# Time-stamp: <2017-06-05 20:40:43 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -32,7 +32,6 @@ class dbTest(db):
     """
 
     def __init__(self):
+        """ constructor
         """
-        constructor
-        """
-        self.db = None
+        db.__init__(self)

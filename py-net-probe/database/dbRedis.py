@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-03 16:20:39 alex>
+# Time-stamp: <2017-06-05 20:34:15 alex>
 #
 #
 # --------------------------------------------------------------------
@@ -40,7 +40,7 @@ class dbRedis(db):
     """
 
     # -----------------------------------------
-    def __init__(self, host=None):
+    def __init__(self, host="localhost"):
         """
         constructor
         """
@@ -259,3 +259,11 @@ class dbRedis(db):
 
         self.db.delete("local_running")
         self.releaseLock("lock_local")
+
+    # -----------------------------------------
+    def disconnect(self):
+        """disconnect from redis
+
+        """
+
+        self.db = None
