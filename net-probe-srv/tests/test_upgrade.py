@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-04-29 17:09:59 alex>
+# Time-stamp: <2017-06-05 19:49:20 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -307,12 +307,12 @@ def test_upgrade_5():
              "version" : 1,
              "data" : {}}]
 
-    uid = insertOneHost("p5", "test_up5", aJobs, "127.2.0.5", ":2:5", "0.6.2", "not_found")
+    uid = insertOneHost("p5", "test_up5", aJobs, "127.2.0.5", ":2:5", "0.6.1", "not_found")
 
     rv = c.post("/upgrade", data=dict(uid=uid))
 
     if rv.status_code != 404:
-        assert False, "file not found"
+        assert False, "file not found {}".format(rv.status_code)
 
 # ---------------------------------------------
 def test_upgrade_6():

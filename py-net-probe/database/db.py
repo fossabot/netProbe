@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-03 16:46:29 alex>
+# Time-stamp: <2017-06-05 20:48:42 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -68,6 +68,7 @@ class db(object):
         logging.debug("getJobs")
 
         return json.loads(sys.stdin.read())
+        # return True
 
     @classmethod
     def dumpJob(cls, jobName):

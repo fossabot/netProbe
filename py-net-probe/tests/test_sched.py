@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-03 14:53:11 alex>
+# Time-stamp: <2017-06-05 19:44:31 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -603,4 +603,4 @@ if __name__ == '__main__':
     logging.basicConfig(format=_logFormat,
                         level=logging.DEBUG)
 
-    all_sched(False)
+    all_sched(True)
