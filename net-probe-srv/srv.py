@@ -1,6 +1,6 @@
 # -*- Mode: Python; python-indent-offset: 4 -*-
 #
-# Time-stamp: <2017-06-05 18:39:43 alex>
+# Time-stamp: <2017-09-24 15:34:49 alex>
 #
 # --------------------------------------------------------------------
 # PiProbe
@@ -24,8 +24,8 @@
  server module for the probe system
 """
 
-__version__ = "1.9.2"
-__date__ = "05/06/17-20:49:04"
+__version__ = "1.9.4"
+__date__ = "24/09/17-14:27:05"
 
 import logging
 import signal
@@ -70,13 +70,13 @@ _logFormat = '%(asctime)-15s [%(levelname)s] %(filename)s:%(lineno)d - %(message
 logLevel = logging.ERROR
 
 if args.log[0] == 'DEBUG':
-    logLevel=logging.DEBUG
+    logLevel = logging.DEBUG
 if args.log[0] == 'WARNING':
-    logLevel=logging.WARNING
+    logLevel = logging.WARNING
 if args.log[0] == 'ERROR':
-    logLevel=logging.ERROR
+    logLevel = logging.ERROR
 if args.log[0] == 'INFO':
-    logLevel=logging.INFO
+    logLevel = logging.INFO
 
 logging.basicConfig(format=_logFormat, level=logLevel)
 # logging.basicConfig(level=logLevel)
