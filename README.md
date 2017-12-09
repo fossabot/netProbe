@@ -1,4 +1,5 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/783f58bd103940a399331ca5711af28f)](https://www.codacy.com/app/achauvinhameau/netProbe?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=achauvinhameau/netProbe&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/783f58bd103940a399331ca5711af28f)](https://www.codacy.com/app/achauvinhameau/netProbe?utm_source=github.com&utm_medium=referral&utm_content=achauvinhameau/netProbe&utm_campaign=Badge_Coverage) [![Code Climate](https://codeclimate.com/github/achauvinhameau/netProbe/badges/gpa.svg)](https://codeclimate.com/github/achauvinhameau/netProbe)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fachauvinhameau%2FnetProbe.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fachauvinhameau%2FnetProbe?ref=badge_shield)
 
 Purpose
 =======
@@ -39,3 +40,7 @@ Current probes
 * temperature: gather raspberry processor temperature
 * traceroute: report path to target and delay at each step
 * dns: check resolv
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fachauvinhameau%2FnetProbe.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fachauvinhameau%2FnetProbe?ref=badge_large)
